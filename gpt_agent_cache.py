@@ -175,6 +175,18 @@ if __name__ == "__main__":
             log_action(result.get("message", str(result)))
 
         if responses:
+    for r in responses:
+        status = r.get('status')
+        if status == 'success':
+            print(Fore.GREEN + '✅', r.get('message', '') + Style.RESET_ALL)
+        elif status == 'error':
+            print(Fore.RED + '❌', r.get('message', '') + Style.RESET_ALL)
+        elif status == 'cancelled':
+            print(Fore.YELLOW + '⚠️', r.get('message', '') + Style.RESET_ALL)
+        elif status == 'macro':
+            print(Fore.CYAN + '📦 Виконано macro-команду:' + Style.RESET_ALL)
+            for step_result in r.get('results', []):
+                print('  -', step_result.get('message', ''))
             print("💾 Записую gpt_response.json і очищаю cache.txt")
             write_response(responses)
             clear_cache()
