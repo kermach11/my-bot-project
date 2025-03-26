@@ -86,6 +86,8 @@ def handle_command(cmd):
                 return {"status": "error", "message": "File not found"}
 
         elif action == "replace_in_file":
+    if filename in ["config.py", "api_keys.py", "cache.txt", "gpt_agent_cache.py"]:
+        return {"status": "error", "message": f"❌ Заборонено змінювати критичний файл: {filename}"}
             if os.path.exists(full_file_path):
                 with open(full_file_path, "r", encoding="utf-8") as f:
                     text = f.read()
