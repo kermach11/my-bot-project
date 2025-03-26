@@ -92,3 +92,6 @@
 [2025-03-26 20:18:16] ❌ Unknown action: test_python
 [2025-03-26 20:21:32] ❌ Unknown action: test_python
 [2025-03-26 20:22:56] ✅ run_bot_logic.py пройшов синтаксичну перевірку
+[2025-03-26 20:29:38] ❌ Заборонено змінювати критичний файл: gpt_agent_cache.py
+[2025-03-26 20:35:18] ✏️ Replaced text in 'gpt_agent_cache.py'
+[2025-03-26 20:41:03] 📌 Appended to file 'gpt_agent_cache.py'
