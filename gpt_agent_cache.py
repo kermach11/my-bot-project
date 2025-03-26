@@ -1,5 +1,7 @@
 import os
 import json
+from colorama import init, Fore, Style
+init()
 import time
 import re
 import shutil
