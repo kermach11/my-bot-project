@@ -88,3 +88,7 @@
 [2025-03-26 19:32:39] ✏️ Replaced text in 'ben_gui_desktop/ben_gui.py'
 [2025-03-26 19:33:44] ✏️ Replaced text in 'ben_gui_desktop/ben_gui.py'
 [2025-03-26 19:34:44] ✏️ Replaced text in 'ben_gui_desktop/ben_gui.py'
+[2025-03-26 20:13:36] ❌ Unknown action: test_python
+[2025-03-26 20:18:16] ❌ Unknown action: test_python
+[2025-03-26 20:21:32] ❌ Unknown action: test_python
+[2025-03-26 20:22:56] ✅ run_bot_logic.py пройшов синтаксичну перевірку

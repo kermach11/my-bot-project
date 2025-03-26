@@ -88,17 +88,20 @@ def handle_command(cmd):
                 return {"status": "error", "message": "File not found"}
 
         elif action == "replace_in_file":
-    if filename in ["config.py", "api_keys.py", "cache.txt", "gpt_agent_cache.py"]:
-        return {"status": "error", "message": f"❌ Заборонено змінювати критичний файл: {filename}"}
+            if filename in ["config.py", "api_keys.py", "cache.txt", "gpt_agent_cache.py"]:
+                return {"status": "error", "message": f"❌ Заборонено змінювати критичний файл: {filename}"}
             if os.path.exists(full_file_path):
                 with open(full_file_path, "r", encoding="utf-8") as f:
                     text = f.read()
-                import re
+                # 🧠 Зберігаємо резервну копію
+                backup_path = full_file_path + ".bak"
+                with open(backup_path, "w", encoding="utf-8") as f:
+                    f.write(text)
+                # 🔁 Заміна через regex
                 new_text = re.sub(pattern, replacement, text)
                 with open(full_file_path, "w", encoding="utf-8") as f:
                     f.write(new_text)
                 return {"status": "success", "message": f"✏️ Replaced text in '{filename}'"}
-
         elif action == "read_file":
             if os.path.exists(full_file_path):
                 with open(full_file_path, "r", encoding="utf-8") as f:
@@ -141,6 +144,17 @@ def handle_command(cmd):
         elif action == "run_python":
             result = subprocess.run(["python", full_file_path], capture_output=True, text=True)
             return {"status": "success", "output": result.stdout, "errors": result.stderr}
+        
+        elif action == "test_python":
+            if os.path.exists(full_file_path):
+                try:
+                    with open(full_file_path, "r", encoding="utf-8") as f:
+                        source = f.read()
+                    compile(source, filename, 'exec')
+                    return {"status": "success", "message": f"✅ {filename} пройшов синтаксичну перевірку"}
+                except SyntaxError as e:
+                    return {"status": "error", "message": f"❌ Syntax error in {filename}: {e}"}
+            return {"status": "error", "message": "File not found"}
 
         elif action == "macro":
             results = []
@@ -175,20 +189,19 @@ if __name__ == "__main__":
             log_action(result.get("message", str(result)))
 
         if responses:
-    for r in responses:
-        status = r.get('status')
-        if status == 'success':
-            print(Fore.GREEN + '✅', r.get('message', '') + Style.RESET_ALL)
-        elif status == 'error':
-            print(Fore.RED + '❌', r.get('message', '') + Style.RESET_ALL)
-        elif status == 'cancelled':
-            print(Fore.YELLOW + '⚠️', r.get('message', '') + Style.RESET_ALL)
-        elif status == 'macro':
-            print(Fore.CYAN + '📦 Виконано macro-команду:' + Style.RESET_ALL)
-            for step_result in r.get('results', []):
-                print('  -', step_result.get('message', ''))
+            for r in responses:
+                status = r.get('status')
+                if status == 'success':
+                    print(Fore.GREEN + '✅', r.get('message', '') + Style.RESET_ALL)
+                elif status == 'error':
+                    print(Fore.RED + '❌', r.get('message', '') + Style.RESET_ALL)
+                elif status == 'cancelled':
+                    print(Fore.YELLOW + '⚠️', r.get('message', '') + Style.RESET_ALL)
+                elif status == 'macro':
+                    print(Fore.CYAN + '📦 Виконано macro-команду:' + Style.RESET_ALL)
+                    for step_result in r.get('results', []):
+                        print('  -', step_result.get('message', ''))
+
             print("💾 Записую gpt_response.json і очищаю cache.txt")
             write_response(responses)
             clear_cache()
-
-        time.sleep(1)
