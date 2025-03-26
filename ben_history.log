@@ -1,0 +1,73 @@
+[2025-03-25 13:22:36] ❌ Unknown action: None
+[2025-03-25 13:45:41] ❌ Unknown action: delete_file
+[2025-03-25 13:45:41] ❌ Unknown action: delete_file
+[2025-03-25 13:45:41] ❌ Unknown action: delete_file
+[2025-03-25 13:45:41] ❌ Unknown action: delete_file
+[2025-03-25 13:45:41] ❌ Unknown action: delete_file
+[2025-03-25 13:45:41] ❌ Unknown action: delete_file
+[2025-03-25 13:45:41] 📄 File renamed to 'config_template.py'
+[2025-03-25 13:46:08] ❌ Unknown action: None
+[2025-03-25 13:46:09] ❌ Unknown action: None
+[2025-03-25 13:48:06] ✅ Created file 'test.txt'
+[2025-03-25 13:49:00] ❌ Unknown action: delete_file
+[2025-03-25 13:49:00] ❌ Unknown action: delete_file
+[2025-03-25 13:49:00] ❌ Unknown action: delete_file
+[2025-03-25 13:49:00] ❌ Unknown action: delete_file
+[2025-03-25 13:49:00] ❌ Unknown action: delete_file
+[2025-03-25 13:49:00] ❌ Unknown action: delete_file
+[2025-03-25 13:49:00] ❌ Exception: [WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config.py' -> 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config_template.py'
+[2025-03-25 13:49:11] ❌ Unknown action: delete_file
+[2025-03-25 13:49:11] ❌ Unknown action: delete_file
+[2025-03-25 13:49:11] ❌ Unknown action: delete_file
+[2025-03-25 13:49:11] ❌ Unknown action: delete_file
+[2025-03-25 13:49:11] ❌ Unknown action: delete_file
+[2025-03-25 13:49:11] ❌ Unknown action: delete_file
+[2025-03-25 13:49:11] ❌ Exception: [WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config.py' -> 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config_template.py'
+[2025-03-25 13:50:01] 📁 Folder 'BEN_TEST_FOLDER' created
+[2025-03-25 13:57:01] ❌ Unknown action: delete_file
+[2025-03-25 13:57:07] ❌ Unknown action: delete_file
+[2025-03-25 13:57:09] ❌ Unknown action: delete_file
+[2025-03-25 13:57:38] ❌ Unknown action: delete_file
+[2025-03-25 13:57:39] ❌ Unknown action: delete_file
+[2025-03-25 13:57:43] ❌ Unknown action: delete_file
+[2025-03-25 14:03:48] ❌ Unknown action: delete_file
+[2025-03-25 14:03:48] ❌ Unknown action: delete_file
+[2025-03-25 14:03:48] ❌ Unknown action: delete_file
+[2025-03-25 14:03:48] ❌ Unknown action: delete_file
+[2025-03-25 14:03:48] ❌ Unknown action: delete_file
+[2025-03-25 14:03:48] ❌ Unknown action: delete_file
+[2025-03-25 14:03:48] ❌ Exception: [WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config.py' -> 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config_template.py'
+[2025-03-25 14:03:51] ❌ Unknown action: delete_file
+[2025-03-25 14:03:51] ❌ Unknown action: delete_file
+[2025-03-25 14:03:51] ❌ Unknown action: delete_file
+[2025-03-25 14:03:51] ❌ Unknown action: delete_file
+[2025-03-25 14:03:51] ❌ Unknown action: delete_file
+[2025-03-25 14:03:51] ❌ Unknown action: delete_file
+[2025-03-25 14:03:51] ❌ Exception: [WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config.py' -> 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config_template.py'
+[2025-03-25 14:03:52] ❌ Unknown action: delete_file
+[2025-03-25 14:03:52] ❌ Unknown action: delete_file
+[2025-03-25 14:03:52] ❌ Unknown action: delete_file
+[2025-03-25 14:03:52] ❌ Unknown action: delete_file
+[2025-03-25 14:03:52] ❌ Unknown action: delete_file
+[2025-03-25 14:03:52] ❌ Unknown action: delete_file
+[2025-03-25 14:03:52] ❌ Exception: [WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config.py' -> 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config_template.py'
+[2025-03-25 14:03:54] ❌ Unknown action: delete_file
+[2025-03-25 14:03:54] ❌ Unknown action: delete_file
+[2025-03-25 14:03:54] ❌ Unknown action: delete_file
+[2025-03-25 14:03:54] ❌ Unknown action: delete_file
+[2025-03-25 14:03:54] ❌ Unknown action: delete_file
+[2025-03-25 14:03:54] ❌ Unknown action: delete_file
+[2025-03-25 14:03:54] ❌ Exception: [WinError 2] The system cannot find the file specified: 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config.py' -> 'C:\\\\Users\\\\DC\\\\OneDrive\\\\Рабочий стол\\\\БОТ\\config_template.py'
+[2025-03-25 14:16:50] ✅ Created file 'ben_delete_test.txt'
+[2025-03-25 14:16:50] 🗑️ File 'ben_delete_test.txt' deleted
+[2025-03-25 14:16:53] ✅ Created file 'ben_delete_test.txt'
+[2025-03-25 14:16:53] 🗑️ File 'ben_delete_test.txt' deleted
+[2025-03-25 14:21:47] 📁 Folder 'BEN.v1' creat
+[2025-03-26 15:15:11] ✅ Created file 'BEN_TEST_OK.txt'
+[2025-03-26 16:41:25] ❌ Unknown action: None
+[2025-03-26 16:44:03] ❌ Unknown action: None
+[2025-03-26 16:55:11] ✏️ Replaced text in 'run_bot_logic.py'
+[2025-03-26 17:00:27] ✏️ Replaced text in 'run_bot_logic.py'
+[2025-03-26 17:05:17] ✏️ Replaced text in 'run_bot_logic.py'
+[2025-03-26 17:09:09] ✏️ Replaced text in 'run_bot_logic.py'
+[2025-03-26 17:12:34] ✏️ Replaced text in 'run_bot_logic.py'
