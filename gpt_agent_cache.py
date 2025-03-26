@@ -97,6 +97,14 @@ def handle_command(cmd):
                 backup_path = full_file_path + ".bak"
                 with open(backup_path, "w", encoding="utf-8") as f:
                     f.write(text)
+                # 📝 Git diff перед записом
+                try:
+                    diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                    if diff_output.strip():
+                        log_action("📄 Git diff перед зміною:
+" + diff_output)
+                except Exception as e:
+                    log_action(f"⚠️ Git diff error: {str(e)}")
                 # 🔁 Заміна через regex
                 new_text = re.sub(pattern, replacement, text)
                 with open(full_file_path, "w", encoding="utf-8") as f:

@@ -205,3 +205,17 @@ if __name__ == "__main__":
             print("💾 Записую gpt_response.json і очищаю cache.txt")
             write_response(responses)
             clear_cache()
+
+
+def log_diff(filepath):
+    import subprocess
+    try:
+        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+        diff = result.stdout.strip()
+        if diff:
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+            with open(history_file, "a", encoding="utf-8") as f:
+                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+    except Exception as e:
+        with open(history_file, "a", encoding="utf-8") as f:
+            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
