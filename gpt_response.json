@@ -1,6 +1,6 @@
 [
   {
     "status": "success",
-    "message": "✅ run_bot_logic.py пройшов синтаксичну перевірку"
+    "message": "📌 Appended to file 'gpt_agent_cache.py'"
   }
 ]
