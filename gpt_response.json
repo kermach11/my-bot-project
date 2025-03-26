@@ -1,15 +1,6 @@
 [
   {
     "status": "success",
-    "steps": [
-      {
-        "status": "success",
-        "message": "📁 Folder 'ben_gui_desktop' created"
-      },
-      {
-        "status": "success",
-        "message": "✅ Created file 'ben_gui_desktop/ben_gui.py'"
-      }
-    ]
+    "message": "✏️ Replaced text in 'ben_gui_desktop/ben_gui.py'"
   }
 ]
