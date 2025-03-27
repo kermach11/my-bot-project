@@ -315,6 +315,10 @@ def run_self_tests():
 # 🧰 CLI-інтерфейс для ручного введення команд
 import argparse
 
+import argparse
+import sys
+import json
+
 def run_cli():
     parser = argparse.ArgumentParser(description="Ben CLI")
     parser.add_argument("--action", help="Дія для виконання (наприклад, create_file)")
@@ -328,11 +332,16 @@ def run_cli():
     parser.add_argument("--steps", help="JSON-рядок для macro-команди")
 
     args = parser.parse_args()
+
+    print("Аргументи командного рядка:", sys.argv)  # Виводимо аргументи для перевірки
+
     cmd = {k: v for k, v in vars(args).items() if v is not None}
+
+    # Перевірка і парсинг JSON для macro-команди
     if cmd.get("action") == "macro" and "steps" in cmd:
-        import json
         try:
-            cmd["steps"] = json.loads(cmd["steps"])
+            cmd["steps"] = json.loads(cmd["steps"])  # Парсимо JSON
+            print("Парсинг JSON успішний:", cmd["steps"])  # Перевірка парсингу
         except Exception as e:
             print(f"❌ Помилка парсингу steps: {str(e)}")
             return
@@ -343,6 +352,7 @@ def run_cli():
 
     result = handle_command(cmd)
     print("🔧 Результат:", result)
+
 
 def git_auto_push(commit_msg="🚀 Auto-commit by Ben"):
     try:
@@ -498,3 +508,47 @@ def handle_command(cmd):
     except Exception as e:
         return {'status': 'error', 'message': f'❌ Exception: {str(e)}'}
 
+
+import sqlite3
+
+# Створюємо підключення до бази даних SQLite
+def create_connection():
+    conn = sqlite3.connect('history.db')
+    return conn
+
+# Функція для створення таблиці історії
+def create_history_table():
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        action TEXT NOT NULL,
+        filename TEXT,
+        content TEXT,
+        result TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    conn.commit()
+    conn.close()
+
+# Функція для збереження команди в історію
+def save_to_history(action, filename, content, result):
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+    INSERT INTO history (action, filename, content, result)
+    VALUES (?, ?, ?, ?)
+    ''', (action, filename, content, result))
+    conn.commit()
+    conn.close()
+
+# Функція для отримання останніх записів з історії
+def get_history():
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM history ORDER BY timestamp DESC LIMIT 10')
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
