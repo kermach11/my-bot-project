@@ -67,3 +67,5 @@ if __name__ == "__main__":
     root = tk.Tk()
     gui = BenGUI(root)
     root.mainloop()
+        self.list_button = tk.Button(root, text="📄 List Files", command=lambda: self.send_simple("list_files"))
+        self.list_button.pack(pady=2)
