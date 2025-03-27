@@ -50,5 +50,16 @@
     "filename": "ben_gui_desktop/ben_gui.py",
     "content": "import tkinter as tk\nfrom tkinter import messagebox, scrolledtext\nimport json\nimport os\n\nCACHE_FILE = \"cache.txt\"\n\nclass BenGUI:\n    def __init__(self, root):\n        self.root = root\n        self.root.title(\"Ben Assistant GUI\")\n\n        self.input_label = tk.Label(root, text=\"Введіть JSON-команду\")\n        self.input_label.pack()\n\n        self.input_box = scrolledtext.ScrolledText(root, height=10, width=80)\n        self.input_box.pack()\n\n        self.send_button = tk.Button(root, text=\"▶️ Надіслати\", command=self.send_command)\n        self.send_button.pack(pady=4)\n\n        self.undo_button = tk.Button(root, text=\"↩️ Undo\", command=lambda: self.send_simple(\"undo_change\"))\n        self.undo_button.pack(pady=2)\n\n        self.repeat_button = tk.Button(root, text=\"🔁 Repeat\", command=lambda: self.send_simple(\"repeat_last\"))\n        self.repeat_button.pack(pady=2)\n\n        self.output_label = tk.Label(root, text=\"Останні команди\")\n        self.output_label.pack(pady=4)\n\n        self.history_box = scrolledtext.ScrolledText(root, height=10, width=80, state=\"disabled\")\n        self.history_box.pack()\n\n    def send_simple(self, action):\n        command = {\"action\": action}\n        self.write_cache([command])\n        self.append_history(json.dumps(command, ensure_ascii=False))\n\n    def send_command(self):\n        try:\n            text = self.input_box.get(\"1.0\", tk.END).strip()\n            if not text:\n                messagebox.showwarning(\"Увага\", \"Поле введення порожнє\")\n                return\n            command = json.loads(text)\n            if not isinstance(command, list):\n                command = [command]\n            self.write_cache(command)\n            self.append_history(text)\n            self.input_box.delete(\"1.0\", tk.END)\n        except Exception as e:\n            messagebox.showerror(\"Помилка\", f\"❌ Невірний JSON: {str(e)}\")\n\n    def write_cache(self, data):\n        with open(CACHE_FILE, \"w\", encoding=\"utf-8\") as f:\n            json.dump(data, f, indent=2, ensure_ascii=False)\n\n    def append_history(self, text):\n        self.history_box.configure(state=\"normal\")\n        self.history_box.insert(tk.END, text + \"\\n\\n\")\n        self.history_box.configure(state=\"disabled\")\n\nif __name__ == \"__main__\":\n    if not os.path.exists(\"ben_gui_desktop\"):\n        os.makedirs(\"ben_gui_desktop\")\n\n    root = tk.Tk()\n    gui = BenGUI(root)\n    root.mainloop()",
     "timestamp": "2025-03-27 10:56:06"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: create_file ben_gui_desktop/ben_gui.py",
+    "timestamp": "2025-03-27 10:56:14"
+  },
+  {
+    "action": "append_file",
+    "filename": "ben_gui_desktop/ben_gui.py",
+    "content": "\n        self.list_button = tk.Button(root, text=\"📄 List Files\", command=lambda: self.send_simple(\"list_files\"))\n        self.list_button.pack(pady=2)",
+    "timestamp": "2025-03-27 10:59:00"
   }
 ]
