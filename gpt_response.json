@@ -1,6 +1,6 @@
 [
   {
-    "status": "error",
-    "message": "❌ Exception: name 'log_diff' is not defined"
+    "status": "skipped",
+    "message": "⚠️ Function 'log_diff' already exists in gpt_agent_cache.py"
   }
 ]

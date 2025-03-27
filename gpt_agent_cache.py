@@ -58,7 +58,7 @@ def handle_command(cmd):
 
     # 🛡️ Захист: перевірка на дублювання при вставці функцій
     if cmd.get("action") == "append_file" and "def " in cmd.get("content", ""):
-        func_name_match = re.search(r"def (\\w+)\\(", cmd["content"])
+        func_name_match = re.search(r"def (\w+)\(", cmd.get("content", ""))
         if func_name_match:
             func_name = func_name_match.group(1)
             with open(os.path.join(base_path, cmd["filename"]), "r", encoding="utf-8") as f:
@@ -325,9 +325,17 @@ def run_cli():
     parser.add_argument("--foldername", help="Ім'я папки")
     parser.add_argument("--target_folder", help="Цільова папка")
     parser.add_argument("--new_name", help="Нове ім'я файлу")
+    parser.add_argument("--steps", help="JSON-рядок для macro-команди")
 
     args = parser.parse_args()
     cmd = {k: v for k, v in vars(args).items() if v is not None}
+    if cmd.get("action") == "macro" and "steps" in cmd:
+        import json
+        try:
+            cmd["steps"] = json.loads(cmd["steps"])
+        except Exception as e:
+            print(f"❌ Помилка парсингу steps: {str(e)}")
+            return
 
     if "action" not in cmd:
         print("❌ Ви повинні вказати --action")

@@ -3580,3 +3580,21 @@ index 02d0a3a..2320660 100644
 [2025-03-27 10:06:48] 🟢 Agent is running
 [2025-03-27 10:07:13] 🟢 Agent is running
 [2025-03-27 10:10:59] 🟢 Agent is running
+[2025-03-27 10:11:03] 📤 Git push: ✅ Auto-commit: check_status 
+[2025-03-27 10:46:08] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 10:46:08] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index b23dde4..bb35d1f 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -325,6 +325,7 @@ def run_cli():
+     parser.add_argument("--foldername", help="Р†Рј'СЏ РїР°РїРєРё")
+     parser.add_argument("--target_folder", help="Р¦С–Р»СЊРѕРІР° РїР°РїРєР°")
+     parser.add_argument("--new_name", help="РќРѕРІРµ С–Рј'СЏ С„Р°Р№Р»Сѓ")
++    parser.add_argument("--steps", help="JSON-СЂСЏРґРѕРє РґР»СЏ macro-РєРѕРјР°РЅРґРё")
+ 
+     args = parser.parse_args()
+     cmd = {k: v for k, v in vars(args).items() if v is not None}
+
+[2025-03-27 10:46:08] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 10:50:38] ⚠️ Function 'log_diff' already exists in gpt_agent_cache.py
+[2025-03-27 10:56:06] ✅ Created file 'ben_gui_desktop/ben_gui.py'
