@@ -457,3 +457,44 @@ def log_diff(filepath):
         with open(history_file, "a", encoding="utf-8") as f:
             f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
 
+
+import autopep8
+
+# Крок 2: Функція для виправлення відступів
+
+def fix_indentation(filepath):
+    try:
+        with open(filepath, 'r', encoding='utf-8') as file:
+            code = file.read()
+
+        fixed_code = autopep8.fix_code(code)
+
+        with open(filepath, 'w', encoding='utf-8') as file:
+            file.write(fixed_code)
+
+        return {'status': 'success', 'message': f'🧹 Виправлені відступи в файлі {filepath}'}
+    except Exception as e:
+        return {'status': 'error', 'message': f'❌ Помилка виправлення відступів: {str(e)}'}
+
+# Крок 3: Інтеграція виправлення відступів перед виконанням заміни
+
+def handle_command(cmd):
+    try:
+        action = cmd.get('action')
+        filename = cmd.get('filename')
+        full_file_path = os.path.join(base_path, filename) if filename else None
+
+        if full_file_path:
+            # Викликаємо fix_indentation перед виконанням заміни
+            fix_result = fix_indentation(full_file_path)
+            if fix_result['status'] == 'error':
+                return fix_result  # Якщо є помилка в форматуванні, зупиняємо виконання
+
+        # Далі виконуються інші дії, наприклад заміни
+        if action == 'replace_in_file':
+            # Ваш код заміни
+            pass
+
+        return {'status': 'success', 'message': 'Команда виконана успішно'}
+    except Exception as e:
+        return {'status': 'error', 'message': f'❌ Exception: {str(e)}'}
