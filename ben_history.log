@@ -96,3 +96,3487 @@
 [2025-03-26 20:35:18] ✏️ Replaced text in 'gpt_agent_cache.py'
 [2025-03-26 20:41:03] 📌 Appended to file 'gpt_agent_cache.py'
 [2025-03-26 20:49:01] ✏️ Replaced text in 'gpt_agent_cache.py'
+[2025-03-26 20:53:09] ✏️ Replaced text in 'gpt_agent_cache.py'
+[2025-03-26 20:57:22] ✅ run_bot_logic.py пройшов синтаксичну перевірку
+[2025-03-26 21:00:28] 📌 Appended to file 'gpt_agent_cache.py'
+[2025-03-26 21:01:39] ❌ Syntax error in gpt_agent_cache.py: unterminated string literal (detected at line 107) (gpt_agent_cache.py, line 107)
+[2025-03-26 21:08:44] ❌ Syntax error in gpt_agent_cache.py: unterminated string literal (detected at line 107) (gpt_agent_cache.py, line 107)
+[2025-03-26 21:11:10] ❌ Syntax error in gpt_agent_cache.py: invalid syntax (gpt_agent_cache.py, line 232)
+[2025-03-26 21:30:14] {'status': 'success', 'steps': [{'status': 'success', 'message': "🔁 Updated file 'gpt_agent_cache.py'"}, {'status': 'success', 'message': "🔁 Updated file 'gpt_agent_cache.py'"}]}
+[2025-03-26 21:31:06] ❌ Unknown action: undo_change
+[2025-03-26 21:49:06] ❌ Немає резервної копії для 'run_bot_logic.py'
+[2025-03-26 21:50:52] ✏️ Replaced text in 'run_bot_logic.py'
+[2025-03-26 21:50:52] ↩️ Undo: відкат до .bak для 'run_bot_logic.py'
+[2025-03-26 21:57:35] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..bd80ea6 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -88,6 +88,9 @@ def handle_command(cmd):
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,8 +104,7 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+@@ -164,6 +166,13 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -213,7 +222,7 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
+-
++        time.sleep(1)
+ 
+ def log_diff(filepath):
+     import subprocess
+@@ -226,4 +235,5 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++        
+
+[2025-03-26 21:57:35] ✏️ Replaced text in 'gpt_agent_cache.py'
+[2025-03-26 21:57:35] 📌 Appended to file 'gpt_agent_cache.py'
+[2025-03-26 21:58:42] ✏️ Replaced text in 'run_bot_logic.py'
+[2025-03-26 22:06:48] 📌 Appended to file 'gpt_agent_cache.py'
+[2025-03-26 22:06:48] ❌ Перед зміною: ❌ Syntax error in gpt_agent_cache.py: invalid syntax (gpt_agent_cache.py, line 111)
+[2025-03-26 22:54:23] ❌ Unknown action: show_memory
+[2025-03-26 23:00:47] ❌ Unknown action: show_memory
+[2025-03-26 23:03:07] ❌ Memory file not found
+[2025-03-26 23:04:26] ✅ Created file 'test_memory.txt'
+[2025-03-26 23:04:37] {'status': 'success', 'memory': [{'action': 'create_file', 'filename': 'test_memory.txt', 'content': 'Memory test', 'timestamp': '2025-03-26 23:04:26'}]}
+[2025-03-26 23:21:10] 📌 Appended to file 'gpt_agent_cache.py'
+[2025-03-26 23:21:10] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..39d131b 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -17,6 +17,21 @@ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
++        
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
+ 
+ def read_requests():
+     if not os.path.exists(request_file):
+@@ -58,11 +73,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +100,15 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +122,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +155,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -141,6 +167,7 @@ def handle_command(cmd):
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +191,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,9 +212,19 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+@@ -213,7 +258,7 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
+-
++        time.sleep(1)
+ 
+ def log_diff(filepath):
+     import subprocess
+@@ -226,4 +271,31 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++        
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+
+[2025-03-26 23:21:10] ❌ Exception: name 'log_diff' is not defined
+[2025-03-26 23:34:53] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..6aadb3f 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -17,6 +17,33 @@ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
++        
++def log_diff(filepath):
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
+ 
+ def read_requests():
+     if not os.path.exists(request_file):
+@@ -58,11 +85,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +112,15 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +134,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +167,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -141,6 +179,7 @@ def handle_command(cmd):
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +203,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,9 +224,19 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+@@ -213,7 +270,7 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
+-
++        time.sleep(1)
+ 
+ def log_diff(filepath):
+     import subprocess
+@@ -226,4 +283,31 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++        
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+
+[2025-03-26 23:34:53] ❌ Exception: name 'log_diff' is not defined
+[2025-03-26 23:34:53] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..6aadb3f 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -17,6 +17,33 @@ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
++        
++def log_diff(filepath):
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
+ 
+ def read_requests():
+     if not os.path.exists(request_file):
+@@ -58,11 +85,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +112,15 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +134,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +167,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -141,6 +179,7 @@ def handle_command(cmd):
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +203,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,9 +224,19 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+@@ -213,7 +270,7 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
+-
++        time.sleep(1)
+ 
+ def log_diff(filepath):
+     import subprocess
+@@ -226,4 +283,31 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++        
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+
+[2025-03-26 23:34:53] ❌ Exception: name 'log_diff' is not defined
+[2025-03-26 23:43:04] ❌ Exception: [Errno 2] No such file or directory: 'C:\\\\Users\\\\DC\\\\my-bot-project\\backup\\test_memory.txt'
+[2025-03-26 23:43:46] 📄 File renamed to 'test_memory_renamed.txt'
+[2025-03-26 23:45:15] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..9dc4391 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -18,6 +18,33 @@ def log_action(message):
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++def log_diff(filepath):
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -58,11 +85,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +112,15 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +134,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +167,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -137,10 +175,12 @@ def handle_command(cmd):
+         elif action == "rename_file":
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +204,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,9 +225,19 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+@@ -213,7 +271,7 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
+-
++        time.sleep(1)
+ 
+ def log_diff(filepath):
+     import subprocess
+@@ -226,4 +284,31 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++        
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+
+[2025-03-26 23:45:15] ❌ Exception: name 'log_diff' is not defined
+[2025-03-26 23:50:32] ❌ Перед зміною: ❌ Syntax error in test_memory_renamed.txt: invalid syntax (test_memory_renamed.txt, line 1)
+[2025-03-27 07:19:48] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..2c4552a 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -18,6 +18,34 @@ def log_action(message):
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++def log_diff(filepath):
++    import subprocess
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -58,11 +86,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +113,15 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +135,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +168,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -137,10 +176,12 @@ def handle_command(cmd):
+         elif action == "rename_file":
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +205,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,9 +226,19 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+@@ -213,17 +272,32 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
+ 
++       
+ 
+-def log_diff(filepath):
+-    import subprocess
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
+     try:
+-        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+-        diff = result.stdout.strip()
+-        if diff:
+-            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+-            with open(history_file, "a", encoding="utf-8") as f:
+-                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        return handle_command(last_cmd)
+     except Exception as e:
+-        with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+
+[2025-03-27 07:19:48] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 07:52:48] ❌ Unknown action: None
+[2025-03-27 07:53:39] ❌ Unknown action: None
+[2025-03-27 08:15:20] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..266fff4 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,44 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++def log_diff(filepath):
++    import subprocess
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +66,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +88,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +115,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +138,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +171,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -137,10 +179,12 @@ def handle_command(cmd):
+         elif action == "rename_file":
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +208,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,10 +229,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -213,17 +276,33 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
+ 
+ 
+-def log_diff(filepath):
+-    import subprocess
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
+     try:
+-        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+-        diff = result.stdout.strip()
+-        if diff:
+-            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+-            with open(history_file, "a", encoding="utf-8") as f:
+-                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
+     except Exception as e:
+-        with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+
+[2025-03-27 08:15:20] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:20:59] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..e586469 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,43 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++def log_diff(filepath):
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +65,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +87,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +114,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +137,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +170,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -137,10 +178,12 @@ def handle_command(cmd):
+         elif action == "rename_file":
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +207,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,10 +228,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +257,8 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,17 +277,33 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
+ 
+ 
+-def log_diff(filepath):
+-    import subprocess
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
+     try:
+-        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+-        diff = result.stdout.strip()
+-        if diff:
+-            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+-            with open(history_file, "a", encoding="utf-8") as f:
+-                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
+     except Exception as e:
+-        with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+
+[2025-03-27 08:20:59] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:28:27] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..02913ab 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,43 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++def log_diff(filepath):
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +65,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +87,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +114,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +137,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +170,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -137,10 +178,12 @@ def handle_command(cmd):
+         elif action == "rename_file":
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +207,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,10 +228,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +257,8 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,17 +277,40 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
+ 
+ 
+-def log_diff(filepath):
+-    import subprocess
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
+     try:
+-        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+-        diff = result.stdout.strip()
+-        if diff:
+-            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+-            with open(history_file, "a", encoding="utf-8") as f:
+-                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++
++        # рџ”Ќ РџРµСЂРµРІС–СЂРєР° С‡Рё С” Р·РјС–РЅРё
++        diff_result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=base_path)
++        if diff_result.returncode == 0:
++            log_action("в„№пёЏ РќРµРјР°С” Р·РјС–РЅ РґР»СЏ РєРѕРјС–С‚Сѓ вЂ” git push РїСЂРѕРїСѓС‰РµРЅРѕ")
++            return {"status": "skipped", "message": "в„№пёЏ No changes to commit"}
++
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
+     except Exception as e:
+-        with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+
+[2025-03-27 08:28:27] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:28:47] ❌ Unknown action: None
+[2025-03-27 08:29:43] 📌 Appended to file 'gpt_agent_cache.py'
+[2025-03-27 08:41:19] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..d3ebbf4 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,34 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +56,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +78,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +105,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +128,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +161,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -137,10 +169,12 @@ def handle_command(cmd):
+         elif action == "rename_file":
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +198,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,10 +219,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +248,8 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,10 +268,46 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
++
++
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++
++        # рџ”Ќ РџРµСЂРµРІС–СЂРєР° С‡Рё С” Р·РјС–РЅРё
++        diff_result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=base_path)
++        if diff_result.returncode == 0:
++            log_action("в„№пёЏ РќРµРјР°С” Р·РјС–РЅ РґР»СЏ РєРѕРјС–С‚Сѓ вЂ” git push РїСЂРѕРїСѓС‰РµРЅРѕ")
++            return {"status": "skipped", "message": "в„№пёЏ No changes to commit"}
++
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+ 
+ 
+ def log_diff(filepath):
+-    import subprocess
+     try:
+         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+         diff = result.stdout.strip()
+@@ -226,4 +317,4 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+
+[2025-03-27 08:41:19] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:46:17] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..d3ebbf4 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,34 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +56,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +78,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +105,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +128,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,6 +161,7 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+@@ -137,10 +169,12 @@ def handle_command(cmd):
+         elif action == "rename_file":
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +198,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,10 +219,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +248,8 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,10 +268,46 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
++
++
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++
++        # рџ”Ќ РџРµСЂРµРІС–СЂРєР° С‡Рё С” Р·РјС–РЅРё
++        diff_result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=base_path)
++        if diff_result.returncode == 0:
++            log_action("в„№пёЏ РќРµРјР°С” Р·РјС–РЅ РґР»СЏ РєРѕРјС–С‚Сѓ вЂ” git push РїСЂРѕРїСѓС‰РµРЅРѕ")
++            return {"status": "skipped", "message": "в„№пёЏ No changes to commit"}
++
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+ 
+ 
+ def log_diff(filepath):
+-    import subprocess
+     try:
+         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+         diff = result.stdout.strip()
+@@ -226,4 +317,4 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+
+[2025-03-27 08:46:17] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:46:17] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..bdbdc6f 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,34 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +56,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +78,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +105,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +128,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,17 +161,22 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+ 
+         elif action == "rename_file":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -164,6 +200,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,10 +221,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +250,8 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,10 +270,46 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
++
++
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++
++        # рџ”Ќ РџРµСЂРµРІС–СЂРєР° С‡Рё С” Р·РјС–РЅРё
++        diff_result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=base_path)
++        if diff_result.returncode == 0:
++            log_action("в„№пёЏ РќРµРјР°С” Р·РјС–РЅ РґР»СЏ РєРѕРјС–С‚Сѓ вЂ” git push РїСЂРѕРїСѓС‰РµРЅРѕ")
++            return {"status": "skipped", "message": "в„№пёЏ No changes to commit"}
++
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+ 
+ 
+ def log_diff(filepath):
+-    import subprocess
+     try:
+         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+         diff = result.stdout.strip()
+@@ -226,4 +319,4 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+
+[2025-03-27 08:46:17] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:46:18] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..a170ea9 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,34 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +56,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +78,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +105,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +128,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,17 +161,22 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+ 
+         elif action == "rename_file":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -150,6 +186,8 @@ def handle_command(cmd):
+             return {"status": "error", "message": "Folder not found"}
+ 
+         elif action == "run_python":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             result = subprocess.run(["python", full_file_path], capture_output=True, text=True)
+             return {"status": "success", "output": result.stdout, "errors": result.stderr}
+         
+@@ -164,6 +202,14 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
+             results = []
+             for step in cmd.get("steps", []):
+@@ -177,10 +223,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +252,8 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,10 +272,46 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
++
++
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++
++        # рџ”Ќ РџРµСЂРµРІС–СЂРєР° С‡Рё С” Р·РјС–РЅРё
++        diff_result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=base_path)
++        if diff_result.returncode == 0:
++            log_action("в„№пёЏ РќРµРјР°С” Р·РјС–РЅ РґР»СЏ РєРѕРјС–С‚Сѓ вЂ” git push РїСЂРѕРїСѓС‰РµРЅРѕ")
++            return {"status": "skipped", "message": "в„№пёЏ No changes to commit"}
++
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
+ 
+ 
+ def log_diff(filepath):
+-    import subprocess
+     try:
+         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+         diff = result.stdout.strip()
+@@ -226,4 +321,4 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+
+[2025-03-27 08:46:18] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:48:59] 📌 Appended to file 'gpt_agent_cache.py'
+[2025-03-27 08:50:30] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..2b946a4 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,34 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +56,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +78,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +105,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +128,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,17 +161,22 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+ 
+         elif action == "rename_file":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -150,6 +186,8 @@ def handle_command(cmd):
+             return {"status": "error", "message": "Folder not found"}
+ 
+         elif action == "run_python":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             result = subprocess.run(["python", full_file_path], capture_output=True, text=True)
+             return {"status": "success", "output": result.stdout, "errors": result.stderr}
+         
+@@ -164,7 +202,17 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
++            if not isinstance(cmd.get("steps"), list):
++                return {"status": "error", "message": "вќЊ Invalid macro steps"}
+             results = []
+             for step in cmd.get("steps", []):
+                 result = handle_command(step)
+@@ -177,10 +225,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +254,8 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,10 +274,59 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
++
++
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++
++        # рџ”Ќ РџРµСЂРµРІС–СЂРєР° С‡Рё С” Р·РјС–РЅРё
++        diff_result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=base_path)
++        if diff_result.returncode == 0:
++            log_action("в„№пёЏ РќРµРјР°С” Р·РјС–РЅ РґР»СЏ РєРѕРјС–С‚Сѓ вЂ” git push РїСЂРѕРїСѓС‰РµРЅРѕ")
++            return {"status": "skipped", "message": "в„№пёЏ No changes to commit"}
++
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
++
++
++def log_diff(filepath):
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+ 
+ 
+ def log_diff(filepath):
+-    import subprocess
+     try:
+         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+         diff = result.stdout.strip()
+@@ -226,4 +336,4 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+
+[2025-03-27 08:50:30] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:51:56] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..ac0a011 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,34 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +56,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +78,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +105,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +128,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,17 +161,22 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+ 
+         elif action == "rename_file":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -150,6 +186,8 @@ def handle_command(cmd):
+             return {"status": "error", "message": "Folder not found"}
+ 
+         elif action == "run_python":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             result = subprocess.run(["python", full_file_path], capture_output=True, text=True)
+             return {"status": "success", "output": result.stdout, "errors": result.stderr}
+         
+@@ -164,7 +202,17 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
++            if not isinstance(cmd.get("steps"), list):
++                return {"status": "error", "message": "вќЊ Invalid macro steps"}
+             results = []
+             for step in cmd.get("steps", []):
+                 result = handle_command(step)
+@@ -177,10 +225,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +254,10 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                push_result = git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
++                print(push_result.get('message', ''))
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,10 +276,59 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
++
++
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++
++        # рџ”Ќ РџРµСЂРµРІС–СЂРєР° С‡Рё С” Р·РјС–РЅРё
++        diff_result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=base_path)
++        if diff_result.returncode == 0:
++            log_action("в„№пёЏ РќРµРјР°С” Р·РјС–РЅ РґР»СЏ РєРѕРјС–С‚Сѓ вЂ” git push РїСЂРѕРїСѓС‰РµРЅРѕ")
++            return {"status": "skipped", "message": "в„№пёЏ No changes to commit"}
++
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
++
++
++def log_diff(filepath):
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+ 
+ 
+ def log_diff(filepath):
+-    import subprocess
+     try:
+         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+         diff = result.stdout.strip()
+@@ -226,4 +338,4 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+
+[2025-03-27 08:51:56] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 08:53:28] 📄 Git diff перед зміною:diff --git a/gpt_agent_cache.py b/gpt_agent_cache.py
+index 02d0a3a..2320660 100644
+--- a/gpt_agent_cache.py
++++ b/gpt_agent_cache.py
+@@ -6,18 +6,34 @@ import time
+ import re
+ import shutil
+ import subprocess
++import traceback
+ from datetime import datetime, timezone
+ 
+-base_path = r"C:\\Users\\DC\\my-bot-project"
+-request_file = os.path.join(base_path, "cache.txt")
+-response_file = os.path.join(base_path, "gpt_response.json")
+-history_file = os.path.join(base_path, "ben_history.log")
++from config import base_path, request_file, response_file, history_file
+ 
+ def log_action(message):
+     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+     with open(history_file, "a", encoding="utf-8") as f:
+         f.write(f"[{timestamp}] {message}\n")
+ 
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
++
++def save_to_memory(cmd):
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    try:
++        if os.path.exists(memory_file):
++            with open(memory_file, "r", encoding="utf-8") as f:
++                memory = json.load(f)
++        else:
++            memory = []
++        cmd["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++        memory.append(cmd)
++        with open(memory_file, "w", encoding="utf-8") as f:
++            json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
++    except Exception as e:
++        log_action(f"вљ пёЏ Error saving to memory: {str(e)}")
++
+ def read_requests():
+     if not os.path.exists(request_file):
+         return []
+@@ -40,6 +56,10 @@ def clear_cache():
+         f.write("")
+ 
+ def handle_command(cmd):
++    required_keys = ["action"]
++    for key in required_keys:
++        if key not in cmd:
++            return {"status": "error", "message": f"вќЊ Missing required field: {key}"}
+     try:
+         action = cmd.get("action")
+         filename = cmd.get("filename")
+@@ -58,11 +78,13 @@ def handle_command(cmd):
+         if action == "create_file":
+             with open(full_file_path, "w", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)  
+             return {"status": "success", "message": f"вњ… Created file '{filename}'"}
+ 
+         elif action == "append_file":
+             with open(full_file_path, "a", encoding="utf-8") as f:
+                 f.write(content)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“Њ Appended to file '{filename}'"}
+         elif action == "scan_all_files":
+             result = {}
+@@ -83,11 +105,16 @@ def handle_command(cmd):
+                 updated = re.sub(pattern, replacement, data)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(updated)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ”Ѓ Updated file '{filename}'"}
+             else:
+                 return {"status": "error", "message": "File not found"}
+ 
+         elif action == "replace_in_file":
++            if filename.endswith('.py'):
++                test_result = handle_command({"action": "test_python", "filename": filename})
++            if test_result.get("status") == "error":
++                return {"status": "error", "message": f"вќЊ РџРµСЂРµРґ Р·РјС–РЅРѕСЋ: {test_result.get('message')}"}
+             if filename in ["config.py", "api_keys.py", "cache.txt"]:
+                 return {"status": "error", "message": f"вќЊ Р—Р°Р±РѕСЂРѕРЅРµРЅРѕ Р·РјС–РЅСЋРІР°С‚Рё РєСЂРёС‚РёС‡РЅРёР№ С„Р°Р№Р»: {filename}"}
+             if os.path.exists(full_file_path):
+@@ -101,19 +128,23 @@ def handle_command(cmd):
+                 try:
+                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
+                     if diff_output.strip():
+-                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:
+-" + diff_output)
++                        log_action("рџ“„ Git diff РїРµСЂРµРґ Р·РјС–РЅРѕСЋ:" + diff_output)
+                 except Exception as e:
+                     log_action(f"вљ пёЏ Git diff error: {str(e)}")
+                 # рџ”Ѓ Р—Р°РјС–РЅР° С‡РµСЂРµР· regex
+                 new_text = re.sub(pattern, replacement, text)
+                 with open(full_file_path, "w", encoding="utf-8") as f:
+                     f.write(new_text)
++                    
++                # рџ“њ Р›РѕРі Р·РјС–РЅ (git diff)
++                log_diff(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"вњЏпёЏ Replaced text in '{filename}'"}
+         elif action == "read_file":
+             if os.path.exists(full_file_path):
+                 with open(full_file_path, "r", encoding="utf-8") as f:
+                     return {"status": "success", "content": f.read()}
++            save_to_memory(cmd)
+             return {"status": "error", "message": "File not found"}
+ 
+         elif action == "search_text_in_file":
+@@ -130,17 +161,22 @@ def handle_command(cmd):
+         elif action == "delete_file":
+             if os.path.exists(full_file_path):
+                 os.remove(full_file_path)
++                save_to_memory(cmd)
+                 return {"status": "success", "message": f"рџ—‘пёЏ File '{filename}' deleted"}
+             else:
+                 return {"status": "error", "message": f"File '{filename}' not found"}
+ 
+         elif action == "rename_file":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             new_path = os.path.join(base_path, new_name)
+             os.rename(full_file_path, new_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“„ File renamed to '{new_name}'"}
+ 
+         elif action == "copy_file":
+             shutil.copy(full_file_path, dst_file_path)
++            save_to_memory(cmd)
+             return {"status": "success", "message": f"рџ“‚ Copied '{filename}' to '{target_folder}'"}
+ 
+         elif action == "read_folder":
+@@ -150,6 +186,8 @@ def handle_command(cmd):
+             return {"status": "error", "message": "Folder not found"}
+ 
+         elif action == "run_python":
++            if not os.path.exists(full_file_path):
++                return {"status": "error", "message": f"вќЊ File '{filename}' not found"}
+             result = subprocess.run(["python", full_file_path], capture_output=True, text=True)
+             return {"status": "success", "output": result.stdout, "errors": result.stderr}
+         
+@@ -164,7 +202,17 @@ def handle_command(cmd):
+                     return {"status": "error", "message": f"вќЊ Syntax error in {filename}: {e}"}
+             return {"status": "error", "message": "File not found"}
+ 
++        elif action == "undo_change":
++            if os.path.exists(full_file_path + ".bak"):
++                shutil.copy(full_file_path + ".bak", full_file_path)
++                save_to_memory(cmd)
++                return {"status": "success", "message": f"в†©пёЏ Undo: РІС–РґРєР°С‚ РґРѕ .bak РґР»СЏ '{filename}'"}
++            else:
++                return {"status": "error", "message": f"вќЊ РќРµРјР°С” СЂРµР·РµСЂРІРЅРѕС— РєРѕРїС–С— РґР»СЏ '{filename}'"}
++
+         elif action == "macro":
++            if not isinstance(cmd.get("steps"), list):
++                return {"status": "error", "message": "вќЊ Invalid macro steps"}
+             results = []
+             for step in cmd.get("steps", []):
+                 result = handle_command(step)
+@@ -177,10 +225,21 @@ def handle_command(cmd):
+         elif action == "check_status":
+             return {"status": "success", "message": "рџџў Agent is running"}
+ 
++        elif action == "show_memory":
++            memory_file = os.path.join(base_path, ".ben_memory.json")
++            if os.path.exists(memory_file):
++                with open(memory_file, "r", encoding="utf-8") as f:
++                    memory = json.load(f)
++                return {"status": "success", "memory": memory[-20:]}
++            else:
++                return {"status": "error", "message": "вќЊ Memory file not found"}
++
+         else:
+             return {"status": "error", "message": f"вќЊ Unknown action: {action}"}
+ 
++
+     except Exception as e:
++        traceback.print_exc()
+         return {"status": "error", "message": f"вќЊ Exception: {str(e)}"}
+ 
+ if __name__ == "__main__":
+@@ -195,6 +254,10 @@ if __name__ == "__main__":
+             print("вњ… Р’РёРєРѕРЅР°РЅРѕ:", result)  # РџРѕРєР°Р·СѓС” СЂРµР·СѓР»СЊС‚Р°С‚ РєРѕР¶РЅРѕС— РґС–С—
+             responses.append(result)
+             log_action(result.get("message", str(result)))
++            if result.get("status") == "success":
++                push_result = git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
++                print(push_result.get('message', ''))
++                git_auto_push(f"вњ… Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
+ 
+         if responses:
+             for r in responses:
+@@ -213,10 +276,60 @@ if __name__ == "__main__":
+             print("рџ’ѕ Р—Р°РїРёСЃСѓСЋ gpt_response.json С– РѕС‡РёС‰Р°СЋ cache.txt")
+             write_response(responses)
+             clear_cache()
++        time.sleep(1)
++
++
++
++def git_auto_push(commit_msg="рџљЂ Auto-commit by Ben"):
++    try:
++        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
++
++        # рџ”Ќ РџРµСЂРµРІС–СЂРєР° С‡Рё С” Р·РјС–РЅРё
++        diff_result = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=base_path)
++        if diff_result.returncode == 0:
++            log_action("в„№пёЏ РќРµРјР°С” Р·РјС–РЅ РґР»СЏ РєРѕРјС–С‚Сѓ вЂ” git push РїСЂРѕРїСѓС‰РµРЅРѕ")
++            return {"status": "skipped", "message": "в„№пёЏ No changes to commit"}
++
++        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
++        subprocess.run(["git", "push"], cwd=base_path, check=True)
++        log_action(f"рџ“¤ Git push: {commit_msg}")
++        save_to_memory({"action": "git_push", "message": commit_msg})
++        return {"status": "success", "message": "рџ“¤ Git push СѓСЃРїС–С€РЅРѕ Р·Р°РІРµСЂС€РµРЅРѕ"}
++
++    except subprocess.CalledProcessError as e:
++        log_action(f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}")
++        return {"status": "error", "message": f"вќЊ Git push РїРѕРјРёР»РєР°: {str(e)}"}
++
++def repeat_last_action():
++    memory_file = os.path.join(base_path, ".ben_memory.json")
++    if not os.path.exists(memory_file):
++        return {"status": "error", "message": "вќЊ Memory file not found"}
++    try:
++        with open(memory_file, "r", encoding="utf-8") as f:
++            memory = json.load(f)
++        if not memory:
++            return {"status": "error", "message": "вќЊ No memory to repeat"}
++        last_cmd = memory[-1]
++        save_to_memory(last_cmd)
++        return handle_command(last_cmd)
++    except Exception as e:
++        return {"status": "error", "message": f"вќЊ Repeat error: {str(e)}"}
++
++
++def log_diff(filepath):
++    try:
++        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
++        diff = result.stdout.strip()
++        if diff:
++            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
++            with open(history_file, "a", encoding="utf-8") as f:
++                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
++    except Exception as e:
++        with open(history_file, "a", encoding="utf-8") as f:
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+ 
+ 
+ def log_diff(filepath):
+-    import subprocess
+     try:
+         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+         diff = result.stdout.strip()
+@@ -226,4 +339,4 @@ def log_diff(filepath):
+                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+     except Exception as e:
+         with open(history_file, "a", encoding="utf-8") as f:
+-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+\ No newline at end of file
++            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+
+[2025-03-27 08:53:28] ❌ Exception: name 'log_diff' is not defined
+[2025-03-27 10:06:48] 🟢 Agent is running
+[2025-03-27 10:07:13] 🟢 Agent is running
+[2025-03-27 10:10:59] 🟢 Agent is running
