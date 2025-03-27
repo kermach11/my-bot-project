@@ -459,9 +459,9 @@ def log_diff(filepath):
 
 
 import autopep8
+import os
 
 # Крок 2: Функція для виправлення відступів
-
 def fix_indentation(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as file:
@@ -477,7 +477,6 @@ def fix_indentation(filepath):
         return {'status': 'error', 'message': f'❌ Помилка виправлення відступів: {str(e)}'}
 
 # Крок 3: Інтеграція виправлення відступів перед виконанням заміни
-
 def handle_command(cmd):
     try:
         action = cmd.get('action')
@@ -498,8 +497,4 @@ def handle_command(cmd):
         return {'status': 'success', 'message': 'Команда виконана успішно'}
     except Exception as e:
         return {'status': 'error', 'message': f'❌ Exception: {str(e)}'}
-# Викликаємо fix_indentation перед виконанням заміни
-if full_file_path:
-    fix_result = fix_indentation(full_file_path)
-    if fix_result['status'] == 'error':
-        return fix_result  # Якщо є помилка в форматуванні, зупиняємо виконання
+
