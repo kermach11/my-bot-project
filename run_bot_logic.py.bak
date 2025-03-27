@@ -19,8 +19,6 @@ print(f"📥 Завантажено дані з: {data_path}")
 df.index = pd.to_datetime(df['timestamp'] if 'timestamp' in df.columns else df.index)
 
 # 🧮 Обчислення TSI
-# 🔁 ТЕСТ
-
 def calculate_tsi(close, long=25, short=13):
     diff = close.diff()
     abs_diff = diff.abs()

@@ -1,0 +1,43 @@
+[
+  {
+    "action": "create_file",
+    "filename": "test_memory.txt",
+    "content": "Memory test",
+    "timestamp": "2025-03-26 23:04:26"
+  },
+  {
+    "action": "append_file",
+    "filename": "gpt_agent_cache.py",
+    "content": "\n\ndef repeat_last_action():\n    memory_file = os.path.join(base_path, \".ben_memory.json\")\n    if not os.path.exists(memory_file):\n        return {\"status\": \"error\", \"message\": \"❌ Memory file not found\"}\n    try:\n        with open(memory_file, \"r\", encoding=\"utf-8\") as f:\n            memory = json.load(f)\n        if not memory:\n            return {\"status\": \"error\", \"message\": \"❌ No memory to repeat\"}\n        last_cmd = memory[-1]\n        return handle_command(last_cmd)\n    except Exception as e:\n        return {\"status\": \"error\", \"message\": f\"❌ Repeat error: {str(e)}\"}\n",
+    "timestamp": "2025-03-26 23:21:10"
+  },
+  {
+    "action": "append_file",
+    "filename": "gpt_agent_cache.py",
+    "content": "\n\ndef log_diff(filepath):\n    try:\n        result = subprocess.run([\"git\", \"diff\", filepath], capture_output=True, text=True)\n        diff = result.stdout.strip()\n        if diff:\n            timestamp = datetime.now(timezone.utc).strftime(\"%Y-%m-%d %H:%M:%S\")\n            with open(history_file, \"a\", encoding=\"utf-8\") as f:\n                f.write(f\"[DIFF {timestamp}] File: {filepath}\\n{diff}\\n---\\n\")\n    except Exception as e:\n        with open(history_file, \"a\", encoding=\"utf-8\") as f:\n            f.write(f\"[DIFF ERROR] {filepath}: {str(e)}\\n\")\n",
+    "timestamp": "2025-03-27 08:29:43"
+  },
+  {
+    "action": "append_file",
+    "filename": "gpt_agent_cache.py",
+    "content": "\n\ndef log_diff(filepath):\n    try:\n        result = subprocess.run([\"git\", \"diff\", filepath], capture_output=True, text=True)\n        diff = result.stdout.strip()\n        if diff:\n            timestamp = datetime.now(timezone.utc).strftime(\"%Y-%m-%d %H:%M:%S\")\n            with open(history_file, \"a\", encoding=\"utf-8\") as f:\n                f.write(f\"[DIFF {timestamp}] File: {filepath}\\n{diff}\\n---\\n\")\n    except Exception as e:\n        with open(history_file, \"a\", encoding=\"utf-8\") as f:\n            f.write(f\"[DIFF ERROR] {filepath}: {str(e)}\\n\")\n",
+    "timestamp": "2025-03-27 08:48:59"
+  },
+  {
+    "action": "create_file",
+    "filename": "test_self.txt",
+    "content": "Hello test!",
+    "timestamp": "2025-03-27 09:27:45"
+  },
+  {
+    "action": "delete_file",
+    "filename": "test_self.txt",
+    "timestamp": "2025-03-27 09:27:45"
+  },
+  {
+    "action": "create_file",
+    "filename": "test_cli.txt",
+    "content": "Привіт із CLI!",
+    "timestamp": "2025-03-27 10:06:10"
+  }
+]
