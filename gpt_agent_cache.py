@@ -498,3 +498,8 @@ def handle_command(cmd):
         return {'status': 'success', 'message': 'Команда виконана успішно'}
     except Exception as e:
         return {'status': 'error', 'message': f'❌ Exception: {str(e)}'}
+# Викликаємо fix_indentation перед виконанням заміни
+if full_file_path:
+    fix_result = fix_indentation(full_file_path)
+    if fix_result['status'] == 'error':
+        return fix_result  # Якщо є помилка в форматуванні, зупиняємо виконання
