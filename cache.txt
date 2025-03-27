@@ -1,5 +1,0 @@
-{
-  "action": "append_file",
-  "filename": "gpt_agent_cache.py",
-  "content": "\n# Викликаємо fix_indentation перед виконанням заміни\nif full_file_path:\n    fix_result = fix_indentation(full_file_path)\n    if fix_result['status'] == 'error':\n        return fix_result  # Якщо є помилка в форматуванні, зупиняємо виконання"
-}

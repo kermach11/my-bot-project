@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/ben_gui.py: unexpected indent (ben_gui_desktop/ben_gui.py, line 70)"
+    "message": "❌ Unknown action: fix_indentation"
   }
 ]

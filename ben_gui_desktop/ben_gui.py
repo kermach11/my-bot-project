@@ -5,6 +5,7 @@ import os
 
 CACHE_FILE = "cache.txt"
 
+
 class BenGUI:
     def __init__(self, root):
         self.root = root
@@ -16,19 +17,27 @@ class BenGUI:
         self.input_box = scrolledtext.ScrolledText(root, height=10, width=80)
         self.input_box.pack()
 
-        self.send_button = tk.Button(root, text="▶️ Надіслати", command=self.send_command)
+        self.send_button = tk.Button(
+            root, text="▶️ Надіслати", command=self.send_command)
         self.send_button.pack(pady=4)
 
-        self.undo_button = tk.Button(root, text="↩️ Undo", command=lambda: self.send_simple("undo_change"))
+        self.undo_button = tk.Button(
+            root,
+            text="↩️ Undo",
+            command=lambda: self.send_simple("undo_change"))
         self.undo_button.pack(pady=2)
 
-        self.repeat_button = tk.Button(root, text="🔁 Repeat", command=lambda: self.send_simple("repeat_last"))
+        self.repeat_button = tk.Button(
+            root,
+            text="🔁 Repeat",
+            command=lambda: self.send_simple("repeat_last"))
         self.repeat_button.pack(pady=2)
 
         self.output_label = tk.Label(root, text="Останні команди")
         self.output_label.pack(pady=4)
 
-        self.history_box = scrolledtext.ScrolledText(root, height=10, width=80, state="disabled")
+        self.history_box = scrolledtext.ScrolledText(
+            root, height=10, width=80, state="disabled")
         self.history_box.pack()
 
     def send_simple(self, action):
@@ -60,6 +69,7 @@ class BenGUI:
         self.history_box.insert(tk.END, text + "\n\n")
         self.history_box.configure(state="disabled")
 
+
 if __name__ == "__main__":
     if not os.path.exists("ben_gui_desktop"):
         os.makedirs("ben_gui_desktop")
@@ -67,5 +77,8 @@ if __name__ == "__main__":
     root = tk.Tk()
     gui = BenGUI(root)
     root.mainloop()
-        self.list_button = tk.Button(root, text="📄 List Files", command=lambda: self.send_simple("list_files"))
-        self.list_button.pack(pady=2)
+    self.list_button = tk.Button(
+        root,
+        text="📄 List Files",
+        command=lambda: self.send_simple("list_files"))
+    self.list_button.pack(pady=2)
