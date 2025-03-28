@@ -2,6 +2,6 @@
   "action": "update_code",
   "file_path": "ben_gui_desktop/main_gui.py",
   "update_type": "custom_insert",
-  "insert_at_line": 4,
-  "code": "from widgets.parameter_form import ParameterForm"
+  "insert_at_line": 14,
+  "code": "parameter_form = ParameterForm(root)\nparameter_form.pack(fill=tk.X, padx=20, pady=10)"
 }
