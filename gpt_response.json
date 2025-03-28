@@ -1,6 +1,6 @@
 [
   {
-    "status": "success",
-    "message": "✅ Created file 'test_append.py'"
+    "status": "skipped",
+    "message": "⚠️ Function 'test_func' already exists in test_append.py"
   }
 ]
