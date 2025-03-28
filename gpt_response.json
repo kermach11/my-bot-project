@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Missing required field: action"
+    "message": "❌ Exception: cannot access local variable 'test_result' where it is not associated with a value"
   }
 ]
