@@ -30,6 +30,26 @@ def save_to_memory(cmd):
             json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
     except Exception as e:
         log_action(f"⚠️ Error saving to memory: {str(e)}")
+        
+def handle_list_history():
+    memory_file = os.path.join(base_path, ".ben_memory.json")
+    if os.path.exists(memory_file):
+        with open(memory_file, "r", encoding="utf-8") as f:
+            memory = json.load(f)
+        return {"status": "success", "history": memory[-20:]}
+    return {"status": "error", "message": "❌ Memory file not found"}
+
+def get_history():
+    try:
+        import sqlite3
+        conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM command_history ORDER BY timestamp DESC LIMIT 20")
+        rows = cursor.fetchall()
+        conn.close()
+        return {"status": "success", "history": rows}
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Failed to fetch from SQLite: {e}"}
 
 def read_requests():
     if not os.path.exists(request_file):
@@ -88,7 +108,6 @@ def handle_update_code(command):
 
     print(f"[BEN] update_code applied to {file_path} with type {update_type}")
     return {"status": "success", "message": f"✅ update_code applied to {file_path} with type {update_type}"}
-
 def handle_macro(cmd):
     if not isinstance(cmd.get("steps"), list):
         return {"status": "error", "message": "❌ Invalid macro steps"}
@@ -96,8 +115,8 @@ def handle_macro(cmd):
     steps = cmd["steps"]
     rollback = cmd.get("rollback_on_fail", False)
     results = []
+    created_files = []
 
-    # 🔄 Створюємо .bak файли перед кожною критичною дією
     if rollback:
         for step in steps:
             if "filename" in step:
@@ -108,21 +127,42 @@ def handle_macro(cmd):
                     with open(file_path + ".bak", "w", encoding="utf-8") as f:
                         f.write(original)
 
-    # ▶️ Виконання кроків
     for step in steps:
         result = handle_command(step)
         results.append(result)
 
+        # Збираємо створені файли (для видалення у rollback)
+        if step.get("action") == "create_file" and "filename" in step:
+            created_files.append(step["filename"])
+
         if result.get("status") == "error" and rollback:
-            # ⏪ Відкат всіх змін
+            # Відкат з резервних копій
             for s in steps:
                 if "filename" in s:
-                    bak_file = os.path.join(base_path, s["filename"] + ".bak")
+                    file_path = os.path.join(base_path, s["filename"])
+                    bak_file = file_path + ".bak"
                     if os.path.exists(bak_file):
                         with open(bak_file, "r", encoding="utf-8") as f:
                             restored = f.read()
-                        with open(os.path.join(base_path, s["filename"]), "w", encoding="utf-8") as f:
+                        with open(file_path, "w", encoding="utf-8") as f:
                             f.write(restored)
+
+            # Видаляємо новостворені файли
+            for fname in created_files:
+                file_path = os.path.join(base_path, fname)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+
+            # 🧠 Запис rollback'у в памʼять
+            save_to_memory({
+                "action": "rollback",
+                "reason": result.get("message"),
+                "rollback_steps": steps
+            })
+
+            # ♻️ Git-коміт
+            auto_commit("♻️ Rollback after failure")
+
             return {
                 "status": "error",
                 "message": "❌ Macro failed. Rolled back all changes.",
@@ -304,13 +344,7 @@ def handle_command(cmd):
                 return {"status": "error", "message": f"❌ Немає резервної копії для '{filename}'"}
 
         elif action == "macro":
-            if not isinstance(cmd.get("steps"), list):
-                return {"status": "error", "message": "❌ Invalid macro steps"}
-            results = []
-            for step in cmd.get("steps", []):
-                result = handle_command(step)
-                results.append(result)
-            return {"status": "success", "steps": results}
+            return handle_macro(cmd)
 
         elif action == "list_files":
             return {"status": "success", "files": os.listdir(base_path)}
@@ -326,6 +360,12 @@ def handle_command(cmd):
                 return {"status": "success", "memory": memory[-20:]}
             else:
                 return {"status": "error", "message": "❌ Memory file not found"}
+        
+        elif action == "list_history":
+            return handle_list_history()
+
+        elif action == "view_sql_history":
+            return get_history()
 
         else:
             return {"status": "error", "message": f"❌ Unknown action: {action}"}
@@ -621,6 +661,18 @@ def get_history():
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+def auto_commit(commit_msg="♻️ Rollback after failure"):
+    try:
+        subprocess.run(["git", "add", "."], cwd=base_path, check=True)
+        subprocess.run(["git", "commit", "-m", commit_msg], cwd=base_path, check=True)
+        subprocess.run(["git", "push"], cwd=base_path, check=True)
+        log_action(f"📤 Git auto-commit: {commit_msg}")
+        save_to_memory({"action": "auto_commit", "message": commit_msg})
+        return {"status": "success", "message": "📤 Git auto-commit завершено"}
+    except subprocess.CalledProcessError as e:
+        log_action(f"❌ Auto-commit помилка: {str(e)}")
+        return {"status": "error", "message": f"❌ Auto-commit помилка: {str(e)}"}
 
 
 # [BEN] Validation logic inserted here

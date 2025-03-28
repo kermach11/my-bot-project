@@ -1,8 +1,1 @@
-{
-  "action": "macro",
-  "rollback_on_fail": true,
-  "steps": [
-    {"action": "create_file", "filename": "temp_test1.py", "content": "# ok"},
-    {"action": "update_code", "file_path": "non_existing.py", "update_type": "validation"}
-  ]
-}
+{"action": "list_history"}
