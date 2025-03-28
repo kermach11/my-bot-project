@@ -129,6 +129,20 @@ def handle_update_code(command):
 
     print(f"[BEN] update_code applied to {file_path} with type {update_type}")
     return {"status": "success", "message": f"✅ update_code applied to {file_path} with type {update_type}"}
+# ✅ ВСТАВ ЦЕ ДЕСЬ ПЕРЕД log_diff(full_file_path)
+def log_diff(filepath):
+    try:
+        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
+        diff = result.stdout.strip()
+        if diff:
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+            with open(history_file, "a", encoding="utf-8") as f:
+                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
+    except Exception as e:
+        with open(history_file, "a", encoding="utf-8") as f:
+            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
+
+
 def handle_macro(cmd):
     if not isinstance(cmd.get("steps"), list):
         return {"status": "error", "message": "❌ Invalid macro steps"}
@@ -635,19 +649,6 @@ def repeat_last_action():
         return handle_command(last_cmd)
     except Exception as e:
         return {"status": "error", "message": f"❌ Repeat error: {str(e)}"}
-
-
-def log_diff(filepath):
-    try:
-        result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
-        diff = result.stdout.strip()
-        if diff:
-            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-            with open(history_file, "a", encoding="utf-8") as f:
-                f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
-    except Exception as e:
-        with open(history_file, "a", encoding="utf-8") as f:
-            f.write(f"[DIFF ERROR] {filepath}: {str(e)}\n")
 
 
 import autopep8
