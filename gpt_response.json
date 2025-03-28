@@ -1,6 +1,6 @@
 [
   {
     "status": "success",
-    "message": "📌 Appended to file '{{ filename }}'"
+    "message": "✅ Created file 'ben_gui_desktop/templates/append_file.j2'"
   }
 ]
