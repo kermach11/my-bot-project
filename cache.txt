@@ -1,5 +1,8 @@
 {
-  "action": "create_file",
-  "filename": "test3.py",
-  "content": "# Тестовий файл для logging"
+  "action": "update_code_bulk",
+  "updates": [
+    {"file_path": "test1.py", "update_type": "validation"},
+    {"file_path": "test2.py", "update_type": "exceptions"},
+    {"file_path": "test3.py", "update_type": "logging"}
+  ]
 }
