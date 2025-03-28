@@ -65,13 +65,13 @@ def handle_update_code(command):
     elif update_type == 'logging':
         content += '\n# [BEN] Logging logic inserted here'
     else:
-        print(f"[BEN] Unknown update_type: {update_type}")
-        return
-
+        print(f"[BEN] update_code applied to {file_path} with type {update_type}")
+        
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
     print(f"[BEN] update_code applied to {file_path} with type {update_type}")
+    return {"status": "success", "message": f"✅ update_code applied to {file_path} with type {update_type}"}
 
 def handle_command(cmd):
     if not isinstance(cmd, dict):
@@ -112,7 +112,8 @@ def handle_command(cmd):
             return {"status": "success", "message": f"✅ Created file '{filename}'"}
 
         elif action == "update_code":
-            handle_update_code(cmd)
+            return handle_update_code(cmd)
+
 
         elif action == "append_file":
             with open(full_file_path, "a", encoding="utf-8") as f:
