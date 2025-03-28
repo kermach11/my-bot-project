@@ -1,6 +1,6 @@
 [
   {
-    "status": "success",
-    "message": "✅ Created file 'ben_gui_desktop/templates/append_file.j2'"
+    "status": "error",
+    "message": "❌ Missing required field: action"
   }
 ]
