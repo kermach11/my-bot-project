@@ -24,6 +24,23 @@ history_memory.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
 history_sqlite = HistoryViewer(root, "📜 Історія з SQLite")
 history_sqlite.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+def insert_from_template():
+    action = action_selector.get_selected_action()
+    fields = parameter_form.get_command_fields()
+    template_name = f"{action}.j2"
+    rendered = render_template(template_name, fields)
+    try:
+        command = json.loads(rendered)
+        parameter_form.entries.get("filename", ttk.Entry()).delete(0, tk.END)
+        parameter_form.entries.get("filename", ttk.Entry()).insert(0, command.get("filename", ""))
+        parameter_form.entries.get("content", ttk.Entry()).delete(0, tk.END)
+        parameter_form.entries.get("content", ttk.Entry()).insert(0, command.get("content", ""))
+        response_area.insert(tk.END, f"🧩 Застосовано шаблон {template_name}\n")
+    except Exception as e:
+        response_area.insert(tk.END, f"❌ Error parsing rendered template: {e}\n")
+
+insert_tpl_btn = ttk.Button(root, text="🧩 Insert from Template", command=insert_from_template)
+insert_tpl_btn.pack(pady=5)
 
 import ast
 parameter_form = ParameterForm(root)

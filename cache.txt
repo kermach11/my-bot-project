@@ -2,6 +2,6 @@
   "action": "update_code",
   "file_path": "ben_gui_desktop/main_gui.py",
   "update_type": "custom_insert",
-  "insert_at_line": 6,
-  "code": "from template_manager import render_template"
+  "insert_at_line": 26,
+  "code": "def insert_from_template():\n    action = action_selector.get_selected_action()\n    fields = parameter_form.get_command_fields()\n    template_name = f\"{action}.j2\"\n    rendered = render_template(template_name, fields)\n    try:\n        command = json.loads(rendered)\n        parameter_form.entries.get(\"filename\", ttk.Entry()).delete(0, tk.END)\n        parameter_form.entries.get(\"filename\", ttk.Entry()).insert(0, command.get(\"filename\", \"\"))\n        parameter_form.entries.get(\"content\", ttk.Entry()).delete(0, tk.END)\n        parameter_form.entries.get(\"content\", ttk.Entry()).insert(0, command.get(\"content\", \"\"))\n        response_area.insert(tk.END, f\"🧩 Застосовано шаблон {template_name}\\n\")\n    except Exception as e:\n        response_area.insert(tk.END, f\"❌ Error parsing rendered template: {e}\\n\")\n\ninsert_tpl_btn = ttk.Button(root, text=\"🧩 Insert from Template\", command=insert_from_template)\ninsert_tpl_btn.pack(pady=5)"
 }
