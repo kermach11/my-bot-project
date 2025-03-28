@@ -3,6 +3,7 @@ from tkinter import ttk
 from widgets.action_selector import ActionSelector
 from tkinter import scrolledtext
 import os
+from widgets.git_log_viewer import GitLogViewer
 from widgets.history_viewer import HistoryViewer
 import json
 
