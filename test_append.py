@@ -1,2 +1,1 @@
-def test_func():
-    return True
+# Порожній файл для тесту
