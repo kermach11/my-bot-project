@@ -4,6 +4,7 @@ from widgets.action_selector import ActionSelector
 from tkinter import scrolledtext
 import os
 from widgets.git_log_viewer import GitLogViewer
+from template_manager import render_template
 from widgets.history_viewer import HistoryViewer
 import json
 

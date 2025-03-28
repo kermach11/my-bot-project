@@ -1,5 +1,7 @@
 {
-  "action": "create_file",
-  "filename": "ben_gui_desktop/templates/create_file.j2",
-  "content": "{\n  \"action\": \"create_file\",\n  \"filename\": \"{{ filename }}\",\n  \"content\": \"{{ content }}\"\n}"
+  "action": "update_code",
+  "file_path": "ben_gui_desktop/main_gui.py",
+  "update_type": "custom_insert",
+  "insert_at_line": 6,
+  "code": "from template_manager import render_template"
 }
