@@ -1,5 +1,7 @@
 {
-  "action": "create_file",
-  "filename": "ben_gui_desktop/widgets/history_viewer.py",
-  "content": "import tkinter as tk\nfrom tkinter import ttk, scrolledtext\n\nclass HistoryViewer(ttk.Frame):\n    def __init__(self, parent, label_text):\n        super().__init__(parent)\n        ttk.Label(self, text=label_text).pack(anchor=\"w\")\n        self.text_area = scrolledtext.ScrolledText(self, height=10, wrap=tk.WORD)\n        self.text_area.pack(fill=tk.BOTH, expand=True)\n\n    def update_history(self, data):\n        self.text_area.delete(\"1.0\", tk.END)\n        for item in data:\n            self.text_area.insert(tk.END, f\"{item}\\n\")\n        self.text_area.see(tk.END)"
+  "action": "update_code",
+  "file_path": "ben_gui_desktop/main_gui.py",
+  "update_type": "custom_insert",
+  "insert_at_line": 5,
+  "code": "from widgets.history_viewer import HistoryViewer"
 }
