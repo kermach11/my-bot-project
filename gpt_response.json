@@ -1,6 +1,6 @@
 [
   {
     "status": "success",
-    "message": "📁 Folder 'ben_gui_desktop/templates' created"
+    "message": "✅ Created file 'ben_gui_desktop/templates/create_file.j2'"
   }
 ]
