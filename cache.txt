@@ -1,7 +1,6 @@
 {
-  "action": "update_code",
-  "file_path": "ben_gui_desktop/widgets/user_profile_panel.py",
-  "update_type": "custom_insert",
-  "insert_at_line": 18,
-  "code": "# Застосування теми при зміні\n        def apply_theme(event=None):\n            selected = self.theme_var.get()\n            if selected == \"dark\":\n                parent.tk_setPalette(background=\"#1e1e1e\", foreground=\"#ffffff\")\n            elif selected == \"light\":\n                parent.tk_setPalette(background=\"#ffffff\", foreground=\"#000000\")\n            else:\n                parent.tk_setPalette(background=None, foreground=None)\n\n        self.theme_var.trace_add(\"write\", lambda *args: apply_theme())\n        apply_theme()"
+  "action": "replace_in_file",
+  "filename": "ben_gui_desktop/main_gui.py",
+  "pattern": "root\\.mainloop\\(\\)",
+  "replacement": "def on_close():\n    if user_profile:\n        user_profile.save_profile_settings()\n    root.destroy()\n\nroot.protocol(\"WM_DELETE_WINDOW\", on_close)\nroot.mainloop()"
 }
