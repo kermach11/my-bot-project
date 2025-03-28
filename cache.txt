@@ -1,5 +1,5 @@
 {
   "action": "create_file",
-  "filename": "ben_gui_desktop/templates/replace_in_file.j2",
-  "content": "{\n  \"action\": \"replace_in_file\",\n  \"filename\": \"{{ filename }}\",\n  \"pattern\": \"{{ pattern }}\",\n  \"replacement\": \"{{ replacement }}\"\n}"
+  "filename": "ben_gui_desktop/templates/macro.j2",
+  "content": "{\n  \"action\": \"macro\",\n  \"steps\": {{ steps | tojson }}\n}"
 }
