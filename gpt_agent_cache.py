@@ -51,6 +51,27 @@ def write_response(responses):
 def clear_cache():
     with open(request_file, "w", encoding="utf-8") as f:
         f.write("")
+def handle_update_code(command):
+    file_path = command.get('file_path')
+    update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging'
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    if update_type == 'validation':
+        content += '\n# [BEN] Validation logic inserted here'
+    elif update_type == 'exceptions':
+        content += '\n# [BEN] Exception handling logic inserted here'
+    elif update_type == 'logging':
+        content += '\n# [BEN] Logging logic inserted here'
+    else:
+        print(f"[BEN] Unknown update_type: {update_type}")
+        return
+
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+
+    print(f"[BEN] update_code applied to {file_path} with type {update_type}")
 
 def handle_command(cmd):
     if not isinstance(cmd, dict):
@@ -489,29 +510,6 @@ def fix_indentation(filepath):
     except Exception as e:
         return {'status': 'error', 'message': f'❌ Помилка виправлення відступів: {str(e)}'}
 
-# Крок 3: Інтеграція виправлення відступів перед виконанням заміни
-def handle_command(cmd):
-    try:
-        action = cmd.get('action')
-        filename = cmd.get('filename')
-        full_file_path = os.path.join(base_path, filename) if filename else None
-
-        if full_file_path:
-            # Викликаємо fix_indentation перед виконанням заміни
-            fix_result = fix_indentation(full_file_path)
-            if fix_result['status'] == 'error':
-                return fix_result  # Якщо є помилка в форматуванні, зупиняємо виконання
-
-        # Далі виконуються інші дії, наприклад заміни
-        if action == 'replace_in_file':
-            # Ваш код заміни
-            pass
-
-        return {'status': 'success', 'message': 'Команда виконана успішно'}
-    except Exception as e:
-        return {'status': 'error', 'message': f'❌ Exception: {str(e)}'}
-
-
 import sqlite3
 
 # Створюємо підключення до бази даних SQLite
@@ -555,24 +553,4 @@ def get_history():
     rows = cursor.fetchall()
     conn.close()
     return rows
-def handle_update_code(command):
-    file_path = command.get('file_path')
-    update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging'
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    if update_type == 'validation':
-        content += '\n# [BEN] Validation logic inserted here'
-    elif update_type == 'exceptions':
-        content += '\n# [BEN] Exception handling logic inserted here'
-    elif update_type == 'logging':
-        content += '\n# [BEN] Logging logic inserted here'
-    else:
-        print(f"[BEN] Unknown update_type: {update_type}")
-        return
-
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-
-    print(f"[BEN] update_code applied to {file_path} with type {update_type}")
