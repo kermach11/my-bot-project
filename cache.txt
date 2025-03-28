@@ -1,1 +1,5 @@
-{"action": "view_sql_history"}
+{
+  "action": "append_file",
+  "filename": "test_append.py",
+  "content": "def test_func():\n    return True"
+}
