@@ -1,4 +1,5 @@
 {
-  "action": "create_folder",
-  "foldername": "ben_gui_desktop/templates"
+  "action": "create_file",
+  "filename": "ben_gui_desktop/templates/create_file.j2",
+  "content": "{\n  \"action\": \"create_file\",\n  \"filename\": \"{{ filename }}\",\n  \"content\": \"{{ content }}\"\n}"
 }
