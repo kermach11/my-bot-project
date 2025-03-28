@@ -11,6 +11,8 @@ import json
 
 from widgets.parameter_form import ParameterForm
 def on_action_change(action):
+user_profile = UserProfilePanel(root)
+user_profile.pack(fill=tk.X, padx=20, pady=10)
     print("🔄 Action changed to:", action)
 
 root = tk.Tk()
