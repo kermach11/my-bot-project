@@ -19,6 +19,8 @@ class TemplateEditor(ttk.Frame):
         self.template_selector.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
         self.template_selector.bind("<<ComboboxSelected>>", self.load_selected_template)
 
+        ttk.Button(top_frame, text="🆕 New Template", command=self.create_new_template).pack(side=tk.LEFT, padx=(5, 0))
+
         ttk.Button(top_frame, text="🔄 Refresh List", command=self.refresh_list).pack(side=tk.LEFT)
 
         self.editor = scrolledtext.ScrolledText(self, wrap=tk.WORD, height=12)
