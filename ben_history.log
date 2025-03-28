@@ -3985,3 +3985,20 @@ index 3808372..86b49ab 100644
 [2025-03-28 20:45:47] ✅ update_code applied to ben_gui_desktop/main_gui.py with type custom_insert
 [2025-03-28 20:45:50] 📤 Git push: ✅ Auto-commit: update_code 
 [2025-03-28 20:48:53] ✅ Created file 'ben_gui_desktop/widgets/template_editor.py'
+[2025-03-28 20:48:57] 📤 Git push: ✅ Auto-commit: create_file ben_gui_desktop/widgets/template_editor.py
+[DIFF 2025-03-28 20:53:45] File: C:\\Users\\DC\\my-bot-project\ben_gui_desktop/widgets/template_editor.py
+diff --git a/ben_gui_desktop/widgets/template_editor.py b/ben_gui_desktop/widgets/template_editor.py
+index 5837301..37abe4e 100644
+--- a/ben_gui_desktop/widgets/template_editor.py
++++ b/ben_gui_desktop/widgets/template_editor.py
+@@ -19,6 +19,8 @@ class TemplateEditor(ttk.Frame):
+         self.template_selector.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+         self.template_selector.bind("<<ComboboxSelected>>", self.load_selected_template)
+ 
++        ttk.Button(top_frame, text="рџ†• New Template", command=self.create_new_template).pack(side=tk.LEFT, padx=(5, 0))
++
+         ttk.Button(top_frame, text="рџ”„ Refresh List", command=self.refresh_list).pack(side=tk.LEFT)
+ 
+         self.editor = scrolledtext.ScrolledText(self, wrap=tk.WORD, height=12)
+---
+[2025-03-28 20:53:45] ✏️ Replaced text in 'ben_gui_desktop/widgets/template_editor.py'

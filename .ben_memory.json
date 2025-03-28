@@ -1,17 +1,6 @@
 [
   {
     "action": "git_push",
-    "message": "✅ Auto-commit: check_status ",
-    "timestamp": "2025-03-27 10:11:03"
-  },
-  {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/ben_gui.py",
-    "content": "import tkinter as tk\nfrom tkinter import messagebox, scrolledtext\nimport json\nimport os\n\nCACHE_FILE = \"cache.txt\"\n\nclass BenGUI:\n    def __init__(self, root):\n        self.root = root\n        self.root.title(\"Ben Assistant GUI\")\n\n        self.input_label = tk.Label(root, text=\"Введіть JSON-команду\")\n        self.input_label.pack()\n\n        self.input_box = scrolledtext.ScrolledText(root, height=10, width=80)\n        self.input_box.pack()\n\n        self.send_button = tk.Button(root, text=\"▶️ Надіслати\", command=self.send_command)\n        self.send_button.pack(pady=4)\n\n        self.undo_button = tk.Button(root, text=\"↩️ Undo\", command=lambda: self.send_simple(\"undo_change\"))\n        self.undo_button.pack(pady=2)\n\n        self.repeat_button = tk.Button(root, text=\"🔁 Repeat\", command=lambda: self.send_simple(\"repeat_last\"))\n        self.repeat_button.pack(pady=2)\n\n        self.output_label = tk.Label(root, text=\"Останні команди\")\n        self.output_label.pack(pady=4)\n\n        self.history_box = scrolledtext.ScrolledText(root, height=10, width=80, state=\"disabled\")\n        self.history_box.pack()\n\n    def send_simple(self, action):\n        command = {\"action\": action}\n        self.write_cache([command])\n        self.append_history(json.dumps(command, ensure_ascii=False))\n\n    def send_command(self):\n        try:\n            text = self.input_box.get(\"1.0\", tk.END).strip()\n            if not text:\n                messagebox.showwarning(\"Увага\", \"Поле введення порожнє\")\n                return\n            command = json.loads(text)\n            if not isinstance(command, list):\n                command = [command]\n            self.write_cache(command)\n            self.append_history(text)\n            self.input_box.delete(\"1.0\", tk.END)\n        except Exception as e:\n            messagebox.showerror(\"Помилка\", f\"❌ Невірний JSON: {str(e)}\")\n\n    def write_cache(self, data):\n        with open(CACHE_FILE, \"w\", encoding=\"utf-8\") as f:\n            json.dump(data, f, indent=2, ensure_ascii=False)\n\n    def append_history(self, text):\n        self.history_box.configure(state=\"normal\")\n        self.history_box.insert(tk.END, text + \"\\n\\n\")\n        self.history_box.configure(state=\"disabled\")\n\nif __name__ == \"__main__\":\n    if not os.path.exists(\"ben_gui_desktop\"):\n        os.makedirs(\"ben_gui_desktop\")\n\n    root = tk.Tk()\n    gui = BenGUI(root)\n    root.mainloop()",
-    "timestamp": "2025-03-27 10:56:06"
-  },
-  {
-    "action": "git_push",
     "message": "✅ Auto-commit: create_file ben_gui_desktop/ben_gui.py",
     "timestamp": "2025-03-27 10:56:14"
   },
@@ -535,5 +524,17 @@
     "filename": "ben_gui_desktop/widgets/template_editor.py",
     "content": "import tkinter as tk\nfrom tkinter import ttk, messagebox, scrolledtext\nimport os\n\nclass TemplateEditor(ttk.Frame):\n    def __init__(self, parent):\n        super().__init__(parent)\n\n        self.template_dir = os.path.join(os.path.dirname(__file__), '..', 'templates')\n        self.current_template = None\n        self.unsaved_changes = False\n\n        ttk.Label(self, text=\"📁 Template Editor\", font=(\"Helvetica\", 14, \"bold\")).pack(anchor=\"w\", pady=(0, 5))\n\n        top_frame = ttk.Frame(self)\n        top_frame.pack(fill=tk.X)\n\n        self.template_selector = ttk.Combobox(top_frame, state=\"readonly\")\n        self.template_selector.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))\n        self.template_selector.bind(\"<<ComboboxSelected>>\", self.load_selected_template)\n\n        ttk.Button(top_frame, text=\"🔄 Refresh List\", command=self.refresh_list).pack(side=tk.LEFT)\n\n        self.editor = scrolledtext.ScrolledText(self, wrap=tk.WORD, height=12)\n        self.editor.pack(fill=tk.BOTH, expand=True, pady=5)\n        self.editor.bind(\"<Key>\", lambda e: self.set_unsaved())\n\n        save_btn = ttk.Button(self, text=\"💾 Save\", command=self.save_template)\n        save_btn.pack(pady=5)\n\n        self.refresh_list()\n        parent.protocol(\"WM_DELETE_WINDOW\", self.on_close)\n\n    def refresh_list(self):\n        try:\n            files = [f for f in os.listdir(self.template_dir) if f.endswith(\".j2\")]\n            self.template_selector[\"values\"] = files\n            if files:\n                self.template_selector.current(0)\n                self.load_selected_template()\n        except Exception as e:\n            messagebox.showerror(\"Error\", f\"❌ Failed to load templates: {e}\")\n\n    def load_selected_template(self, event=None):\n        if self.unsaved_changes:\n            if not messagebox.askyesno(\"Unsaved\", \"⚠️ Unsaved changes. Discard?\"):\n                return\n        name = self.template_selector.get()\n        path = os.path.join(self.template_dir, name)\n        try:\n            with open(path, \"r\", encoding=\"utf-8\") as f:\n                content = f.read()\n            self.editor.delete(\"1.0\", tk.END)\n            self.editor.insert(tk.END, content)\n            self.current_template = name\n            self.unsaved_changes = False\n        except Exception as e:\n            messagebox.showerror(\"Error\", f\"❌ Failed to load: {e}\")\n\n    def save_template(self):\n        if not self.current_template:\n            return\n        try:\n            content = self.editor.get(\"1.0\", tk.END)\n            path = os.path.join(self.template_dir, self.current_template)\n            with open(path, \"w\", encoding=\"utf-8\") as f:\n                f.write(content)\n            self.unsaved_changes = False\n            messagebox.showinfo(\"Saved\", f\"✅ Saved {self.current_template}\")\n        except Exception as e:\n            messagebox.showerror(\"Error\", f\"❌ Failed to save: {e}\")\n\n    def set_unsaved(self):\n        self.unsaved_changes = True\n\n    def on_close(self):\n        if self.unsaved_changes:\n            if not messagebox.askyesno(\"Exit\", \"⚠️ Unsaved changes. Exit anyway?\"):\n                return\n        self.master.destroy()",
     "timestamp": "2025-03-28 20:48:53"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: create_file ben_gui_desktop/widgets/template_editor.py",
+    "timestamp": "2025-03-28 20:48:57"
+  },
+  {
+    "action": "replace_in_file",
+    "filename": "ben_gui_desktop/widgets/template_editor.py",
+    "pattern": "self\\.template_selector\\.bind\\(\"<<ComboboxSelected>>\", self\\.load_selected_template\\)",
+    "replacement": "self.template_selector.bind(\"<<ComboboxSelected>>\", self.load_selected_template)\n\n        ttk.Button(top_frame, text=\"🆕 New Template\", command=self.create_new_template).pack(side=tk.LEFT, padx=(5, 0))",
+    "timestamp": "2025-03-28 20:53:45"
   }
 ]
