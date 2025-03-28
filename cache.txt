@@ -2,6 +2,6 @@
   "action": "update_code",
   "file_path": "ben_gui_desktop/main_gui.py",
   "update_type": "custom_insert",
-  "insert_at_line": 5,
-  "code": "from widgets.history_viewer import HistoryViewer"
+  "insert_at_line": 17,
+  "code": "history_memory = HistoryViewer(root, \"🧠 Історія .ben_memory.json\")\nhistory_memory.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)\n\nhistory_sqlite = HistoryViewer(root, \"📜 Історія з SQLite\")\nhistory_sqlite.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)"
 }
