@@ -1,7 +1,4 @@
-[
-  {
-    "action": "create_file",
-    "filename": "ben_test_check.txt",
-    "content": "✅ Бен працює справно!"
-  }
-]
+{
+  "action": "create_folder",
+  "foldername": "ben_gui_desktop/widgets"
+}

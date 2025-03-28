@@ -1,6 +1,6 @@
 [
   {
-    "status": "success",
-    "message": "🔁 Updated file 'ben_gui_desktop/ben_gui.py'"
+    "status": "error",
+    "message": "❌ Exception: [Errno 2] No such file or directory: 'C:\\\\\\\\Users\\\\\\\\DC\\\\\\\\my-bot-project\\\\ben_gui_desktop/widgets/action_selector.py'"
   }
 ]
