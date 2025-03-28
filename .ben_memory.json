@@ -142,5 +142,16 @@
     "filename": "test2.py",
     "content": "# Тестовий файл для exceptions",
     "timestamp": "2025-03-28 11:47:41"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: create_file test2.py",
+    "timestamp": "2025-03-28 11:47:44"
+  },
+  {
+    "action": "create_file",
+    "filename": "test3.py",
+    "content": "# Тестовий файл для logging",
+    "timestamp": "2025-03-28 11:47:51"
   }
 ]
