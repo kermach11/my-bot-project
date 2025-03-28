@@ -55,6 +55,10 @@ def handle_update_code(command):
     file_path = command.get('file_path')
     update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging'
     
+    test_result = handle_command({"action": "test_python", "filename": file_path})
+    if test_result.get("status") == "error":
+        return {"status": "error", "message": f"❌ Syntax check failed: {test_result.get('message')}"}
+
     if not file_path or not update_type:
         return {"status": "error", "message": "❌ В команді відсутній file_path або update_type"}
     
@@ -567,3 +571,5 @@ def get_history():
     conn.close()
     return rows
 
+
+# [BEN] Validation logic inserted here
