@@ -1,6 +1,6 @@
 [
   {
-    "status": "success",
-    "message": "✅ Created file 'ben_gui_desktop/ben_gui.py'"
+    "status": "error",
+    "message": "❌ Exception: _path_exists: path should be string, bytes, os.PathLike or integer, not NoneType"
   }
 ]

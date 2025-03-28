@@ -2,11 +2,11 @@ import os
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import request_file, response_file
+
 import json
 import tkinter as tk
 from tkinter import ttk, scrolledtext
-from config import request_file, response_file
+
 
 class BenGUI:
     def __init__(self, root):
