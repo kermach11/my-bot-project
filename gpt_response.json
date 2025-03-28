@@ -1,6 +1,6 @@
 [
   {
-    "status": "error",
-    "message": "❌ Invalid insert_at_line value"
+    "status": "success",
+    "message": "✏️ Replaced text in 'ben_gui_desktop/main_gui.py'"
   }
 ]
