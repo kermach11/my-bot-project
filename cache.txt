@@ -1,5 +1,5 @@
 {
-  "action": "append_file",
+  "action": "create_file",
   "filename": "test_append.py",
-  "content": "def test_func():\n    return True"
+  "content": "# Порожній файл для тесту"
 }
