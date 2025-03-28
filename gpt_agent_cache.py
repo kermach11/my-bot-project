@@ -116,7 +116,8 @@ def handle_command(cmd):
 
         elif action == "update_code":
             return handle_update_code(cmd)
-
+        elif action == "update_code_bulk":
+            return handle_update_code_bulk(cmd)
 
         elif action == "append_file":
             with open(full_file_path, "a", encoding="utf-8") as f:
@@ -401,6 +402,14 @@ def git_auto_push(commit_msg="🚀 Auto-commit by Ben"):
     except subprocess.CalledProcessError as e:
         log_action(f"❌ Git push помилка: {str(e)}")
         return {"status": "error", "message": f"❌ Git push помилка: {str(e)}"}
+def handle_update_code_bulk(command):
+    updates = command.get('updates', [])
+    results = []
+    for update in updates:
+        result = handle_update_code(update)
+        results.append(result)
+    return {"status": "success", "results": results}
+   
 if __name__ == "__main__":
     import argparse
     import sys

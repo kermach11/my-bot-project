@@ -1,5 +1,5 @@
 {
-  "action": "update_code",
-  "file_path": "test_ben_module.py",
-  "update_type": "validation"
+  "action": "create_file",
+  "filename": "test1.py",
+  "content": "# Тестовий файл для валідації"
 }
