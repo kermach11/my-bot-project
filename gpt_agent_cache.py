@@ -89,6 +89,48 @@ def handle_update_code(command):
     print(f"[BEN] update_code applied to {file_path} with type {update_type}")
     return {"status": "success", "message": f"✅ update_code applied to {file_path} with type {update_type}"}
 
+def handle_macro(cmd):
+    if not isinstance(cmd.get("steps"), list):
+        return {"status": "error", "message": "❌ Invalid macro steps"}
+
+    steps = cmd["steps"]
+    rollback = cmd.get("rollback_on_fail", False)
+    results = []
+
+    # 🔄 Створюємо .bak файли перед кожною критичною дією
+    if rollback:
+        for step in steps:
+            if "filename" in step:
+                file_path = os.path.join(base_path, step["filename"])
+                if os.path.exists(file_path):
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        original = f.read()
+                    with open(file_path + ".bak", "w", encoding="utf-8") as f:
+                        f.write(original)
+
+    # ▶️ Виконання кроків
+    for step in steps:
+        result = handle_command(step)
+        results.append(result)
+
+        if result.get("status") == "error" and rollback:
+            # ⏪ Відкат всіх змін
+            for s in steps:
+                if "filename" in s:
+                    bak_file = os.path.join(base_path, s["filename"] + ".bak")
+                    if os.path.exists(bak_file):
+                        with open(bak_file, "r", encoding="utf-8") as f:
+                            restored = f.read()
+                        with open(os.path.join(base_path, s["filename"]), "w", encoding="utf-8") as f:
+                            f.write(restored)
+            return {
+                "status": "error",
+                "message": "❌ Macro failed. Rolled back all changes.",
+                "results": results
+            }
+
+    return {"status": "success", "steps": results}
+
 def handle_command(cmd):
     if not isinstance(cmd, dict):
         return {"status": "error", "message": "❌ Invalid command format — expected a JSON object"}

@@ -1,7 +1,8 @@
 {
-  "action": "update_code",
-  "file_path": "test_ben_module.py",
-  "update_type": "custom_insert",
-  "insert_at_line": 3,
-  "code": "print('Вставлено на 3-й рядок')"
+  "action": "macro",
+  "rollback_on_fail": true,
+  "steps": [
+    {"action": "create_file", "filename": "temp_test1.py", "content": "# ok"},
+    {"action": "update_code", "file_path": "non_existing.py", "update_type": "validation"}
+  ]
 }
