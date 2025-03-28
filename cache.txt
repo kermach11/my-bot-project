@@ -1,6 +1,7 @@
 {
-  "action": "replace_in_file",
-  "filename": "ben_gui_desktop/main_gui.py",
-  "pattern": "history_memory\\.update_history\\(responses\\[0\\]\\.get\\(\"history\", \\[\\]\\)\\).*?history_sqlite\\.update_history\\(responses\\[1\\]\\.get\\(\"history\", \\[\\]\\)\\)",
-  "replacement": "profile_settings = user_profile.get_profile_settings()\nflt = profile_settings.get(\"filter\", \"all\")\n\nfiltered_memory = filter_history_entries(responses[0].get(\"history\", []), flt)\nfiltered_sqlite = filter_history_entries(responses[1].get(\"history\", []), flt)\n\nhistory_memory.update_history(filtered_memory)\nhistory_sqlite.update_history(filtered_sqlite)"
+  "action": "update_code",
+  "file_path": "ben_gui_desktop/widgets/user_profile_panel.py",
+  "update_type": "custom_insert",
+  "insert_at_line": 18,
+  "code": "# Застосування теми при зміні\n        def apply_theme(event=None):\n            selected = self.theme_var.get()\n            if selected == \"dark\":\n                parent.tk_setPalette(background=\"#1e1e1e\", foreground=\"#ffffff\")\n            elif selected == \"light\":\n                parent.tk_setPalette(background=\"#ffffff\", foreground=\"#000000\")\n            else:\n                parent.tk_setPalette(background=None, foreground=None)\n\n        self.theme_var.trace_add(\"write\", lambda *args: apply_theme())\n        apply_theme()"
 }

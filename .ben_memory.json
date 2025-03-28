@@ -1,11 +1,5 @@
 [
   {
-    "action": "create_file",
-    "filename": "test_memory.txt",
-    "content": "Memory test",
-    "timestamp": "2025-03-26 23:04:26"
-  },
-  {
     "action": "append_file",
     "filename": "gpt_agent_cache.py",
     "content": "\n\ndef repeat_last_action():\n    memory_file = os.path.join(base_path, \".ben_memory.json\")\n    if not os.path.exists(memory_file):\n        return {\"status\": \"error\", \"message\": \"❌ Memory file not found\"}\n    try:\n        with open(memory_file, \"r\", encoding=\"utf-8\") as f:\n            memory = json.load(f)\n        if not memory:\n            return {\"status\": \"error\", \"message\": \"❌ No memory to repeat\"}\n        last_cmd = memory[-1]\n        return handle_command(last_cmd)\n    except Exception as e:\n        return {\"status\": \"error\", \"message\": f\"❌ Repeat error: {str(e)}\"}\n",
@@ -538,5 +532,10 @@
     "pattern": "history_memory\\.update_history\\(responses\\[0\\]\\.get\\(\"history\", \\[\\]\\)\\).*?history_sqlite\\.update_history\\(responses\\[1\\]\\.get\\(\"history\", \\[\\]\\)\\)",
     "replacement": "profile_settings = user_profile.get_profile_settings()\nflt = profile_settings.get(\"filter\", \"all\")\n\nfiltered_memory = filter_history_entries(responses[0].get(\"history\", []), flt)\nfiltered_sqlite = filter_history_entries(responses[1].get(\"history\", []), flt)\n\nhistory_memory.update_history(filtered_memory)\nhistory_sqlite.update_history(filtered_sqlite)",
     "timestamp": "2025-03-28 20:31:54"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: replace_in_file ben_gui_desktop/main_gui.py",
+    "timestamp": "2025-03-28 20:31:57"
   }
 ]
