@@ -21,6 +21,7 @@ history_memory.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 history_sqlite = HistoryViewer(root, "📜 Історія з SQLite")
 history_sqlite.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
+import ast
 parameter_form = ParameterForm(root)
 def refresh_history():
     cmds = [
