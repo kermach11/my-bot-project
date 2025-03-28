@@ -1,5 +1,5 @@
 {
   "action": "create_file",
-  "filename": "test1.py",
-  "content": "# Тестовий файл для валідації"
+  "filename": "test2.py",
+  "content": "# Тестовий файл для exceptions"
 }
