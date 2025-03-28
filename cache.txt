@@ -1,6 +1,7 @@
-{
-  "action": "update_file",
-  "filename": "ben_gui_desktop/ben_gui.py",
-  "pattern": "from config import request_file, response_file",
-  "replacement": ""
-}
+[
+  {
+    "action": "create_file",
+    "filename": "ben_test_check.txt",
+    "content": "✅ Бен працює справно!"
+  }
+]
