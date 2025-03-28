@@ -1,5 +1,5 @@
 {
   "action": "create_file",
-  "filename": "test2.py",
-  "content": "# Тестовий файл для exceptions"
+  "filename": "test3.py",
+  "content": "# Тестовий файл для logging"
 }
