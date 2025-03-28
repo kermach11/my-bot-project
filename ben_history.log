@@ -3678,3 +3678,5 @@ index b23dde4..bb35d1f 100644
 [2025-03-28 13:22:19] 📤 Git push: ✅ Auto-commit: list_history 
 [2025-03-28 13:22:24] ❌ Failed to fetch from SQLite: no such table: command_history
 [2025-03-28 13:48:02] {'status': 'success', 'history': []}
+[2025-03-28 13:48:05] 📤 Git push: ✅ Auto-commit: view_sql_history 
+[2025-03-28 14:04:41] {'status': 'success', 'history': []}

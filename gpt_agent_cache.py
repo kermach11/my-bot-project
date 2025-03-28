@@ -390,6 +390,20 @@ def handle_command(cmd):
         else:
             return {"status": "error", "message": f"❌ Unknown action: {action}"}
 
+        # 📝 Зберігаємо дію в SQLite
+        try:
+            import sqlite3
+            conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO command_history (action, file_path, update_type)
+                VALUES (?, ?, ?)
+            """, (cmd.get("action"), cmd.get("file_path") or cmd.get("filename"), cmd.get("update_type")))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            log_action(f"⚠️ SQLite save error: {e}")
+
 
     except Exception as e:
         traceback.print_exc()

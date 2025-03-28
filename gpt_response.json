@@ -1,6 +1,6 @@
 [
   {
-    "status": "error",
-    "message": "❌ Failed to fetch from SQLite: no such table: command_history"
+    "status": "success",
+    "history": []
   }
 ]
