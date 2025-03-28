@@ -1,84 +1,60 @@
-import tkinter as tk
-from tkinter import messagebox, scrolledtext
-import json
 import os
-
-CACHE_FILE = "cache.txt"
-
+import json
+import tkinter as tk
+from tkinter import ttk, scrolledtext
+from config import request_file, response_file
 
 class BenGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Ben Assistant GUI")
+        root.title("Ben Assistant GUI")
+        root.geometry("700x500")
 
-        self.input_label = tk.Label(root, text="Введіть JSON-команду")
-        self.input_label.pack()
+        # Ввід
+        self.action_var = tk.StringVar()
+        self.filename_var = tk.StringVar()
+        self.content_var = tk.StringVar()
 
-        self.input_box = scrolledtext.ScrolledText(root, height=10, width=80)
-        self.input_box.pack()
+        ttk.Label(root, text="Action:").pack()
+        ttk.Entry(root, textvariable=self.action_var).pack(fill=tk.X)
 
-        self.send_button = tk.Button(
-            root, text="▶️ Надіслати", command=self.send_command)
-        self.send_button.pack(pady=4)
+        ttk.Label(root, text="Filename (optional):").pack()
+        ttk.Entry(root, textvariable=self.filename_var).pack(fill=tk.X)
 
-        self.undo_button = tk.Button(
-            root,
-            text="↩️ Undo",
-            command=lambda: self.send_simple("undo_change"))
-        self.undo_button.pack(pady=2)
+        ttk.Label(root, text="Content (optional):").pack()
+        ttk.Entry(root, textvariable=self.content_var).pack(fill=tk.X)
 
-        self.repeat_button = tk.Button(
-            root,
-            text="🔁 Repeat",
-            command=lambda: self.send_simple("repeat_last"))
-        self.repeat_button.pack(pady=2)
+        ttk.Button(root, text="📩 Надіслати команду", command=self.send_command).pack(pady=10)
 
-        self.output_label = tk.Label(root, text="Останні команди")
-        self.output_label.pack(pady=4)
-
-        self.history_box = scrolledtext.ScrolledText(
-            root, height=10, width=80, state="disabled")
-        self.history_box.pack()
-
-    def send_simple(self, action):
-        command = {"action": action}
-        self.write_cache([command])
-        self.append_history(json.dumps(command, ensure_ascii=False))
+        ttk.Label(root, text="Відповідь:").pack()
+        self.response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=15)
+        self.response_area.pack(fill=tk.BOTH, expand=True)
 
     def send_command(self):
-        try:
-            text = self.input_box.get("1.0", tk.END).strip()
-            if not text:
-                messagebox.showwarning("Увага", "Поле введення порожнє")
-                return
-            command = json.loads(text)
-            if not isinstance(command, list):
-                command = [command]
-            self.write_cache(command)
-            self.append_history(text)
-            self.input_box.delete("1.0", tk.END)
-        except Exception as e:
-            messagebox.showerror("Помилка", f"❌ Невірний JSON: {str(e)}")
+        command = {
+            "action": self.action_var.get(),
+            "filename": self.filename_var.get(),
+            "content": self.content_var.get()
+        }
+        command = {k: v for k, v in command.items() if v.strip()}
+        with open(request_file, "w", encoding="utf-8") as f:
+            json.dump([command], f, indent=2)
+        self.response_area.insert(tk.END, f"📤 Відправлено: {json.dumps(command)}\n")
+        self.response_area.see(tk.END)
 
-    def write_cache(self, data):
-        with open(CACHE_FILE, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+        self.root.after(1000, self.load_response)
 
-    def append_history(self, text):
-        self.history_box.configure(state="normal")
-        self.history_box.insert(tk.END, text + "\n\n")
-        self.history_box.configure(state="disabled")
-
+    def load_response(self):
+        if os.path.exists(response_file):
+            with open(response_file, "r", encoding="utf-8") as f:
+                try:
+                    data = json.load(f)
+                    self.response_area.insert(tk.END, f"✅ Відповідь: {json.dumps(data, indent=2, ensure_ascii=False)}\n")
+                    self.response_area.see(tk.END)
+                except Exception as e:
+                    self.response_area.insert(tk.END, f"❌ Error reading response: {e}\n")
 
 if __name__ == "__main__":
-    if not os.path.exists("ben_gui_desktop"):
-        os.makedirs("ben_gui_desktop")
-
     root = tk.Tk()
-    gui = BenGUI(root)
+    app = BenGUI(root)
     root.mainloop()
-    self.list_button = tk.Button(
-        root,
-        text="📄 List Files",
-        command=lambda: self.send_simple("list_files"))
-    self.list_button.pack(pady=2)
