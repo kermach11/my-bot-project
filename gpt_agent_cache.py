@@ -53,29 +53,38 @@ def clear_cache():
         f.write("")
 def handle_update_code(command):
     file_path = command.get('file_path')
-    update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging'
-    
+    update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging', 'custom_insert'
+    insert_at_line = command.get('insert_at_line')
+    insert_code = command.get('code')
+
+    if not file_path or not update_type:
+        return {"status": "error", "message": "❌ Missing 'file_path' or 'update_type'"}
+    if not isinstance(file_path, str) or not isinstance(update_type, str):
+        return {"status": "error", "message": "❌ Invalid type for 'file_path' or 'update_type'"}
+
     test_result = handle_command({"action": "test_python", "filename": file_path})
     if test_result.get("status") == "error":
         return {"status": "error", "message": f"❌ Syntax check failed: {test_result.get('message')}"}
 
-    if not file_path or not update_type:
-        return {"status": "error", "message": "❌ В команді відсутній file_path або update_type"}
-    
     with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+        lines = f.readlines()
 
     if update_type == 'validation':
-        content += '\n# [BEN] Validation logic inserted here'
+        lines.append('\nif data is None:\n    raise ValueError("Input data cannot be None")')
     elif update_type == 'exceptions':
-        content += '\n# [BEN] Exception handling logic inserted here'
+        lines.append('\ntry:\n    risky_operation()\nexcept Exception as e:\n    print(f"Exception occurred: {e}")')
     elif update_type == 'logging':
-        content += '\n# [BEN] Logging logic inserted here'
+        lines.append('\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info("Log message from BEN")')
+    elif update_type == 'custom_insert' and insert_code:
+        if isinstance(insert_at_line, int) and 0 <= insert_at_line <= len(lines):
+            lines.insert(insert_at_line, insert_code + '\n')
+        else:
+            return {"status": "error", "message": "❌ Invalid insert_at_line value"}
     else:
-        print(f"[BEN] update_code applied to {file_path} with type {update_type}")
-        
+        return {"status": "error", "message": f"❌ Unknown update_type: {update_type}"}
+
     with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(content)
+        f.writelines(lines)
 
     print(f"[BEN] update_code applied to {file_path} with type {update_type}")
     return {"status": "success", "message": f"✅ update_code applied to {file_path} with type {update_type}"}
