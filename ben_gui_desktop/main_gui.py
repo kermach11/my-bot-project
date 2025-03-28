@@ -22,6 +22,27 @@ history_sqlite = HistoryViewer(root, "📜 Історія з SQLite")
 history_sqlite.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
 parameter_form = ParameterForm(root)
+def refresh_history():
+    cmds = [
+        {"action": "list_history"},
+        {"action": "view_sql_history"}
+    ]
+    with open(request_file, "w", encoding="utf-8") as f:
+        json.dump(cmds, f, indent=2)
+
+    def load():
+        if os.path.exists(response_file):
+            with open(response_file, "r", encoding="utf-8") as f:
+                try:
+                    responses = json.load(f)
+                    history_memory.update_history(responses[0].get("history", []))
+                    history_sqlite.update_history(responses[1].get("history", []))
+                except Exception as e:
+                    response_area.insert(tk.END, f"❌ Error loading history: {e}\n")
+    root.after(1500, load)
+
+refresh_btn = ttk.Button(root, text="🔁 Оновити історію", command=refresh_history)
+refresh_btn.pack(pady=5)
 response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=10)
 response_area.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 status_label = ttk.Label(root, text="🟡 Перевірка статусу агента...")
