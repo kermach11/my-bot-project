@@ -21,6 +21,26 @@ class MacroBuilder(ttk.Frame):
         self.action_entry = ttk.Entry(form_frame, textvariable=self.action_var)
         self.action_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 5))
         ttk.Button(form_frame, text="➕ Add", command=self.add_step).pack(side=tk.LEFT)
+        # Поля для повного редагування кроку
+        self.fields_frame = ttk.Frame(self)
+        self.fields_frame.pack(fill=tk.X, padx=5, pady=5)
+
+        self.field_vars = {
+            "action": tk.StringVar(),
+            "filename": tk.StringVar(),
+            "pattern": tk.StringVar(),
+            "replacement": tk.StringVar(),
+            "content": tk.StringVar(),
+        }
+
+        for i, (label, var) in enumerate(self.field_vars.items()):
+            row = ttk.Frame(self.fields_frame)
+            row.pack(fill=tk.X, pady=2)
+            ttk.Label(row, text=label.capitalize() + ":").pack(side=tk.LEFT, padx=(0, 5))
+            entry = ttk.Entry(row, textvariable=var)
+            entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        ttk.Button(self, text="➕ Add Full Step", command=self.add_full_step).pack(pady=5)
         ttk.Button(form_frame, text="🗑 Remove", command=self.remove_selected).pack(side=tk.LEFT, padx=(5, 0))
 
         ttk.Button(self, text="💾 Save Macro", command=self.save_macro).pack(pady=5)
