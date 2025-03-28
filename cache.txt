@@ -1,4 +1,7 @@
-{
-  "action": "create_folder",
-  "foldername": "ben_gui_desktop/widgets"
-}
+[
+  {
+    "action": "create_file",
+    "filename": "ben_gui_desktop/widgets/action_selector.py",
+    "content": "import tkinter as tk\nfrom tkinter import ttk\n\nclass ActionSelector(ttk.Frame):\n    def __init__(self, parent, on_action_change):\n        super().__init__(parent)\n        self.on_action_change = on_action_change\n\n        ttk.Label(self, text=\"Оберіть дію:\").pack(anchor=\"w\")\n\n        self.action_var = tk.StringVar()\n        self.combo = ttk.Combobox(self, textvariable=self.action_var)\n        self.combo['values'] = [\n            \"create_file\", \"append_file\", \"update_code\", \"update_code_bulk\",\n            \"replace_in_file\", \"delete_file\", \"rename_file\", \"macro\",\n            \"list_history\", \"view_sql_history\", \"run_python\"\n        ]\n        self.combo.bind(\"<<ComboboxSelected>>\", self.action_selected)\n        self.combo.pack(fill=tk.X)\n\n    def action_selected(self, event):\n        selected = self.action_var.get()\n        self.on_action_change(selected)\n\n    def get_selected_action(self):\n        return self.action_var.get()"
+  }
+]
