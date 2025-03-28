@@ -11,6 +11,7 @@ from widgets.history_viewer import HistoryViewer
 import json
 
 from widgets.parameter_form import ParameterForm
+
 def filter_history_entries(entries, filter_type):
     if filter_type == "all":
         return entries
@@ -19,14 +20,18 @@ def filter_history_entries(entries, filter_type):
     elif filter_type == "errors":
         return [e for e in entries if e.get("status") == "error"]
     elif filter_type == "system":
-template_editor = TemplateEditor(root)
-template_editor.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
         return [e for e in entries if not e.get("action") and not e.get("status")]
+macro_builder = MacroBuilder(root)
+macro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
     return entries
 
 def on_action_change(action):
     user_profile = UserProfilePanel(root)
     user_profile.pack(fill=tk.X, padx=20, pady=10)
+
+    template_editor = TemplateEditor(root)
+    template_editor.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
     print("🔄 Action changed to:", action)
 
 root = tk.Tk()

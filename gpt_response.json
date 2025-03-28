@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Syntax error in new function code"
+    "message": "❌ Syntax check failed: ❌ Syntax error in ben_gui_desktop/main_gui.py: expected an indented block after 'elif' statement on line 21 (ben_gui_desktop/main_gui.py, line 22)"
   }
 ]
