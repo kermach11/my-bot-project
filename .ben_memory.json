@@ -2,17 +2,6 @@
   {
     "action": "append_file",
     "filename": "gpt_agent_cache.py",
-    "content": "\nimport autopep8\n\n# Крок 2: Функція для виправлення відступів\n\ndef fix_indentation(filepath):\n    try:\n        with open(filepath, 'r', encoding='utf-8') as file:\n            code = file.read()\n\n        fixed_code = autopep8.fix_code(code)\n\n        with open(filepath, 'w', encoding='utf-8') as file:\n            file.write(fixed_code)\n\n        return {'status': 'success', 'message': f'🧹 Виправлені відступи в файлі {filepath}'}\n    except Exception as e:\n        return {'status': 'error', 'message': f'❌ Помилка виправлення відступів: {str(e)}'}\n\n# Крок 3: Інтеграція виправлення відступів перед виконанням заміни\n\ndef handle_command(cmd):\n    try:\n        action = cmd.get('action')\n        filename = cmd.get('filename')\n        full_file_path = os.path.join(base_path, filename) if filename else None\n\n        if full_file_path:\n            # Викликаємо fix_indentation перед виконанням заміни\n            fix_result = fix_indentation(full_file_path)\n            if fix_result['status'] == 'error':\n                return fix_result  # Якщо є помилка в форматуванні, зупиняємо виконання\n\n        # Далі виконуються інші дії, наприклад заміни\n        if action == 'replace_in_file':\n            # Ваш код заміни\n            pass\n\n        return {'status': 'success', 'message': 'Команда виконана успішно'}\n    except Exception as e:\n        return {'status': 'error', 'message': f'❌ Exception: {str(e)}'}",
-    "timestamp": "2025-03-27 11:39:28"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: append_file gpt_agent_cache.py",
-    "timestamp": "2025-03-27 11:39:37"
-  },
-  {
-    "action": "append_file",
-    "filename": "gpt_agent_cache.py",
     "content": "\n# Викликаємо fix_indentation перед виконанням заміни\nif full_file_path:\n    fix_result = fix_indentation(full_file_path)\n    if fix_result['status'] == 'error':\n        return fix_result  # Якщо є помилка в форматуванні, зупиняємо виконання",
     "timestamp": "2025-03-27 11:46:23"
   },
@@ -537,5 +526,16 @@
     "action": "git_push",
     "message": "✅ Auto-commit: replace_in_file ben_gui_desktop/widgets/template_editor.py",
     "timestamp": "2025-03-28 20:55:08"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: update_code ",
+    "timestamp": "2025-03-28 21:16:42"
+  },
+  {
+    "action": "create_file",
+    "filename": "ben_gui_desktop/widgets/macro_builder.py",
+    "content": "import tkinter as tk\nfrom tkinter import ttk, messagebox\nimport json\n\nclass MacroBuilder(ttk.Frame):\n    def __init__(self, parent):\n        super().__init__(parent)\n\n        self.steps = []\n\n        ttk.Label(self, text=\"🧱 Macro Builder\", font=(\"Helvetica\", 14, \"bold\")).pack(anchor=\"w\", pady=(0, 5))\n\n        self.listbox = tk.Listbox(self)\n        self.listbox.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)\n\n        form_frame = ttk.Frame(self)\n        form_frame.pack(fill=tk.X, padx=5)\n\n        ttk.Label(form_frame, text=\"Action:\").pack(side=tk.LEFT)\n        self.action_var = tk.StringVar()\n        self.action_entry = ttk.Entry(form_frame, textvariable=self.action_var)\n        self.action_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 5))\n        ttk.Button(form_frame, text=\"➕ Add\", command=self.add_step).pack(side=tk.LEFT)\n        ttk.Button(form_frame, text=\"🗑 Remove\", command=self.remove_selected).pack(side=tk.LEFT, padx=(5, 0))\n\n        ttk.Button(self, text=\"💾 Save Macro\", command=self.save_macro).pack(pady=5)\n\n    def add_step(self):\n        action = self.action_var.get().strip()\n        if action:\n            self.steps.append({\"action\": action})\n            self.listbox.insert(tk.END, action)\n            self.action_var.set(\"\")\n\n    def remove_selected(self):\n        selected = self.listbox.curselection()\n        if not selected:\n            return\n        index = selected[0]\n        self.listbox.delete(index)\n        del self.steps[index]\n\n    def save_macro(self):\n        if not self.steps:\n            messagebox.showerror(\"Error\", \"No steps to save\")\n            return\n        macro = {\n            \"action\": \"macro\",\n            \"steps\": self.steps\n        }\n        with open(\"macro_command.json\", \"w\", encoding=\"utf-8\") as f:\n            json.dump(macro, f, indent=2)\n        messagebox.showinfo(\"Saved\", \"✅ Macro saved to macro_command.json\")",
+    "timestamp": "2025-03-28 21:19:24"
   }
 ]
