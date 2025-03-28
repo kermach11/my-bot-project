@@ -20,6 +20,27 @@ response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=10)
 response_area.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 status_label = ttk.Label(root, text="🟡 Перевірка статусу агента...")
 status_label.pack(pady=5)
+def test_python_file():
+    filename = parameter_form.get_command_fields().get("filename")
+    if not filename:
+        response_area.insert(tk.END, "⚠️ Вкажіть 'filename' для перевірки.\n")
+        return
+    command = {"action": "test_python", "filename": filename}
+    with open(request_file, "w", encoding="utf-8") as f:
+        json.dump([command], f, indent=2)
+    def show_result():
+        if os.path.exists(response_file):
+            with open(response_file, "r", encoding="utf-8") as f:
+                try:
+                    result = json.load(f)
+                    response_area.insert(tk.END, f"🧪 Тест: {json.dumps(result, indent=2, ensure_ascii=False)}\n")
+                    response_area.see(tk.END)
+                except Exception as e:
+                    response_area.insert(tk.END, f"❌ Error: {e}\n")
+    root.after(1000, show_result)
+
+test_button = ttk.Button(root, text="🧪 Test Python File", command=test_python_file)
+test_button.pack(pady=5)
 
 def check_agent_status():
     command = {"action": "check_status"}
