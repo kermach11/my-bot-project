@@ -16,6 +16,31 @@ root.geometry("600x400")
 ttk.Label(root, text="Ben Assistant GUI", font=("Arial", 16)).pack(pady=10)
 
 parameter_form = ParameterForm(root)
+response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=10)
+response_area.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+def load_response():
+    if os.path.exists(response_file):
+        with open(response_file, "r", encoding="utf-8") as f:
+            try:
+                data = json.load(f)
+                response_area.insert(tk.END, f"✅ Відповідь: {json.dumps(data, indent=2, ensure_ascii=False)}\n")
+                response_area.see(tk.END)
+            except Exception as e:
+                response_area.insert(tk.END, f"❌ Error reading response: {e}\n")
+
+def send_command():
+    command = {
+        "action": action_selector.get_selected_action()
+    }
+    command.update(parameter_form.get_command_fields())
+
+    with open(request_file, "w", encoding="utf-8") as f:
+        json.dump([command], f, indent=2)
+
+    response_area.insert(tk.END, f"📤 Відправлено: {json.dumps(command, indent=2, ensure_ascii=False)}\n")
+    response_area.see(tk.END)
+    root.after(1000, load_response)
 parameter_form.pack(fill=tk.X, padx=20, pady=10)
 def send_command():
     command = {
