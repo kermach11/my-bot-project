@@ -5,6 +5,7 @@ from tkinter import scrolledtext
 import os
 from widgets.git_log_viewer import GitLogViewer
 from template_manager import render_template
+from widgets.user_profile_panel import UserProfilePanel
 from widgets.history_viewer import HistoryViewer
 import json
 
