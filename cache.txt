@@ -1,6 +1,7 @@
 {
-  "action": "replace_in_file",
-  "filename": "ben_gui_desktop/widgets/template_editor.py",
-  "pattern": "# self\\.template_selector\\.bind\\(\"<<ComboboxSelected>>\", self\\.load_selected_template\\)", 
-  "replacement": "# self.template_selector.bind(\"<<ComboboxSelected>>\", self.load_selected_template)\n\n    def create_new_template(self):\n        name = tk.simpledialog.askstring(\"New Template\", \"Enter filename (with .j2):\")\n        if not name or not name.endswith(\".j2\"):\n            messagebox.showerror(\"Error\", \"❌ Invalid filename\")\n            return\n        path = os.path.join(self.template_dir, name)\n        if os.path.exists(path):\n            messagebox.showerror(\"Error\", \"❌ File already exists\")\n            return\n        with open(path, \"w\", encoding=\"utf-8\") as f:\n            f.write(\"{\\n  \\\"action\\\": \\\"\\\"\\n}\")\n        self.refresh_list()\n        self.template_selector.set(name)\n        self.load_selected_template()"
+  "action": "update_code",
+  "file_path": "ben_gui_desktop/main_gui.py",
+  "update_type": "custom_insert",
+  "insert_at_line": 23,
+  "code": "macro_builder = MacroBuilder(root)\nmacro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)"
 }

@@ -1,10 +1,5 @@
 [
   {
-    "action": "git_push",
-    "message": "✅ Auto-commit: append_file ben_gui_desktop/ben_gui.py",
-    "timestamp": "2025-03-27 10:59:07"
-  },
-  {
     "action": "append_file",
     "filename": "gpt_agent_cache.py",
     "content": "\nimport autopep8\n\n# Крок 2: Функція для виправлення відступів\n\ndef fix_indentation(filepath):\n    try:\n        with open(filepath, 'r', encoding='utf-8') as file:\n            code = file.read()\n\n        fixed_code = autopep8.fix_code(code)\n\n        with open(filepath, 'w', encoding='utf-8') as file:\n            file.write(fixed_code)\n\n        return {'status': 'success', 'message': f'🧹 Виправлені відступи в файлі {filepath}'}\n    except Exception as e:\n        return {'status': 'error', 'message': f'❌ Помилка виправлення відступів: {str(e)}'}\n\n# Крок 3: Інтеграція виправлення відступів перед виконанням заміни\n\ndef handle_command(cmd):\n    try:\n        action = cmd.get('action')\n        filename = cmd.get('filename')\n        full_file_path = os.path.join(base_path, filename) if filename else None\n\n        if full_file_path:\n            # Викликаємо fix_indentation перед виконанням заміни\n            fix_result = fix_indentation(full_file_path)\n            if fix_result['status'] == 'error':\n                return fix_result  # Якщо є помилка в форматуванні, зупиняємо виконання\n\n        # Далі виконуються інші дії, наприклад заміни\n        if action == 'replace_in_file':\n            # Ваш код заміни\n            pass\n\n        return {'status': 'success', 'message': 'Команда виконана успішно'}\n    except Exception as e:\n        return {'status': 'error', 'message': f'❌ Exception: {str(e)}'}",
@@ -537,5 +532,10 @@
     "pattern": "# self\\.template_selector\\.bind\\(\"<<ComboboxSelected>>\", self\\.load_selected_template\\)",
     "replacement": "# self.template_selector.bind(\"<<ComboboxSelected>>\", self.load_selected_template)\n\n    def create_new_template(self):\n        name = tk.simpledialog.askstring(\"New Template\", \"Enter filename (with .j2):\")\n        if not name or not name.endswith(\".j2\"):\n            messagebox.showerror(\"Error\", \"❌ Invalid filename\")\n            return\n        path = os.path.join(self.template_dir, name)\n        if os.path.exists(path):\n            messagebox.showerror(\"Error\", \"❌ File already exists\")\n            return\n        with open(path, \"w\", encoding=\"utf-8\") as f:\n            f.write(\"{\\n  \\\"action\\\": \\\"\\\"\\n}\")\n        self.refresh_list()\n        self.template_selector.set(name)\n        self.load_selected_template()",
     "timestamp": "2025-03-28 20:55:05"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: replace_in_file ben_gui_desktop/widgets/template_editor.py",
+    "timestamp": "2025-03-28 20:55:08"
   }
 ]
