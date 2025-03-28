@@ -1,8 +1,5 @@
 {
-  "action": "update_code_bulk",
-  "updates": [
-    {"file_path": "test1.py", "update_type": "validation"},
-    {"file_path": "test2.py", "update_type": "exceptions"},
-    {"file_path": "test3.py", "update_type": "logging"}
-  ]
+  "action": "update_code",
+  "file_path": "gpt_agent_cache.py",
+  "update_type": "validation"
 }
