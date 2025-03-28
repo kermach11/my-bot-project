@@ -2,6 +2,6 @@
   "action": "update_code",
   "file_path": "ben_gui_desktop/main_gui.py",
   "update_type": "custom_insert",
-  "insert_at_line": 16,
-  "code": "def send_command():\n    command = {\n        \"action\": action_selector.get_selected_action()\n    }\n    command.update(parameter_form.get_command_fields())\n\n    with open(request_file, \"w\", encoding=\"utf-8\") as f:\n        json.dump([command], f, indent=2)\n\n    print(\"📤 Відправлено:\", command)\n\nsend_button = ttk.Button(root, text=\"📩 Надіслати команду\", command=send_command)\nsend_button.pack(pady=10)"
+  "insert_at_line": 3,
+  "code": "from tkinter import scrolledtext\nimport os\nimport json"
 }

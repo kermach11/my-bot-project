@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 from widgets.action_selector import ActionSelector
+from tkinter import scrolledtext
+import os
+import json
 
 from widgets.parameter_form import ParameterForm
 def on_action_change(action):
