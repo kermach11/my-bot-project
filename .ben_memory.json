@@ -288,5 +288,16 @@
     "filename": "ben_gui_desktop/widgets/action_selector.py",
     "content": "import tkinter as tk\nfrom tkinter import ttk\n\nclass ActionSelector(ttk.Frame):\n    def __init__(self, parent, on_action_change):\n        super().__init__(parent)\n        self.on_action_change = on_action_change\n\n        ttk.Label(self, text=\"Оберіть дію:\").pack(anchor=\"w\")\n\n        self.action_var = tk.StringVar()\n        self.combo = ttk.Combobox(self, textvariable=self.action_var)\n        self.combo['values'] = [\n            \"create_file\", \"append_file\", \"update_code\", \"update_code_bulk\",\n            \"replace_in_file\", \"delete_file\", \"rename_file\", \"macro\",\n            \"list_history\", \"view_sql_history\", \"run_python\"\n        ]\n        self.combo.bind(\"<<ComboboxSelected>>\", self.action_selected)\n        self.combo.pack(fill=tk.X)\n\n    def action_selected(self, event):\n        selected = self.action_var.get()\n        self.on_action_change(selected)\n\n    def get_selected_action(self):\n        return self.action_var.get()",
     "timestamp": "2025-03-28 17:01:14"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: create_file ben_gui_desktop/widgets/action_selector.py",
+    "timestamp": "2025-03-28 17:01:17"
+  },
+  {
+    "action": "create_file",
+    "filename": "ben_gui_desktop/main_gui.py",
+    "content": "import tkinter as tk\nfrom tkinter import ttk\nfrom widgets.action_selector import ActionSelector\n\ndef on_action_change(action):\n    print(\"🔄 Action changed to:\", action)\n\nroot = tk.Tk()\nroot.title(\"Ben GUI Interface\")\nroot.geometry(\"600x400\")\n\nttk.Label(root, text=\"Ben Assistant GUI\", font=(\"Arial\", 16)).pack(pady=10)\n\naction_selector = ActionSelector(root, on_action_change)\naction_selector.pack(fill=tk.X, padx=20, pady=10)\n\nroot.mainloop()",
+    "timestamp": "2025-03-28 17:11:18"
   }
 ]
