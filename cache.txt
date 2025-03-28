@@ -1,7 +1,5 @@
 {
-  "action": "update_code",
-  "file_path": "ben_gui_desktop/main_gui.py",
-  "update_type": "custom_insert",
-  "insert_at_line": 19,
-  "code": "git_log = GitLogViewer(root)\ngit_log.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)"
+  "action": "create_file",
+  "filename": "ben_gui_desktop/template_manager.py",
+  "content": "from jinja2 import Environment, FileSystemLoader\nimport os\n\nTEMPLATE_DIR = os.path.join(os.path.dirname(__file__), \"templates\")\nenv = Environment(loader=FileSystemLoader(TEMPLATE_DIR))\n\ndef render_template(template_name, context):\n    try:\n        template = env.get_template(template_name)\n        return template.render(context)\n    except Exception as e:\n        return f\"❌ Template rendering error: {e}\""
 }
