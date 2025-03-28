@@ -1,5 +1,5 @@
 {
-  "action": "append_file",
-  "filename": "{{ filename }}",
-  "content": "{{ content }}"
+  "action": "create_file",
+  "filename": "ben_gui_desktop/templates/append_file.j2",
+  "content": "{\n  \"action\": \"append_file\",\n  \"filename\": \"{{ filename }}\",\n  \"content\": \"{{ content }}\"\n}"
 }

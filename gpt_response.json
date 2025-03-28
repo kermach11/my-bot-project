@@ -1,6 +1,6 @@
 [
   {
     "status": "success",
-    "message": "✅ update_code applied to ben_gui_desktop/main_gui.py with type custom_insert"
+    "message": "📌 Appended to file '{{ filename }}'"
   }
 ]
