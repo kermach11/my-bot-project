@@ -3,6 +3,7 @@ from tkinter import ttk
 from widgets.action_selector import ActionSelector
 from tkinter import scrolledtext
 import os
+from widgets.history_viewer import HistoryViewer
 import json
 
 from widgets.parameter_form import ParameterForm
