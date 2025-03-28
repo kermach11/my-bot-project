@@ -1,5 +1,7 @@
 {
-  "action": "create_file",
-  "filename": "ben_gui_desktop/widgets/parameter_form.py",
-  "content": "import tkinter as tk\nfrom tkinter import ttk\n\nclass ParameterForm(ttk.Frame):\n    def __init__(self, parent):\n        super().__init__(parent)\n        self.entries = {}\n        self.fields = [\n            \"filename\", \"content\", \"pattern\", \"replacement\",\n            \"update_type\", \"insert_at_line\", \"rollback_on_fail\"\n        ]\n\n        for field in self.fields:\n            row = ttk.Frame(self)\n            row.pack(fill=tk.X, pady=2)\n\n            ttk.Label(row, text=field + \":\", width=18).pack(side=tk.LEFT)\n            entry = ttk.Entry(row)\n            entry.pack(fill=tk.X, expand=True)\n            self.entries[field] = entry\n\n    def get_command_fields(self):\n        result = {}\n        for field, entry in self.entries.items():\n            value = entry.get().strip()\n            if value:\n                # Автоматично перетворюємо rollback_on_fail в bool\n                if field == \"rollback_on_fail\":\n                    result[field] = value.lower() in [\"true\", \"1\", \"yes\"]\n                elif field == \"insert_at_line\":\n                    try:\n                        result[field] = int(value)\n                    except ValueError:\n                        pass  # Ігноруємо некоректне число\n                else:\n                    result[field] = value\n        return result\n\n    def clear(self):\n        for entry in self.entries.values():\n            entry.delete(0, tk.END)"
+  "action": "update_code",
+  "file_path": "ben_gui_desktop/main_gui.py",
+  "update_type": "custom_insert",
+  "insert_at_line": 4,
+  "code": "from widgets.parameter_form import ParameterForm"
 }
