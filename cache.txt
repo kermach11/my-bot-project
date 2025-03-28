@@ -1,7 +1,5 @@
 {
-  "action": "update_code",
-  "file_path": "ben_gui_desktop/main_gui.py",
-  "update_type": "custom_insert",
-  "insert_at_line": 22,
-  "code": "def test_python_file():\n    filename = parameter_form.get_command_fields().get(\"filename\")\n    if not filename:\n        response_area.insert(tk.END, \"⚠️ Вкажіть 'filename' для перевірки.\\n\")\n        return\n    command = {\"action\": \"test_python\", \"filename\": filename}\n    with open(request_file, \"w\", encoding=\"utf-8\") as f:\n        json.dump([command], f, indent=2)\n    def show_result():\n        if os.path.exists(response_file):\n            with open(response_file, \"r\", encoding=\"utf-8\") as f:\n                try:\n                    result = json.load(f)\n                    response_area.insert(tk.END, f\"🧪 Тест: {json.dumps(result, indent=2, ensure_ascii=False)}\\n\")\n                    response_area.see(tk.END)\n                except Exception as e:\n                    response_area.insert(tk.END, f\"❌ Error: {e}\\n\")\n    root.after(1000, show_result)\n\ntest_button = ttk.Button(root, text=\"🧪 Test Python File\", command=test_python_file)\ntest_button.pack(pady=5)"
+  "action": "create_file",
+  "filename": "ben_gui_desktop/widgets/history_viewer.py",
+  "content": "import tkinter as tk\nfrom tkinter import ttk, scrolledtext\n\nclass HistoryViewer(ttk.Frame):\n    def __init__(self, parent, label_text):\n        super().__init__(parent)\n        ttk.Label(self, text=label_text).pack(anchor=\"w\")\n        self.text_area = scrolledtext.ScrolledText(self, height=10, wrap=tk.WORD)\n        self.text_area.pack(fill=tk.BOTH, expand=True)\n\n    def update_history(self, data):\n        self.text_area.delete(\"1.0\", tk.END)\n        for item in data:\n            self.text_area.insert(tk.END, f\"{item}\\n\")\n        self.text_area.see(tk.END)"
 }
