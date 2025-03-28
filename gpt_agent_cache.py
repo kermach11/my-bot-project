@@ -90,6 +90,9 @@ def handle_command(cmd):
             save_to_memory(cmd)  
             return {"status": "success", "message": f"✅ Created file '{filename}'"}
 
+        elif action == "update_code":
+            handle_update_code(cmd)
+
         elif action == "append_file":
             with open(full_file_path, "a", encoding="utf-8") as f:
                 f.write(content)
@@ -552,3 +555,24 @@ def get_history():
     rows = cursor.fetchall()
     conn.close()
     return rows
+def handle_update_code(command):
+    file_path = command.get('file_path')
+    update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging'
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    if update_type == 'validation':
+        content += '\n# [BEN] Validation logic inserted here'
+    elif update_type == 'exceptions':
+        content += '\n# [BEN] Exception handling logic inserted here'
+    elif update_type == 'logging':
+        content += '\n# [BEN] Logging logic inserted here'
+    else:
+        print(f"[BEN] Unknown update_type: {update_type}")
+        return
+
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+
+    print(f"[BEN] update_code applied to {file_path} with type {update_type}")

@@ -1,6 +1,6 @@
 [
   {
-    "status": "skipped",
-    "message": "⚠️ Function 'handle_command' already exists in gpt_agent_cache.py"
+    "status": "error",
+    "message": "❌ Unknown action: insert_after_pattern"
   }
 ]
