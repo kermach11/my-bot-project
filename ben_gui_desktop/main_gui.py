@@ -17,6 +17,8 @@ root.geometry("600x400")
 
 ttk.Label(root, text="Ben Assistant GUI", font=("Arial", 16)).pack(pady=10)
 history_memory = HistoryViewer(root, "🧠 Історія .ben_memory.json")
+git_log = GitLogViewer(root)
+git_log.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 history_memory.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
 history_sqlite = HistoryViewer(root, "📜 Історія з SQLite")
