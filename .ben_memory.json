@@ -494,5 +494,16 @@
     "filename": "ben_gui_desktop/templates/replace_in_file.j2",
     "content": "{\n  \"action\": \"replace_in_file\",\n  \"filename\": \"{{ filename }}\",\n  \"pattern\": \"{{ pattern }}\",\n  \"replacement\": \"{{ replacement }}\"\n}",
     "timestamp": "2025-03-28 19:50:02"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: create_file ben_gui_desktop/templates/replace_in_file.j2",
+    "timestamp": "2025-03-28 19:50:05"
+  },
+  {
+    "action": "create_file",
+    "filename": "ben_gui_desktop/templates/macro.j2",
+    "content": "{\n  \"action\": \"macro\",\n  \"steps\": {{ steps | tojson }}\n}",
+    "timestamp": "2025-03-28 19:50:33"
   }
 ]
