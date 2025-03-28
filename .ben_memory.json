@@ -2,17 +2,6 @@
   {
     "action": "git_push",
     "message": "✅ Auto-commit: append_file gpt_agent_cache.py",
-    "timestamp": "2025-03-27 11:46:30"
-  },
-  {
-    "action": "append_file",
-    "filename": "gpt_agent_cache.py",
-    "content": "\nimport sqlite3\n\n# Створюємо підключення до бази даних SQLite\ndef create_connection():\n    conn = sqlite3.connect('history.db')\n    return conn\n\n# Функція для створення таблиці історії\ndef create_history_table():\n    conn = create_connection()\n    cursor = conn.cursor()\n    cursor.execute('''\n    CREATE TABLE IF NOT EXISTS history (\n        id INTEGER PRIMARY KEY AUTOINCREMENT,\n        action TEXT NOT NULL,\n        filename TEXT,\n        content TEXT,\n        result TEXT,\n        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP\n    )\n    ''')\n    conn.commit()\n    conn.close()\n\n# Функція для збереження команди в історію\ndef save_to_history(action, filename, content, result):\n    conn = create_connection()\n    cursor = conn.cursor()\n    cursor.execute('''\n    INSERT INTO history (action, filename, content, result)\n    VALUES (?, ?, ?, ?)\n    ''', (action, filename, content, result))\n    conn.commit()\n    conn.close()\n\n# Функція для отримання останніх записів з історії\ndef get_history():\n    conn = create_connection()\n    cursor = conn.cursor()\n    cursor.execute('SELECT * FROM history ORDER BY timestamp DESC LIMIT 10')\n    rows = cursor.fetchall()\n    conn.close()\n    return rows\n",
-    "timestamp": "2025-03-27 12:39:35"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: append_file gpt_agent_cache.py",
     "timestamp": "2025-03-27 12:39:44"
   },
   {
@@ -536,5 +525,17 @@
     "action": "git_push",
     "message": "✅ Auto-commit: create_file ben_gui_desktop/widgets/macro_builder.py",
     "timestamp": "2025-03-28 21:19:27"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: update_code ",
+    "timestamp": "2025-03-28 21:23:28"
+  },
+  {
+    "action": "replace_in_file",
+    "filename": "ben_gui_desktop/widgets/macro_builder.py",
+    "pattern": "# def add_full_step\\(self\\):",
+    "replacement": "    def add_full_step(self):\n        step = {k: v.get().strip() for k, v in self.field_vars.items() if v.get().strip()}\n        if \"action\" not in step:\n            messagebox.showerror(\"Error\", \"⚠️ Action is required\")\n            return\n        self.steps.append(step)\n        label = step.get(\"action\", \"<unnamed>\")\n        self.listbox.insert(tk.END, label)\n        for var in self.field_vars.values():\n            var.set(\"\")",
+    "timestamp": "2025-03-28 21:25:20"
   }
 ]
