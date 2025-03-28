@@ -2,6 +2,6 @@
   "action": "update_code",
   "file_path": "ben_gui_desktop/main_gui.py",
   "update_type": "custom_insert",
-  "insert_at_line": 24,
-  "code": "def refresh_history():\n    cmds = [\n        {\"action\": \"list_history\"},\n        {\"action\": \"view_sql_history\"}\n    ]\n    with open(request_file, \"w\", encoding=\"utf-8\") as f:\n        json.dump(cmds, f, indent=2)\n\n    def load():\n        if os.path.exists(response_file):\n            with open(response_file, \"r\", encoding=\"utf-8\") as f:\n                try:\n                    responses = json.load(f)\n                    history_memory.update_history(responses[0].get(\"history\", []))\n                    history_sqlite.update_history(responses[1].get(\"history\", []))\n                except Exception as e:\n                    response_area.insert(tk.END, f\"❌ Error loading history: {e}\\n\")\n    root.after(1500, load)\n\nrefresh_btn = ttk.Button(root, text=\"🔁 Оновити історію\", command=refresh_history)\nrefresh_btn.pack(pady=5)"
+  "insert_at_line": 23,
+  "code": "import ast"
 }
