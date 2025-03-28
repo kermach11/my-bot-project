@@ -3767,3 +3767,192 @@ index b23dde4..bb35d1f 100644
 [2025-03-28 19:58:01] ✅ update_code applied to ben_gui_desktop/main_gui.py with type custom_insert
 [2025-03-28 19:58:04] 📤 Git push: ✅ Auto-commit: update_code 
 [2025-03-28 19:58:35] ✅ update_code applied to ben_gui_desktop/main_gui.py with type custom_insert
+[2025-03-28 19:58:38] 📤 Git push: ✅ Auto-commit: update_code 
+[2025-03-28 20:01:28] ❌ Syntax check failed: ❌ Syntax error in ben_gui_desktop/main_gui.py: expected an indented block after function definition on line 13 (ben_gui_desktop/main_gui.py, line 14)
+[2025-03-28 20:02:07] ❌ Syntax check failed: ❌ Syntax error in ben_gui_desktop/main_gui.py: expected an indented block after function definition on line 13 (ben_gui_desktop/main_gui.py, line 14)
+[2025-03-28 20:02:42] ❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/main_gui.py: expected an indented block after function definition on line 13 (ben_gui_desktop/main_gui.py, line 14)
+[2025-03-28 20:16:32] 📄 Git diff перед зміною:diff --git a/ben_gui_desktop/main_gui.py b/ben_gui_desktop/main_gui.py
+index 91649d8..3808372 100644
+--- a/ben_gui_desktop/main_gui.py
++++ b/ben_gui_desktop/main_gui.py
+@@ -10,9 +10,20 @@ from widgets.history_viewer import HistoryViewer
+ import json
+ 
+ from widgets.parameter_form import ParameterForm
++def filter_history_entries(entries, filter_type):
++    if filter_type == "all":
++        return entries
++    elif filter_type == "commands":
++        return [e for e in entries if e.get("action")]
++    elif filter_type == "errors":
++        return [e for e in entries if e.get("status") == "error"]
++    elif filter_type == "system":
++        return [e for e in entries if not e.get("action") and not e.get("status")]
++    return entries
++
+ def on_action_change(action):
+-user_profile = UserProfilePanel(root)
+-user_profile.pack(fill=tk.X, padx=20, pady=10)
++    user_profile = UserProfilePanel(root)
++    user_profile.pack(fill=tk.X, padx=20, pady=10)
+     print("рџ”„ Action changed to:", action)
+ 
+ root = tk.Tk()
+@@ -167,16 +178,6 @@ def send_command():
+     response_area.see(tk.END)
+     root.after(1000, load_response)
+ parameter_form.pack(fill=tk.X, padx=20, pady=10)
+-def send_command():
+-    command = {
+-        "action": action_selector.get_selected_action()
+-    }
+-    command.update(parameter_form.get_command_fields())
+-
+-    with open(request_file, "w", encoding="utf-8") as f:
+-        json.dump([command], f, indent=2)
+-
+-    print("рџ“¤ Р’С–РґРїСЂР°РІР»РµРЅРѕ:", command)
+ 
+ send_button = ttk.Button(root, text="рџ“© РќР°РґС–СЃР»Р°С‚Рё РєРѕРјР°РЅРґСѓ", command=send_command)
+ send_button.pack(pady=10)
+
+[2025-03-28 20:16:32] ❌ Exception: name 'log_diff' is not defined
+[2025-03-28 20:17:49] ⚠️ Function 'log_diff' already exists in gpt_agent_cache.py
+[2025-03-28 20:18:30] 📄 Git diff перед зміною:diff --git a/ben_gui_desktop/main_gui.py b/ben_gui_desktop/main_gui.py
+index 91649d8..3808372 100644
+--- a/ben_gui_desktop/main_gui.py
++++ b/ben_gui_desktop/main_gui.py
+@@ -10,9 +10,20 @@ from widgets.history_viewer import HistoryViewer
+ import json
+ 
+ from widgets.parameter_form import ParameterForm
++def filter_history_entries(entries, filter_type):
++    if filter_type == "all":
++        return entries
++    elif filter_type == "commands":
++        return [e for e in entries if e.get("action")]
++    elif filter_type == "errors":
++        return [e for e in entries if e.get("status") == "error"]
++    elif filter_type == "system":
++        return [e for e in entries if not e.get("action") and not e.get("status")]
++    return entries
++
+ def on_action_change(action):
+-user_profile = UserProfilePanel(root)
+-user_profile.pack(fill=tk.X, padx=20, pady=10)
++    user_profile = UserProfilePanel(root)
++    user_profile.pack(fill=tk.X, padx=20, pady=10)
+     print("рџ”„ Action changed to:", action)
+ 
+ root = tk.Tk()
+@@ -167,16 +178,6 @@ def send_command():
+     response_area.see(tk.END)
+     root.after(1000, load_response)
+ parameter_form.pack(fill=tk.X, padx=20, pady=10)
+-def send_command():
+-    command = {
+-        "action": action_selector.get_selected_action()
+-    }
+-    command.update(parameter_form.get_command_fields())
+-
+-    with open(request_file, "w", encoding="utf-8") as f:
+-        json.dump([command], f, indent=2)
+-
+-    print("рџ“¤ Р’С–РґРїСЂР°РІР»РµРЅРѕ:", command)
+ 
+ send_button = ttk.Button(root, text="рџ“© РќР°РґС–СЃР»Р°С‚Рё РєРѕРјР°РЅРґСѓ", command=send_command)
+ send_button.pack(pady=10)
+
+[2025-03-28 20:18:30] ❌ Exception: name 'log_diff' is not defined
+[2025-03-28 20:31:54] 📄 Git diff перед зміною:diff --git a/ben_gui_desktop/main_gui.py b/ben_gui_desktop/main_gui.py
+index 91649d8..3808372 100644
+--- a/ben_gui_desktop/main_gui.py
++++ b/ben_gui_desktop/main_gui.py
+@@ -10,9 +10,20 @@ from widgets.history_viewer import HistoryViewer
+ import json
+ 
+ from widgets.parameter_form import ParameterForm
++def filter_history_entries(entries, filter_type):
++    if filter_type == "all":
++        return entries
++    elif filter_type == "commands":
++        return [e for e in entries if e.get("action")]
++    elif filter_type == "errors":
++        return [e for e in entries if e.get("status") == "error"]
++    elif filter_type == "system":
++        return [e for e in entries if not e.get("action") and not e.get("status")]
++    return entries
++
+ def on_action_change(action):
+-user_profile = UserProfilePanel(root)
+-user_profile.pack(fill=tk.X, padx=20, pady=10)
++    user_profile = UserProfilePanel(root)
++    user_profile.pack(fill=tk.X, padx=20, pady=10)
+     print("рџ”„ Action changed to:", action)
+ 
+ root = tk.Tk()
+@@ -167,16 +178,6 @@ def send_command():
+     response_area.see(tk.END)
+     root.after(1000, load_response)
+ parameter_form.pack(fill=tk.X, padx=20, pady=10)
+-def send_command():
+-    command = {
+-        "action": action_selector.get_selected_action()
+-    }
+-    command.update(parameter_form.get_command_fields())
+-
+-    with open(request_file, "w", encoding="utf-8") as f:
+-        json.dump([command], f, indent=2)
+-
+-    print("рџ“¤ Р’С–РґРїСЂР°РІР»РµРЅРѕ:", command)
+ 
+ send_button = ttk.Button(root, text="рџ“© РќР°РґС–СЃР»Р°С‚Рё РєРѕРјР°РЅРґСѓ", command=send_command)
+ send_button.pack(pady=10)
+
+[DIFF 2025-03-28 20:31:54] File: C:\\Users\\DC\\my-bot-project\ben_gui_desktop/main_gui.py
+diff --git a/ben_gui_desktop/main_gui.py b/ben_gui_desktop/main_gui.py
+index 91649d8..3808372 100644
+--- a/ben_gui_desktop/main_gui.py
++++ b/ben_gui_desktop/main_gui.py
+@@ -10,9 +10,20 @@ from widgets.history_viewer import HistoryViewer
+ import json
+ 
+ from widgets.parameter_form import ParameterForm
++def filter_history_entries(entries, filter_type):
++    if filter_type == "all":
++        return entries
++    elif filter_type == "commands":
++        return [e for e in entries if e.get("action")]
++    elif filter_type == "errors":
++        return [e for e in entries if e.get("status") == "error"]
++    elif filter_type == "system":
++        return [e for e in entries if not e.get("action") and not e.get("status")]
++    return entries
++
+ def on_action_change(action):
+-user_profile = UserProfilePanel(root)
+-user_profile.pack(fill=tk.X, padx=20, pady=10)
++    user_profile = UserProfilePanel(root)
++    user_profile.pack(fill=tk.X, padx=20, pady=10)
+     print("рџ”„ Action changed to:", action)
+ 
+ root = tk.Tk()
+@@ -167,16 +178,6 @@ def send_command():
+     response_area.see(tk.END)
+     root.after(1000, load_response)
+ parameter_form.pack(fill=tk.X, padx=20, pady=10)
+-def send_command():
+-    command = {
+-        "action": action_selector.get_selected_action()
+-    }
+-    command.update(parameter_form.get_command_fields())
+-
+-    with open(request_file, "w", encoding="utf-8") as f:
+-        json.dump([command], f, indent=2)
+-
+-    print("рџ“¤ Р’С–РґРїСЂР°РІР»РµРЅРѕ:", command)
+ 
+ send_button = ttk.Button(root, text="рџ“© РќР°РґС–СЃР»Р°С‚Рё РєРѕРјР°РЅРґСѓ", command=send_command)
+ send_button.pack(pady=10)
+---
+[2025-03-28 20:31:54] ✏️ Replaced text in 'ben_gui_desktop/main_gui.py'
