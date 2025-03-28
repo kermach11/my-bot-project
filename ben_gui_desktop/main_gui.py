@@ -184,4 +184,10 @@ send_button.pack(pady=10)
 action_selector = ActionSelector(root, on_action_change)
 action_selector.pack(fill=tk.X, padx=20, pady=10)
 
+def on_close():
+    if user_profile:
+        user_profile.save_profile_settings()
+    root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", on_close)
 root.mainloop()

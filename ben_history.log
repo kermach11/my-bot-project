@@ -3958,3 +3958,24 @@ index 91649d8..3808372 100644
 [2025-03-28 20:31:54] ✏️ Replaced text in 'ben_gui_desktop/main_gui.py'
 [2025-03-28 20:31:57] 📤 Git push: ✅ Auto-commit: replace_in_file ben_gui_desktop/main_gui.py
 [2025-03-28 20:36:35] ✅ update_code applied to ben_gui_desktop/widgets/user_profile_panel.py with type custom_insert
+[2025-03-28 20:36:39] 📤 Git push: ✅ Auto-commit: update_code 
+[2025-03-28 20:39:02] ❌ Invalid insert_at_line value
+[DIFF 2025-03-28 20:39:55] File: C:\\Users\\DC\\my-bot-project\ben_gui_desktop/main_gui.py
+diff --git a/ben_gui_desktop/main_gui.py b/ben_gui_desktop/main_gui.py
+index 3808372..86b49ab 100644
+--- a/ben_gui_desktop/main_gui.py
++++ b/ben_gui_desktop/main_gui.py
+@@ -184,4 +184,10 @@ send_button.pack(pady=10)
+ action_selector = ActionSelector(root, on_action_change)
+ action_selector.pack(fill=tk.X, padx=20, pady=10)
+ 
++def on_close():
++    if user_profile:
++        user_profile.save_profile_settings()
++    root.destroy()
++
++root.protocol("WM_DELETE_WINDOW", on_close)
+ root.mainloop()
+\ No newline at end of file
+---
+[2025-03-28 20:39:55] ✏️ Replaced text in 'ben_gui_desktop/main_gui.py'
