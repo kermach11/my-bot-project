@@ -483,5 +483,16 @@
     "filename": "ben_gui_desktop/templates/update_code_bulk.j2",
     "content": "{\n  \"action\": \"update_code_bulk\",\n  \"updates\": [\n    {\n      \"file_path\": \"{{ file_path }}\",\n      \"update_type\": \"{{ update_type }}\",\n      \"insert_at_line\": {{ insert_at_line }},\n      \"code\": \"{{ code | replace(\"\\n\", \"\\\\n\") }}\"\n    }\n  ]\n}",
     "timestamp": "2025-03-28 19:48:21"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: create_file ben_gui_desktop/templates/update_code_bulk.j2",
+    "timestamp": "2025-03-28 19:48:24"
+  },
+  {
+    "action": "create_file",
+    "filename": "ben_gui_desktop/templates/replace_in_file.j2",
+    "content": "{\n  \"action\": \"replace_in_file\",\n  \"filename\": \"{{ filename }}\",\n  \"pattern\": \"{{ pattern }}\",\n  \"replacement\": \"{{ replacement }}\"\n}",
+    "timestamp": "2025-03-28 19:50:02"
   }
 ]
