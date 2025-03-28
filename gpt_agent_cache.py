@@ -4,6 +4,7 @@ from colorama import init, Fore, Style
 init()
 import time
 import re
+import ast
 import shutil
 import subprocess
 import traceback
@@ -197,12 +198,27 @@ def handle_command(cmd):
 
     # 🛡️ Захист: перевірка на дублювання при вставці функцій
     if cmd.get("action") == "append_file" and "def " in cmd.get("content", ""):
-        func_name_match = re.search(r"def (\w+)\(", cmd.get("content", ""))
-        if func_name_match:
-            func_name = func_name_match.group(1)
-            with open(os.path.join(base_path, cmd["filename"]), "r", encoding="utf-8") as f:
-                if f"def {func_name}(" in f.read():
-                    return {"status": "skipped", "message": f"⚠️ Function '{func_name}' already exists in {cmd['filename']}"}
+        new_func_name = None
+        try:
+            new_func_ast = ast.parse(cmd["content"])
+            for node in ast.walk(new_func_ast):
+                if isinstance(node, ast.FunctionDef):
+                    new_func_name = node.name  # <-- правильний відступ тут!
+                    break  # <-- правильний відступ тут!
+        except SyntaxError:
+            return {"status": "error", "message": "❌ Syntax error in new function code"}
+
+        if new_func_name:
+            existing_file_path = os.path.join(base_path, cmd["filename"])
+            if os.path.exists(existing_file_path):
+                with open(existing_file_path, "r", encoding="utf-8") as f:
+                    existing_ast = ast.parse(f.read())
+                    for node in ast.walk(existing_ast):
+                        if isinstance(node, ast.FunctionDef) and node.name == new_func_name:
+                            return {
+                                "status": "skipped",
+                                "message": f"⚠️ Function '{new_func_name}' already exists in {cmd['filename']}"
+                            }
 
     required_keys = ["action"]
     for key in required_keys:
