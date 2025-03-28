@@ -16,6 +16,18 @@ class UserProfilePanel(ttk.Frame):
         ttk.Label(self, text="🎨 Тема інтерфейсу:").pack(anchor="w")
         self.theme_var = tk.StringVar(value="light")
         ttk.Combobox(self, textvariable=self.theme_var, values=["light", "dark", "system"]).pack(fill=tk.X, pady=5)
+# Застосування теми при зміні
+        def apply_theme(event=None):
+            selected = self.theme_var.get()
+            if selected == "dark":
+                parent.tk_setPalette(background="#1e1e1e", foreground="#ffffff")
+            elif selected == "light":
+                parent.tk_setPalette(background="#ffffff", foreground="#000000")
+            else:
+                parent.tk_setPalette(background=None, foreground=None)
+
+        self.theme_var.trace_add("write", lambda *args: apply_theme())
+        apply_theme()
 
         # Роль користувача
         ttk.Label(self, text="🔐 Роль:").pack(anchor="w")
