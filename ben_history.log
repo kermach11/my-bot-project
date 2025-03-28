@@ -3619,3 +3619,17 @@ index b23dde4..bb35d1f 100644
 [2025-03-27 12:39:44] 📤 Git push: ✅ Auto-commit: append_file gpt_agent_cache.py
 [2025-03-27 12:41:52] ❌ Unknown action: list_history
 [2025-03-27 12:45:44] ⚠️ Function 'handle_command' already exists in gpt_agent_cache.py
+[2025-03-27 15:29:45] ❌ Unknown action: update_code
+[2025-03-28 09:59:35] ❌ Unknown action: update_code
+[2025-03-28 10:00:18] ❌ Unknown action: edit_file
+[2025-03-28 10:00:48] ❌ Unknown action: update_code
+[2025-03-28 10:01:19] ❌ Unknown action: update_code
+[2025-03-28 10:02:31] ❌ Unknown action: insert_code
+[2025-03-28 10:03:19] ❌ Unknown action: update_code
+[2025-03-28 10:04:10] ❌ Unknown action: update_code
+[2025-03-28 10:04:52] ❌ Unknown action: update_code
+[2025-03-28 10:05:06] ❌ Unknown action: update_code
+[2025-03-28 10:13:40] ❌ Unknown action: update_code
+[2025-03-28 10:16:11] ❌ Unknown action: prepare_update_code_support
+[2025-03-28 10:17:08] ❌ Unknown action: insert_after_pattern
+[2025-03-28 10:17:17] ❌ Unknown action: insert_after_pattern
