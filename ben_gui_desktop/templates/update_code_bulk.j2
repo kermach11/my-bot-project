@@ -1,0 +1,11 @@
+{
+  "action": "update_code_bulk",
+  "updates": [
+    {
+      "file_path": "{{ file_path }}",
+      "update_type": "{{ update_type }}",
+      "insert_at_line": {{ insert_at_line }},
+      "code": "{{ code | replace("\n", "\\n") }}"
+    }
+  ]
+}
