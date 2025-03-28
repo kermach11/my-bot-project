@@ -1,1 +1,1 @@
-{"action": "list_history"}
+{"action": "view_sql_history"}

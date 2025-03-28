@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Exception: name 'get_history' is not defined"
+    "message": "❌ Failed to fetch from SQLite: no such table: command_history"
   }
 ]

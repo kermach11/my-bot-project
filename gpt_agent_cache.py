@@ -11,6 +11,26 @@ from datetime import datetime, timezone
 
 from config import base_path, request_file, response_file, history_file
 
+import sqlite3
+
+def create_history_table():
+    conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS command_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            action TEXT,
+            file_path TEXT,
+            update_type TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+
+create_history_table()
+
 def log_action(message):
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     with open(history_file, "a", encoding="utf-8") as f:
@@ -30,7 +50,7 @@ def save_to_memory(cmd):
             json.dump(memory[-100:], f, indent=2, ensure_ascii=False)
     except Exception as e:
         log_action(f"⚠️ Error saving to memory: {str(e)}")
-        
+
 def handle_list_history():
     memory_file = os.path.join(base_path, ".ben_memory.json")
     if os.path.exists(memory_file):
