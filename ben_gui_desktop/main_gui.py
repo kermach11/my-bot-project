@@ -23,6 +23,36 @@ history_sqlite.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
 import ast
 parameter_form = ParameterForm(root)
+def check_duplicate_function():
+    content = parameter_form.get_command_fields().get("content")
+    filename = parameter_form.get_command_fields().get("filename")
+    if not content or not filename:
+        response_area.insert(tk.END, "⚠️ Потрібно вказати content і filename\n")
+        return
+    try:
+        new_ast = ast.parse(content)
+        new_func_name = next((n.name for n in ast.walk(new_ast) if isinstance(n, ast.FunctionDef)), None)
+        if not new_func_name:
+            response_area.insert(tk.END, "⚠️ Не знайдено імʼя функції у content\n")
+            return
+
+        file_path = os.path.join(os.path.dirname(__file__), filename)
+        if not os.path.exists(file_path):
+            response_area.insert(tk.END, "ℹ️ Файл не існує, дублювання неможливе\n")
+            return
+
+        with open(file_path, "r", encoding="utf-8") as f:
+            existing_ast = ast.parse(f.read())
+        for node in ast.walk(existing_ast):
+            if isinstance(node, ast.FunctionDef) and node.name == new_func_name:
+                response_area.insert(tk.END, f"⚠️ Функція '{new_func_name}' вже існує в '{filename}'\n")
+                return
+        response_area.insert(tk.END, f"✅ Функція '{new_func_name}' відсутня в '{filename}' — можна вставляти\n")
+    except Exception as e:
+        response_area.insert(tk.END, f"❌ Error: {e}\n")
+
+check_btn = ttk.Button(root, text="🧠 Перевірити функцію на дубль", command=check_duplicate_function)
+check_btn.pack(pady=5)
 def refresh_history():
     cmds = [
         {"action": "list_history"},
