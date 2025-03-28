@@ -2,6 +2,6 @@
   "action": "update_code",
   "file_path": "ben_gui_desktop/main_gui.py",
   "update_type": "custom_insert",
-  "insert_at_line": 8,
-  "code": "from widgets.template_editor import TemplateEditor"
+  "insert_at_line": 21,
+  "code": "template_editor = TemplateEditor(root)\ntemplate_editor.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)"
 }
