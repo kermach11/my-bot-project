@@ -1,7 +1,6 @@
 {
-  "action": "update_code",
-  "file_path": "ben_gui_desktop/widgets/macro_builder.py",
-  "update_type": "custom_insert",
-  "insert_at_line": 23,
-  "code": "        # Поля для повного редагування кроку\n        self.fields_frame = ttk.Frame(self)\n        self.fields_frame.pack(fill=tk.X, padx=5, pady=5)\n\n        self.field_vars = {\n            \"action\": tk.StringVar(),\n            \"filename\": tk.StringVar(),\n            \"pattern\": tk.StringVar(),\n            \"replacement\": tk.StringVar(),\n            \"content\": tk.StringVar(),\n        }\n\n        for i, (label, var) in enumerate(self.field_vars.items()):\n            row = ttk.Frame(self.fields_frame)\n            row.pack(fill=tk.X, pady=2)\n            ttk.Label(row, text=label.capitalize() + \":\").pack(side=tk.LEFT, padx=(0, 5))\n            entry = ttk.Entry(row, textvariable=var)\n            entry.pack(side=tk.LEFT, fill=tk.X, expand=True)\n\n        ttk.Button(self, text=\"➕ Add Full Step\", command=self.add_full_step).pack(pady=5)"
+  "action": "replace_in_file",
+  "filename": "ben_gui_desktop/widgets/macro_builder.py",
+  "pattern": "# def add_full_step\\(self\\):",
+  "replacement": "    def add_full_step(self):\n        step = {k: v.get().strip() for k, v in self.field_vars.items() if v.get().strip()}\n        if \"action\" not in step:\n            messagebox.showerror(\"Error\", \"⚠️ Action is required\")\n            return\n        self.steps.append(step)\n        label = step.get(\"action\", \"<unnamed>\")\n        self.listbox.insert(tk.END, label)\n        for var in self.field_vars.values():\n            var.set(\"\")"
 }
