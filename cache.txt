@@ -1,6 +1,7 @@
 {
-  "action": "replace_in_file",
-  "filename": "ben_gui_desktop/main_gui.py",
-  "pattern": "root\\.mainloop\\(\\)",
-  "replacement": "def on_close():\n    if user_profile:\n        user_profile.save_profile_settings()\n    root.destroy()\n\nroot.protocol(\"WM_DELETE_WINDOW\", on_close)\nroot.mainloop()"
+  "action": "update_code",
+  "file_path": "ben_gui_desktop/main_gui.py",
+  "update_type": "custom_insert",
+  "insert_at_line": 8,
+  "code": "from widgets.template_editor import TemplateEditor"
 }
