@@ -19,6 +19,8 @@ def filter_history_entries(entries, filter_type):
     elif filter_type == "errors":
         return [e for e in entries if e.get("status") == "error"]
     elif filter_type == "system":
+template_editor = TemplateEditor(root)
+template_editor.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
         return [e for e in entries if not e.get("action") and not e.get("status")]
     return entries
 
