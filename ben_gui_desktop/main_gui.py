@@ -15,6 +15,11 @@ root.title("Ben GUI Interface")
 root.geometry("600x400")
 
 ttk.Label(root, text="Ben Assistant GUI", font=("Arial", 16)).pack(pady=10)
+history_memory = HistoryViewer(root, "🧠 Історія .ben_memory.json")
+history_memory.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
+history_sqlite = HistoryViewer(root, "📜 Історія з SQLite")
+history_sqlite.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
 parameter_form = ParameterForm(root)
 response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=10)
