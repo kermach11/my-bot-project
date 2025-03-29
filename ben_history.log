@@ -4066,3 +4066,20 @@ index 5837301..37abe4e 100644
 [2025-03-29 18:34:12] ❌ Unknown update_type: replace
 [2025-03-29 18:35:15] ❌ Missing 'file_path' or 'update_type'
 [2025-03-29 18:45:43] ✅ Updated C:\Users\DC\my-bot-project\ben_gui_desktop\main_gui.py
+[2025-03-29 18:45:46] ❌ Git push помилка: Command '['git', 'push']' returned non-zero exit status 1.
+[2025-03-29 18:51:05] ❌ Invalid macro steps
+[2025-03-29 18:52:49] ❌ Invalid macro steps
+[2025-03-29 19:48:50] ✅ Shell OK: On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   ben_history.log
+	modified:   cache.txt
+	modified:   gpt_agent_cache.py
+	modified:   gpt_response.json
+	modified:   history.sqlite
+
+no changes added to commit (use "git add" and/or "git commit -a")

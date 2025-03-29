@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Missing 'file_path' or 'update_type'"
+    "message": "❌ Invalid macro steps"
   }
 ]

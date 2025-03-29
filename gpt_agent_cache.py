@@ -23,6 +23,21 @@ def is_valid_python_file(filepath):
     except SyntaxError as e:
         print(f"❌ Syntax error in {filepath}: {e}")
         return False
+import subprocess
+
+def handle_run_shell(command):
+    shell_cmd = command.get("command")
+    if not shell_cmd:
+        return {"status": "error", "message": "❌ Missing shell command"}
+
+    try:
+        print(f"[BEN] 💻 Running shell: {shell_cmd}")
+        result = subprocess.run(shell_cmd, shell=True, capture_output=True, text=True)
+        if result.returncode != 0:
+            return {"status": "error", "message": f"❌ Shell error: {result.stderr.strip()}"}
+        return {"status": "success", "message": f"✅ Shell OK: {result.stdout.strip()}"}
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Shell exception: {e}"}
 
 def create_history_table():
     conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
@@ -111,7 +126,7 @@ def write_response(responses):
 def clear_cache():
     with open(request_file, "w", encoding="utf-8") as f:
         f.write("")
-        
+
 def handle_update_code(command):
     file_path = command.get('file_path')
     update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging', 'custom_insert', ...
@@ -508,6 +523,9 @@ def handle_command(cmd):
 
         elif action == "macro":
             return handle_macro(cmd)
+        
+        elif cmd["action"] == "run_shell":
+            return handle_run_shell(cmd)
 
         elif action == "list_files":
             return {"status": "success", "files": os.listdir(base_path)}
