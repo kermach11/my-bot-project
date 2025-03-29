@@ -1,22 +1,4 @@
-{
-  "action": "update_code_bulk",
-  "updates": [
-    {
-      "file_path": "widgets/macro_builder.py",
-      "update_type": "custom_insert",
-      "insert_at_line": 118,
-      "code": "\n        # 📋 Лог запуску макросу\n        self.response_area.insert(tk.END, f\"✅ Запущено макрос '{macro.get('name', 'Без назви')}' з {len(macro.get('steps', []))} кроків\\n\")\n        self.response_area.see(tk.END)"
-    },
-    {
-      "file_path": "widgets/macro_builder.py",
-      "update_type": "append",
-      "content": "\n    def preview_macro(self):\n        try:\n            name = self.name_entry.get()\n            steps = json.loads(self.steps_area.get(\"1.0\", tk.END))\n            if not isinstance(steps, list):\n                raise ValueError(\"Поле 'steps' має бути списком\")\n            msg = f\"🧪 Превʼю макросу '{name}': {len(steps)} кроків\\n\"\n            for i, step in enumerate(steps, 1):\n                msg += f\"  {i}. {step.get('action', '...')}\\n\"\n            self.response_area.insert(tk.END, msg)\n        except Exception as e:\n            self.response_area.insert(tk.END, f\"❌ Помилка валідації макросу: {e}\\n\")\n        self.response_area.see(tk.END)"
-    },
-    {
-      "file_path": "widgets/macro_builder.py",
-      "update_type": "custom_insert",
-      "insert_at_line": 49,
-      "code": "        preview_btn = ttk.Button(self, text=\"🧪 Preview & Validate\", command=self.preview_macro)\n        preview_btn.pack(pady=5)"
-    }
-  ]
-}
+[
+  { "action": "read_file", "filename": "ben_gui_desktop/main_gui.py" },
+  { "action": "test_python", "filename": "ben_gui_desktop/main_gui.py" }
+]
