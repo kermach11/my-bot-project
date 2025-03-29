@@ -1,6 +1,7 @@
 {
-  "action": "replace_in_file",
-  "filename": "ben_gui_desktop/widgets/macro_builder.py",
-  "pattern": "# def add_full_step\\(self\\):",
-  "replacement": "    def add_full_step(self):\n        step = {k: v.get().strip() for k, v in self.field_vars.items() if v.get().strip()}\n        if \"action\" not in step:\n            messagebox.showerror(\"Error\", \"⚠️ Action is required\")\n            return\n        self.steps.append(step)\n        label = step.get(\"action\", \"<unnamed>\")\n        self.listbox.insert(tk.END, label)\n        for var in self.field_vars.values():\n            var.set(\"\")"
+  "action": "update_code",
+  "file_path": "ben_gui_desktop/widgets/macro_builder.py",
+  "update_type": "custom_insert",
+  "insert_at_line": 70,
+  "code": "    def run_macro(self):\n        try:\n            with open(\"macro_command.json\", \"r\", encoding=\"utf-8\") as f:\n                macro = json.load(f)\n            with open(\"request.json\", \"w\", encoding=\"utf-8\") as f:\n                json.dump([macro], f, indent=2)\n            messagebox.showinfo(\"Запуск\", \"▶️ Макрос надіслано до агента\")\n        except Exception as e:\n            messagebox.showerror(\"Помилка\", \"❌ Не вдалося запустити макрос: {}\".format(e))"
 }

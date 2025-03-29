@@ -68,6 +68,15 @@ class MacroBuilder(ttk.Frame):
             "action": "macro",
             "steps": self.steps
         }
+    def run_macro(self):
+        try:
+            with open("macro_command.json", "r", encoding="utf-8") as f:
+                macro = json.load(f)
+            with open("request.json", "w", encoding="utf-8") as f:
+                json.dump([macro], f, indent=2)
+            messagebox.showinfo("Запуск", "▶️ Макрос надіслано до агента")
+        except Exception as e:
+            messagebox.showerror("Помилка", "❌ Не вдалося запустити макрос: {}".format(e))
         with open("macro_command.json", "w", encoding="utf-8") as f:
             json.dump(macro, f, indent=2)
         messagebox.showinfo("Saved", "✅ Macro saved to macro_command.json")
