@@ -3,20 +3,20 @@
     "status": "success",
     "results": [
       {
-        "status": "error",
-        "message": "❌ Missing 'file_path' or 'update_type'"
+        "status": "success",
+        "message": "✅ update_code applied to gpt_agent_cache.py with type custom_insert"
       },
       {
         "status": "error",
-        "message": "❌ Missing 'file_path' or 'update_type'"
+        "message": "❌ Syntax check failed: ❌ Syntax error in gpt_agent_cache.py: expected an indented block after function definition on line 17 (gpt_agent_cache.py, line 18)"
       },
       {
         "status": "error",
-        "message": "❌ Missing 'file_path' or 'update_type'"
+        "message": "❌ Syntax check failed: ❌ Syntax error in gpt_agent_cache.py: expected an indented block after function definition on line 17 (gpt_agent_cache.py, line 18)"
       },
       {
         "status": "error",
-        "message": "❌ Missing 'file_path' or 'update_type'"
+        "message": "❌ Syntax check failed: ❌ Syntax error in gpt_agent_cache.py: expected an indented block after function definition on line 17 (gpt_agent_cache.py, line 18)"
       }
     ]
   }
