@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 import json
 
 class MacroBuilder(ttk.Frame):
+from ben_gui_desktop.main_gui import response_area
     def __init__(self, parent):
         super().__init__(parent)
 
