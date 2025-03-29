@@ -1,11 +1,5 @@
 [
   {
-    "action": "create_file",
-    "filename": "test_ben_module.py",
-    "content": "# Цей файл створений для тесту функції update_code\n",
-    "timestamp": "2025-03-28 10:54:40"
-  },
-  {
     "action": "git_push",
     "message": "✅ Auto-commit: create_file test_ben_module.py",
     "timestamp": "2025-03-28 10:54:43"
@@ -537,5 +531,10 @@
     "action": "git_push",
     "message": "✅ Auto-commit: replace_in_file ben_gui_desktop/widgets/macro_builder.py",
     "timestamp": "2025-03-28 21:25:24"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: update_code ",
+    "timestamp": "2025-03-29 06:56:30"
   }
 ]

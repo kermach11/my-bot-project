@@ -1,6 +1,6 @@
 [
   {
-    "status": "error",
-    "message": "❌ Syntax error in new function code"
+    "status": "success",
+    "message": "✅ update_code applied to ben_gui_desktop/widgets/macro_builder.py with type custom_insert"
   }
 ]
