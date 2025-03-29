@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Unknown update_type: custom_insert"
+    "message": "❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/widgets/macro_builder.py: expected an indented block after function definition on line 6 (ben_gui_desktop/widgets/macro_builder.py, line 7)"
   }
 ]
