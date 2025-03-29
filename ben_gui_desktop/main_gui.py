@@ -141,6 +141,8 @@ def test_python_file():
                 except Exception as e:
                     response_area.insert(tk.END, f"❌ Error: {e}\n")
     root.after(1000, show_result)
+macro_builder = MacroBuilder(root, response_area)
+macro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
 test_button = ttk.Button(root, text="🧪 Test Python File", command=test_python_file)
 test_button.pack(pady=5)

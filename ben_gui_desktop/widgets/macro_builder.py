@@ -4,6 +4,10 @@ import json
 
 class MacroBuilder(ttk.Frame):
     def __init__(self, parent, response_area):
+class MacroBuilder(ttk.Frame):
+    def __init__(self, parent, response_area):
+        super().__init__(parent)
+        self.response_area = response_area
         super().__init__(parent)
         self.response_area = response_area
         ...
