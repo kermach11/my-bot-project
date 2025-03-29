@@ -28,7 +28,16 @@ def create_history_table():
     ''')
     conn.commit()
     conn.close()
-
+    
+def is_valid_python_file(filepath):
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            source = f.read()
+        ast.parse(source)
+        return True
+    except SyntaxError as e:
+        print(f"❌ Syntax error in {filepath}: {e}")
+        return False
 
 create_history_table()
 

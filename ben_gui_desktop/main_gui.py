@@ -8,6 +8,8 @@ from template_manager import render_template
 from widgets.user_profile_panel import UserProfilePanel
 from widgets.template_editor import TemplateEditor
 from widgets.history_viewer import HistoryViewer
+from widgets.macro_builder import MacroBuilder
+
 import json
 
 from widgets.parameter_form import ParameterForm
@@ -21,8 +23,6 @@ def filter_history_entries(entries, filter_type):
         return [e for e in entries if e.get("status") == "error"]
     elif filter_type == "system":
         return [e for e in entries if not e.get("action") and not e.get("status")]
-macro_builder = MacroBuilder(root)
-macro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
     return entries
 
 def on_action_change(action):
@@ -119,6 +119,8 @@ refresh_btn = ttk.Button(root, text="🔁 Оновити історію", comman
 refresh_btn.pack(pady=5)
 response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=10)
 response_area.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+macro_builder = MacroBuilder(root, response_area)
+macro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 status_label = ttk.Label(root, text="🟡 Перевірка статусу агента...")
 status_label.pack(pady=5)
 def test_python_file():

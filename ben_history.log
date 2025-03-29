@@ -4025,3 +4025,11 @@ index 5837301..37abe4e 100644
 [2025-03-29 06:56:27] ✅ update_code applied to ben_gui_desktop/widgets/macro_builder.py with type custom_insert
 [2025-03-29 06:56:30] 📤 Git push: ✅ Auto-commit: update_code 
 [2025-03-29 07:01:35] ✅ update_code applied to ben_gui_desktop/widgets/macro_builder.py with type custom_insert
+[2025-03-29 07:01:38] 📤 Git push: ✅ Auto-commit: update_code 
+[2025-03-29 07:01:44] ❌ Syntax check failed: ❌ Syntax error in ben_gui_desktop/widgets/macro_builder.py: expected an indented block after class definition on line 5 (ben_gui_desktop/widgets/macro_builder.py, line 6)
+[2025-03-29 07:02:40] ❌ Syntax check failed: ❌ Syntax error in ben_gui_desktop/widgets/macro_builder.py: expected an indented block after class definition on line 5 (ben_gui_desktop/widgets/macro_builder.py, line 6)
+[2025-03-29 07:03:14] ❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/widgets/macro_builder.py: expected an indented block after class definition on line 5 (ben_gui_desktop/widgets/macro_builder.py, line 6)
+[2025-03-29 07:08:28] ❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/main_gui.py: unexpected indent (ben_gui_desktop/main_gui.py, line 26)
+[2025-03-29 07:11:50] ❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/main_gui.py: unexpected indent (ben_gui_desktop/main_gui.py, line 26)
+[2025-03-29 07:14:10] ❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/main_gui.py: unexpected indent (ben_gui_desktop/main_gui.py, line 26)
+[2025-03-29 07:34:15] {'status': 'success', 'results': [{'status': 'error', 'message': "❌ Missing 'file_path' or 'update_type'"}, {'status': 'error', 'message': "❌ Missing 'file_path' or 'update_type'"}, {'status': 'error', 'message': "❌ Missing 'file_path' or 'update_type'"}, {'status': 'error', 'message': "❌ Missing 'file_path' or 'update_type'"}]}

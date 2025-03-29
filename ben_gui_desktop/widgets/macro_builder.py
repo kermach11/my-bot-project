@@ -3,9 +3,11 @@ from tkinter import ttk, messagebox
 import json
 
 class MacroBuilder(ttk.Frame):
-from ben_gui_desktop.main_gui import response_area
-    def __init__(self, parent):
+    def __init__(self, parent, response_area):
         super().__init__(parent)
+        self.response_area = response_area
+        ...
+
 
         self.steps = []
 
@@ -69,6 +71,13 @@ from ben_gui_desktop.main_gui import response_area
             "action": "macro",
             "steps": self.steps
         }
+        try:
+            with open("macro_command.json", "w", encoding="utf-8") as f:
+                json.dump(macro, f, indent=2)
+            messagebox.showinfo("Saved", "✅ Macro saved to macro_command.json")
+        except Exception as e:
+            messagebox.showerror("Error", f"❌ Failed to save macro: {e}")
+
     def run_macro(self):
         try:
             with open("macro_command.json", "r", encoding="utf-8") as f:
@@ -76,8 +85,7 @@ from ben_gui_desktop.main_gui import response_area
             with open("request.json", "w", encoding="utf-8") as f:
                 json.dump([macro], f, indent=2)
             messagebox.showinfo("Запуск", "▶️ Макрос надіслано до агента")
+            self.response_area.insert("end", "📤 ▶️ Макрос надіслано до агента\n")
+            self.response_area.see("end")
         except Exception as e:
-            messagebox.showerror("Помилка", "❌ Не вдалося запустити макрос: {}".format(e))
-        with open("macro_command.json", "w", encoding="utf-8") as f:
-            json.dump(macro, f, indent=2)
-        messagebox.showinfo("Saved", "✅ Macro saved to macro_command.json")
+            messagebox.showerror("Помилка", f"❌ Не вдалося запустити макрос: {e}")
