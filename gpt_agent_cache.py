@@ -15,6 +15,15 @@ from config import base_path, request_file, response_file, history_file
 import sqlite3
 
 def create_history_table():
+def is_valid_python_file(filepath):
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            source = f.read()
+        ast.parse(source)
+        return True
+    except SyntaxError as e:
+        print(f"❌ Syntax error in {filepath}: {e}")
+        return False
     conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
     cursor = conn.cursor()
     cursor.execute('''

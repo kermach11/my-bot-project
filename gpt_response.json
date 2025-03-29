@@ -1,6 +1,23 @@
 [
   {
-    "status": "error",
-    "message": "❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/main_gui.py: unexpected indent (ben_gui_desktop/main_gui.py, line 26)"
+    "status": "success",
+    "results": [
+      {
+        "status": "error",
+        "message": "❌ Missing 'file_path' or 'update_type'"
+      },
+      {
+        "status": "error",
+        "message": "❌ Missing 'file_path' or 'update_type'"
+      },
+      {
+        "status": "error",
+        "message": "❌ Missing 'file_path' or 'update_type'"
+      },
+      {
+        "status": "error",
+        "message": "❌ Missing 'file_path' or 'update_type'"
+      }
+    ]
   }
 ]
