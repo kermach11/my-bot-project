@@ -1,5 +1,11 @@
 {
-  "action": "append_file",
-  "filename": ".gitignore",
-  "content": "env\n"
+  "action": "update_code",
+  "file_path": "gpt_agent_cache.py",
+  "updates": [
+    {
+      "update_type": "prepend",
+      "pattern": "def handle_command\\(cmd\\):",
+      "replacement": "def handle_command(cmd):\n    if cmd.get(\"filename\") == \"env\" or cmd.get(\"file_path\", \"\").endswith(\"env\"):\n        if cmd[\"action\"] in [\"update_file\", \"append_file\", \"replace_in_file\", \"update_code\", \"delete_file\"]:\n            return {\"status\": \"error\", \"message\": \"❌ Заборонено змінювати або комітити файл 'env'\"}\n"
+    }
+  ]
 }

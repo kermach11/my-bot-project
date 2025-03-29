@@ -1,3 +1,8 @@
+def handle_command(cmd):
+    if cmd.get("filename") == "env" or cmd.get("file_path", "").endswith("env"):
+        if cmd["action"] in ["update_file", "append_file", "replace_in_file", "update_code", "delete_file"]:
+            return {"status": "error", "message": "❌ Заборонено змінювати або комітити файл 'env'"}
+
 import os
 import json
 from colorama import init, Fore, Style
