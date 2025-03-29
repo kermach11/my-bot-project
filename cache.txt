@@ -1,7 +1,25 @@
 {
-  "action": "update_code",
-  "file_path": "ben_gui_desktop/widgets/macro_builder.py",
-  "update_type": "custom_insert",
-  "insert_at_line": 5,
-  "code": "from ben_gui_desktop.main_gui import response_area"
+  "action": "update_code_bulk",
+  "updates": [
+    {
+      "update_type": "custom_insert",
+      "insert_at_line": 17,
+      "code": "def is_valid_python_file(filepath):\n    try:\n        with open(filepath, \"r\", encoding=\"utf-8\") as f:\n            source = f.read()\n        ast.parse(source)\n        return True\n    except SyntaxError as e:\n        print(f\"❌ Syntax error in {filepath}: {e}\")\n        return False"
+    },
+    {
+      "update_type": "custom_insert",
+      "insert_at_line": 473,
+      "code": "            if not is_valid_python_file(full_file_path):\n                return {\"status\": \"error\", \"message\": f\"❌ Syntax error before change in {filename}\"}"
+    },
+    {
+      "update_type": "custom_insert",
+      "insert_at_line": 480,
+      "code": "            if not is_valid_python_file(full_file_path):\n                return {\"status\": \"error\", \"message\": f\"❌ Syntax error after change in {filename}. Revert or fix manually.\"}"
+    },
+    {
+      "update_type": "custom_insert",
+      "insert_at_line": 212,
+      "code": "    if not is_valid_python_file(file_path):\n        return {\"status\": \"error\", \"message\": f\"❌ Syntax error after applying update_code to {file_path}\"}"
+    }
+  ]
 }
