@@ -1,11 +1,5 @@
 [
   {
-    "action": "create_file",
-    "filename": "temp_test1.py",
-    "content": "# ok",
-    "timestamp": "2025-03-28 12:33:29"
-  },
-  {
     "action": "git_push",
     "message": "✅ Auto-commit: macro ",
     "timestamp": "2025-03-28 12:33:32"
@@ -535,5 +529,11 @@
     "filename": "C:/Users/DC/env_files/env",
     "content": "OPENAI_API_KEY=your-api-key-here",
     "timestamp": "2025-03-29 20:27:15"
+  },
+  {
+    "action": "create_file",
+    "filename": "make_snapshot.bat",
+    "content": "@echo off\nsetlocal\nset SNAPSHOT_DIR=%~dp0snapshots\nset SNAPSHOT_NAME=ben_snapshot_%date:~-4%%date:~3,2%%date:~0,2%_%time:~0,2%%time:~3,2%%time:~6,2%\nset SNAPSHOT_NAME=%SNAPSHOT_NAME: =0%\nmkdir \"%SNAPSHOT_DIR%\" 2>nul\npowershell -Command \"Compress-Archive -Path '%~dp0*' -CompressionLevel Optimal -DestinationPath '%SNAPSHOT_DIR%\\\\%SNAPSHOT_NAME%.zip' -Force -Exclude 'env', 'env/*', '*.sqlite', '*.pyc', '__pycache__'\"\necho 📦 Snapshot created at: %SNAPSHOT_DIR%\\%SNAPSHOT_NAME%.zip\npause",
+    "timestamp": "2025-03-29 20:48:02"
   }
 ]

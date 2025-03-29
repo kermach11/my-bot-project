@@ -1,6 +1,15 @@
 [
   {
     "status": "success",
-    "message": "✅ Updated gpt_agent_cache.py"
+    "steps": [
+      {
+        "status": "success",
+        "message": "📁 Folder 'C:/Users/DC/env_files' created"
+      },
+      {
+        "status": "success",
+        "message": "✅ Created file 'C:/Users/DC/env_files/env'"
+      }
+    ]
   }
 ]
