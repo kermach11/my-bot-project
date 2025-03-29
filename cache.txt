@@ -1,4 +1,27 @@
 {
-  "action": "run_shell",
-  "command": "git status"
+  "action": "macro",
+  "macro_name": "safe_git_push",
+  "steps": [
+    {
+      "action": "append_file",
+      "file_path": ".gitignore",
+      "code": "env"
+    },
+    {
+      "action": "run_shell",
+      "command": "git rm --cached env"
+    },
+    {
+      "action": "run_shell",
+      "command": "git add ."
+    },
+    {
+      "action": "run_shell",
+      "command": "git commit -m \"🚀 Auto-commit all (excluding env)\""
+    },
+    {
+      "action": "run_shell",
+      "command": "git push"
+    }
+  ]
 }

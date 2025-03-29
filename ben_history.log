@@ -4083,3 +4083,5 @@ Changes not staged for commit:
 	modified:   history.sqlite
 
 no changes added to commit (use "git add" and/or "git commit -a")
+[2025-03-29 19:48:53] ❌ Git push помилка: Command '['git', 'push']' returned non-zero exit status 1.
+[2025-03-29 19:51:35] ❌ Invalid macro steps
