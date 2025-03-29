@@ -58,6 +58,7 @@ def create_history_table():
     ''')
     conn.commit()
     conn.close()
+write_debug_log('🟢 Agent started and listening...')
 
 def is_valid_python_file(filepath):
     try:
@@ -863,3 +864,6 @@ def auto_commit(commit_msg="♻️ Rollback after failure"):
 
 
 # [BEN] Validation logic inserted here
+def write_debug_log(message):
+    with open(os.path.join(base_path, 'debug.log'), 'a', encoding='utf-8') as f:
+        f.write(f'[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] {message}\n')

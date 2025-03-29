@@ -1,0 +1,18 @@
+{
+  "action": "macro",
+  "macro_name": "add_debug_log_support",
+  "steps": [
+    {
+      "action": "append_file",
+      "filename": "gpt_agent_cache.py",
+      "content": "def write_debug_log(message):\n    with open(os.path.join(base_path, 'debug.log'), 'a', encoding='utf-8') as f:\n        f.write(f'[{datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")}] {message}\\n')"
+    },
+    {
+      "action": "update_code",
+      "file_path": "gpt_agent_cache.py",
+      "update_type": "custom_insert",
+      "insert_at_line": 60,
+      "code": "write_debug_log('🟢 Agent started and listening...')"
+    }
+  ]
+}
