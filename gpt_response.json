@@ -1,6 +1,27 @@
 [
   {
-    "status": "error",
-    "message": "❌ Invalid macro steps"
+    "status": "success",
+    "steps": [
+      {
+        "status": "error",
+        "message": "❌ Exception: expected str, bytes or os.PathLike object, not NoneType"
+      },
+      {
+        "status": "success",
+        "message": "✅ Shell OK: rm 'env'"
+      },
+      {
+        "status": "success",
+        "message": "✅ Shell OK: "
+      },
+      {
+        "status": "success",
+        "message": "✅ Shell OK: [main 796b7f5] рџљЂ Auto-commit all (excluding env)\n 2 files changed, 27 insertions(+), 2 deletions(-)"
+      },
+      {
+        "status": "error",
+        "message": "❌ Shell error: remote: error: GH013: Repository rule violations found for refs/heads/main.        \nremote: \nremote: - GITHUB PUSH PROTECTION        \nremote:   вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”        \nremote:     Resolve the following violations before pushing again        \nremote: \nremote:     - Push cannot contain secrets        \nremote: \nremote:             \nremote:      (?) Learn how to resolve a blocked push        \nremote:      https://docs.github.com/code-security/secret-scanning/working-with-secret-scanning-and-push-protection/working-with-push-protection-from-the-command-line#resolving-a-blocked-push        \nremote:             \nremote:             \nremote:       вЂ”вЂ” OpenAI API Key вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”вЂ”        \nremote:        locations:        \nremote:          - commit: 690b31a9d70957262f608279300500716c867e02        \nremote:            path: env:1        \nremote:             \nremote:        (?) To push, remove secret from commit(s) or follow this URL to allow the secret.        \nremote:        https://github.com/kermach11/my-bot-project/security/secret-scanning/unblock-secret/2v0FB1ZumwSOPdQ0441lAitEZtn        \nremote:             \nremote: \nremote: \nTo https://github.com/kermach11/my-bot-project.git\n ! [remote rejected] main -> main (push declined due to repository rule violations)\nerror: failed to push some refs to 'https://github.com/kermach11/my-bot-project.git'"
+      }
+    ]
   }
 ]
