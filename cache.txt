@@ -1,0 +1,15 @@
+{
+  "action": "macro",
+  "macro_name": "create_env_file_outside_project",
+  "steps": [
+    {
+      "action": "create_folder",
+      "foldername": "C:/Users/DC/env_files"
+    },
+    {
+      "action": "create_file",
+      "filename": "C:/Users/DC/env_files/env",
+      "content": "OPENAI_API_KEY=your-api-key-here"
+    }
+  ]
+}
