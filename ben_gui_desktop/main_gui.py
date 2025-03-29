@@ -153,6 +153,8 @@ def check_agent_status():
         json.dump([command], f, indent=2)
     def update_status():
         if os.path.exists(response_file):
+run_macro_btn = ttk.Button(root, text="▶️ Запустити макрос", command=macro_builder.run_macro)
+run_macro_btn.pack(pady=5)
             with open(response_file, "r", encoding="utf-8") as f:
                 try:
                     response = json.load(f)[0]

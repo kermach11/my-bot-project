@@ -2,22 +2,16 @@
   "action": "update_code_bulk",
   "updates": [
     {
-      "file_path": "ben_gui_desktop/widgets/macro_builder.py",
-      "update_type": "custom_insert",
-      "insert_at_line": 6,
-      "code": "class MacroBuilder(ttk.Frame):\n    def __init__(self, parent, response_area):\n        super().__init__(parent)\n        self.response_area = response_area"
-    },
-    {
-      "file_path": "ben_gui_desktop/widgets/macro_builder.py",
-      "update_type": "custom_insert",
-      "insert_at_line": 76,
-      "code": "            self.response_area.insert(\"end\", \"📤 ▶️ Макрос надіслано до агента\\n\")\n            self.response_area.see(\"end\")"
-    },
-    {
       "file_path": "ben_gui_desktop/main_gui.py",
       "update_type": "custom_insert",
-      "insert_at_line": 143,
-      "code": "macro_builder = MacroBuilder(root, response_area)\nmacro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)"
+      "insert_at_line": 155,
+      "code": "run_macro_btn = ttk.Button(root, text=\"▶️ Запустити макрос\", command=macro_builder.run_macro)\nrun_macro_btn.pack(pady=5)"
+    },
+    {
+      "file_path": "ben_gui_desktop/widgets/macro_builder.py",
+      "update_type": "custom_insert",
+      "insert_at_line": 116,
+      "code": "            from config import base_path\n            import os\n            memory_path = os.path.join(base_path, \".ben_memory.json\")\n            import json\n            if os.path.exists(memory_path):\n                with open(memory_path, \"r\", encoding=\"utf-8\") as mf:\n                    try:\n                        history = json.load(mf)\n                    except:\n                        history = []\n            else:\n                history = []\n            macro[\"timestamp\"] = __import__(\"datetime\").datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")\n            history.append(macro)\n            with open(memory_path, \"w\", encoding=\"utf-8\") as mf:\n                json.dump(history[-100:], mf, indent=2, ensure_ascii=False)"
     }
   ]
 }
