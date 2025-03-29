@@ -1,15 +1,6 @@
 [
   {
     "status": "success",
-    "steps": [
-      {
-        "status": "success",
-        "message": "📁 Folder 'C:/Users/DC/env_files' created"
-      },
-      {
-        "status": "success",
-        "message": "✅ Created file 'C:/Users/DC/env_files/env'"
-      }
-    ]
+    "message": "✅ Created file 'make_snapshot.bat'"
   }
 ]
