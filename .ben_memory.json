@@ -1,10 +1,5 @@
 [
   {
-    "action": "git_push",
-    "message": "✅ Auto-commit: append_file gpt_agent_cache.py",
-    "timestamp": "2025-03-27 12:39:44"
-  },
-  {
     "action": "create_file",
     "filename": "test_ben_module.py",
     "content": "# Цей файл створений для тесту функції update_code\n",
@@ -537,5 +532,10 @@
     "pattern": "# def add_full_step\\(self\\):",
     "replacement": "    def add_full_step(self):\n        step = {k: v.get().strip() for k, v in self.field_vars.items() if v.get().strip()}\n        if \"action\" not in step:\n            messagebox.showerror(\"Error\", \"⚠️ Action is required\")\n            return\n        self.steps.append(step)\n        label = step.get(\"action\", \"<unnamed>\")\n        self.listbox.insert(tk.END, label)\n        for var in self.field_vars.values():\n            var.set(\"\")",
     "timestamp": "2025-03-28 21:25:20"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: replace_in_file ben_gui_desktop/widgets/macro_builder.py",
+    "timestamp": "2025-03-28 21:25:24"
   }
 ]
