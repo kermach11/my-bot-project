@@ -1,11 +1,5 @@
 [
   {
-    "action": "create_file",
-    "filename": "test3.py",
-    "content": "# Тестовий файл для logging",
-    "timestamp": "2025-03-28 11:47:51"
-  },
-  {
     "action": "git_push",
     "message": "✅ Auto-commit: create_file test3.py",
     "timestamp": "2025-03-28 11:47:54"
@@ -534,5 +528,10 @@
     "action": "read_file",
     "filename": "main_gui.py",
     "timestamp": "2025-03-29 10:54:54"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: read_file ben_gui_desktop/main_gui.py",
+    "timestamp": "2025-03-29 10:58:20"
   }
 ]
