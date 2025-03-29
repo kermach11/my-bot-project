@@ -1,7 +1,11 @@
 {
-  "action": "macro",
-  "steps": [
-    { "if": "previous_status == 'error'", "action": "rollback" },
-    { "else": true, "action": "continue_process" }
+  "action": "update_code",
+  "file_path": "C:\\Users\\DC\\my-bot-project\\ben_gui_desktop\\main_gui.py",
+  "updates": [
+    {
+      "update_type": "replace",
+      "pattern": ".*",
+      "replacement": "def enable_ctrl_shortcuts(widget):\n    widget.bind(\"<Control-c>\", lambda e: widget.event_generate(\"<<Copy>>\"))\n    widget.bind(\"<Control-v>\", lambda e: widget.event_generate(\"<<Paste>>\"))\n    widget.bind(\"<Control-x>\", lambda e: widget.event_generate(\"<<Cut>>\"))\n\ndef apply_shortcuts_recursively(widget):\n    if isinstance(widget, (tk.Entry, tk.Text, scrolledtext.ScrolledText)):\n        enable_ctrl_shortcuts(widget)\n    if hasattr(widget, \"winfo_children\"):\n        for child in widget.winfo_children():\n            apply_shortcuts_recursively(child)\n\n# Включити гарячі клавіші для всіх віджетів\napply_shortcuts_recursively(scrollable_frame)"
+    }
   ]
 }

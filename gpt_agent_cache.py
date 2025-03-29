@@ -111,46 +111,94 @@ def write_response(responses):
 def clear_cache():
     with open(request_file, "w", encoding="utf-8") as f:
         f.write("")
+        
 def handle_update_code(command):
     file_path = command.get('file_path')
-    update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging', 'custom_insert'
+    update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging', 'custom_insert', ...
     insert_at_line = command.get('insert_at_line')
     insert_code = command.get('code')
-    
-    if not file_path or not update_type:
-        return {"status": "error", "message": "❌ Missing 'file_path' or 'update_type'"}
-    if not isinstance(file_path, str) or not isinstance(update_type, str):
-        return {"status": "error", "message": "❌ Invalid type for 'file_path' or 'update_type'"}
 
-    test_result = handle_command({"action": "test_python", "filename": file_path})
-    if test_result.get("status") == "error":
-        return {"status": "error", "message": f"❌ Syntax check failed: {test_result.get('message')}"}
+    # 🆕 Підтримка простого формату без updates[]
+    if "updates" not in command and all(k in command for k in ("pattern", "replacement", "update_type")):
+        command["updates"] = [{
+            "pattern": command["pattern"],
+            "replacement": command["replacement"],
+            "update_type": command["update_type"]
+        }]
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+    if not file_path:
+        return {"status": "error", "message": "❌ Missing 'file_path'"}
 
-    if update_type == 'validation':
-        lines.append('\nif data is None:\n    raise ValueError("Input data cannot be None")')
-    elif update_type == 'exceptions':
-        lines.append('\ntry:\n    risky_operation()\nexcept Exception as e:\n    print(f"Exception occurred: {e}")')
-    elif update_type == 'logging':
-        lines.append('\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info("Log message from BEN")')
-    elif update_type == 'custom_insert' and insert_code:
-        if isinstance(insert_at_line, int) and 0 <= insert_at_line <= len(lines):
-            lines.insert(insert_at_line, insert_code + '\n')
+    # 🔁 Спеціальні типи
+    if update_type in ("validation", "exceptions", "logging", "custom_insert"):
+        test_result = handle_command({"action": "test_python", "filename": file_path})
+        if test_result.get("status") == "error":
+            return {"status": "error", "message": f"❌ Syntax check failed: {test_result.get('message')}"}
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        if update_type == 'validation':
+            lines.append('\nif data is None:\n    raise ValueError("Input data cannot be None")')
+        elif update_type == 'exceptions':
+            lines.append('\ntry:\n    risky_operation()\nexcept Exception as e:\n    print(f"Exception occurred: {e}")')
+        elif update_type == 'logging':
+            lines.append('\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info("Log message from BEN")')
+        elif update_type == 'custom_insert' and insert_code:
+            if isinstance(insert_at_line, int) and 0 <= insert_at_line <= len(lines):
+                lines.insert(insert_at_line, insert_code + '\n')
+            else:
+                return {"status": "error", "message": "❌ Invalid insert_at_line value"}
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
+
+        if not is_valid_python_file(file_path):
+            return {"status": "error", "message": f"❌ Syntax error after applying update_code to {file_path}"}
+
+        print(f"[BEN] update_code applied to {file_path} with type {update_type}")
+        return {"status": "success", "message": f"✅ update_code applied to {file_path} with type {update_type}"}
+
+    # 🔁 Універсальний режим: updates[]. Виконується тільки якщо НЕ один із вище
+    updates = command.get("updates")
+    if not updates:
+        return {"status": "error", "message": "❌ Missing 'updates' or unsupported update_type"}
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return {"status": "error", "message": "❌ File not found"}
+
+    # Зберегти .bak перед змінами
+    backup_path = file_path + ".bak"
+    with open(backup_path, "w", encoding="utf-8") as backup:
+        backup.write(content)
+
+    for upd in updates:
+        pattern = upd.get("pattern")
+        replacement = upd.get("replacement")
+        u_type = upd.get("update_type")
+
+        if not all([pattern, replacement, u_type]):
+            return {"status": "error", "message": "❌ Missing fields in update"}
+
+        if u_type == "replace":
+            import re
+            content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+        elif u_type == "append":
+            content += "\n" + replacement
+        elif u_type == "prepend":
+            content = replacement + "\n" + content
         else:
-            return {"status": "error", "message": "❌ Invalid insert_at_line value"}
-    else:
-        return {"status": "error", "message": f"❌ Unknown update_type: {update_type}"}
+            return {"status": "error", "message": f"❌ Unknown update_type: {u_type}"}
 
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.writelines(lines)
-    if not is_valid_python_file(file_path):
-        return {"status": "error", "message": f"❌ Syntax error after applying update_code to {file_path}"}
-    
-    print(f"[BEN] update_code applied to {file_path} with type {update_type}")
-    return {"status": "success", "message": f"✅ update_code applied to {file_path} with type {update_type}"}
-# ✅ ВСТАВ ЦЕ ДЕСЬ ПЕРЕД log_diff(full_file_path)
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    return {"status": "success", "message": f"✅ Updated {file_path}"}
+
+
 def log_diff(filepath):
     try:
         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
@@ -354,6 +402,7 @@ def handle_command(cmd):
                 log_diff(full_file_path)
                 save_to_memory(cmd)
                 return {"status": "success", "message": f"✏️ Replaced text in '{filename}'"}
+            
         elif action == "insert_between_markers":
             file_path = os.path.join(base_path, cmd.get("file_path"))
             marker_start = cmd.get("marker_start")

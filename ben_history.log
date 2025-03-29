@@ -4055,3 +4055,14 @@ index 5837301..37abe4e 100644
 [2025-03-29 10:58:20] ✅ ben_gui_desktop/main_gui.py пройшов синтаксичну перевірку
 [2025-03-29 10:58:23] 📤 Git push: ✅ Auto-commit: test_python ben_gui_desktop/main_gui.py
 [2025-03-29 11:34:06] {'status': 'success', 'steps': [{'status': 'error', 'message': '❌ Unknown action: rollback'}, {'status': 'error', 'message': '❌ Unknown action: continue_process'}]}
+[2025-03-29 11:34:09] 📤 Git push: ✅ Auto-commit: macro 
+[2025-03-29 11:35:08] ❌ Немає резервної копії для 'example.py'
+[2025-03-29 11:35:39] ❌ Missing 'file_path' or 'update_type'
+[2025-03-29 18:25:07] ❌ Missing 'file_path' or 'update_type'
+[2025-03-29 18:25:44] ❌ Missing 'file_path' or 'update_type'
+[2025-03-29 18:29:31] ❌ Syntax check failed: File not found
+[2025-03-29 18:31:47] ❌ Unknown update_type: replace
+[2025-03-29 18:32:32] ❌ Missing 'file_path' or 'update_type'
+[2025-03-29 18:34:12] ❌ Unknown update_type: replace
+[2025-03-29 18:35:15] ❌ Missing 'file_path' or 'update_type'
+[2025-03-29 18:45:43] ✅ Updated C:\Users\DC\my-bot-project\ben_gui_desktop\main_gui.py

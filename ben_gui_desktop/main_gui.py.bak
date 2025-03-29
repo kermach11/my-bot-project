@@ -6,10 +6,14 @@ import os
 from widgets.git_log_viewer import GitLogViewer
 from template_manager import render_template
 from widgets.user_profile_panel import UserProfilePanel
+from widgets.template_editor import TemplateEditor
 from widgets.history_viewer import HistoryViewer
+from widgets.macro_builder import MacroBuilder
+
 import json
 
 from widgets.parameter_form import ParameterForm
+
 def filter_history_entries(entries, filter_type):
     if filter_type == "all":
         return entries
@@ -22,42 +26,91 @@ def filter_history_entries(entries, filter_type):
     return entries
 
 def on_action_change(action):
-    user_profile = UserProfilePanel(root)
+    user_profile = UserProfilePanel(scrollable_frame)
     user_profile.pack(fill=tk.X, padx=20, pady=10)
+
+    template_editor = TemplateEditor(scrollable_frame)
+    template_editor.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
     print("🔄 Action changed to:", action)
 
 root = tk.Tk()
-root.title("Ben GUI Interface")
-root.geometry("600x400")
+root.title("Ben Assistant GUI")
+root.geometry("800x1000")
 
-ttk.Label(root, text="Ben Assistant GUI", font=("Arial", 16)).pack(pady=10)
-history_memory = HistoryViewer(root, "🧠 Історія .ben_memory.json")
-git_log = GitLogViewer(root)
-git_log.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+# ⬇️ Scrollable wrapper
+canvas = tk.Canvas(root)
+scrollbar = ttk.Scrollbar(root, orient="vertical", command=canvas.yview)
+scrollable_frame = ttk.Frame(canvas)
+
+scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+canvas.configure(yscrollcommand=scrollbar.set)
+
+canvas.pack(side="left", fill="both", expand=True)
+scrollbar.pack(side="right", fill="y")
+
+# Content goes to scrollable_frame
+
+ttk.Label(scrollable_frame, text="Ben Assistant GUI", font=("Arial", 16)).pack(pady=10)
+history_memory = HistoryViewer(scrollable_frame, "🧠 Історія .ben_memory.json")
 history_memory.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
-history_sqlite = HistoryViewer(root, "📜 Історія з SQLite")
+git_log = GitLogViewer(scrollable_frame)
+git_log.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
+history_sqlite = HistoryViewer(scrollable_frame, "📜 Історія з SQLite")
 history_sqlite.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
+parameter_form = ParameterForm(scrollable_frame)
+parameter_form.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
+action_selector = ActionSelector(scrollable_frame, on_action_change)
+action_selector.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
+response_area = scrolledtext.ScrolledText(scrollable_frame, wrap=tk.WORD, height=10)
+response_area.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+macro_builder = MacroBuilder(scrollable_frame, response_area)
+macro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
+def enable_ctrl_shortcuts(widget):
+    widget.bind("<Control-c>", lambda e: widget.event_generate("<<Copy>>"))
+    widget.bind("<Control-v>", lambda e: widget.event_generate("<<Paste>>"))
+    widget.bind("<Control-x>", lambda e: widget.event_generate("<<Cut>>"))
+
+# Включити для всіх Entry та Text
+for child in scrollable_frame.winfo_children():
+    if isinstance(child, (tk.Entry, tk.Text, scrolledtext.ScrolledText)):
+        enable_ctrl_shortcuts(child)
+
 def insert_from_template():
     action = action_selector.get_selected_action()
     fields = parameter_form.get_command_fields()
     template_name = f"{action}.j2"
     rendered = render_template(template_name, fields)
-    try:
-        command = json.loads(rendered)
-        parameter_form.entries.get("filename", ttk.Entry()).delete(0, tk.END)
-        parameter_form.entries.get("filename", ttk.Entry()).insert(0, command.get("filename", ""))
-        parameter_form.entries.get("content", ttk.Entry()).delete(0, tk.END)
-        parameter_form.entries.get("content", ttk.Entry()).insert(0, command.get("content", ""))
-        response_area.insert(tk.END, f"🧩 Застосовано шаблон {template_name}\n")
-    except Exception as e:
-        response_area.insert(tk.END, f"❌ Error parsing rendered template: {e}\n")
 
-insert_tpl_btn = ttk.Button(root, text="🧩 Insert from Template", command=insert_from_template)
+    # 🛡️ Автовалідатор JSON
+    try:
+        parsed = json.loads(rendered)
+    except json.JSONDecodeError as e:
+        response_area.insert(tk.END, f"❌ Невірний шаблон {template_name}:\n{e}\n")
+        response_area.see(tk.END)
+        return
+
+    # ✅ Якщо JSON валідний — вставити у форму
+    parameter_form.entries.get("filename", ttk.Entry()).delete(0, tk.END)
+    parameter_form.entries.get("filename", ttk.Entry()).insert(0, parsed.get("filename", ""))
+    parameter_form.entries.get("content", ttk.Entry()).delete(0, tk.END)
+    parameter_form.entries.get("content", ttk.Entry()).insert(0, parsed.get("content", ""))
+    response_area.insert(tk.END, f"🧩 Застосовано шаблон {template_name}\n")
+    response_area.see(tk.END)
+
+insert_tpl_btn = ttk.Button(scrollable_frame, text="🧩 Insert from Template", command=insert_from_template)
 insert_tpl_btn.pack(pady=5)
 
 import ast
-parameter_form = ParameterForm(root)
+parameter_form = ParameterForm(scrollable_frame)
 def check_duplicate_function():
     content = parameter_form.get_command_fields().get("content")
     filename = parameter_form.get_command_fields().get("filename")
@@ -86,7 +139,7 @@ def check_duplicate_function():
     except Exception as e:
         response_area.insert(tk.END, f"❌ Error: {e}\n")
 
-check_btn = ttk.Button(root, text="🧠 Перевірити функцію на дубль", command=check_duplicate_function)
+check_btn = ttk.Button(scrollable_frame, text="🧠 Перевірити функцію на дубль", command=check_duplicate_function)
 check_btn.pack(pady=5)
 def refresh_history():
     cmds = [
@@ -111,8 +164,20 @@ refresh_btn = ttk.Button(root, text="🔁 Оновити історію", comman
 refresh_btn.pack(pady=5)
 response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=10)
 response_area.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
+macro_builder = MacroBuilder(root, response_area)
+macro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
+# [BEN-ANCHOR: run_macro_button]
+run_macro_btn = ttk.Button(root, text="▶️ Запустити макрос", command=macro_builder.run_macro)
+run_macro_btn.pack(pady=5)
+# [BEN-ANCHOR-END]
+
 status_label = ttk.Label(root, text="🟡 Перевірка статусу агента...")
 status_label.pack(pady=5)
+request_file = "request.json"
+response_file = "gpt_response.json"
+
 def test_python_file():
     filename = parameter_form.get_command_fields().get("filename")
     if not filename:
@@ -135,10 +200,27 @@ def test_python_file():
 test_button = ttk.Button(root, text="🧪 Test Python File", command=test_python_file)
 test_button.pack(pady=5)
 
+def undo_last_change():
+    filename = parameter_form.get_command_fields().get("filename")
+    if not filename:
+        response_area.insert(tk.END, "⚠️ Вкажіть 'filename' для відкату.\n")
+        return
+    cmd = {"action": "undo_change", "filename": filename}
+    with open(request_file, "w", encoding="utf-8") as f:
+        json.dump([cmd], f, indent=2)
+
+    response_area.insert(tk.END, f"↩️ Відкат змін для: {filename}\n")
+    response_area.see(tk.END)
+    root.after(1000, load_response)
+
+undo_btn = ttk.Button(root, text="↩️ Undo Last Change", command=undo_last_change)
+undo_btn.pack(pady=5)
+
 def check_agent_status():
     command = {"action": "check_status"}
     with open(request_file, "w", encoding="utf-8") as f:
         json.dump([command], f, indent=2)
+
     def update_status():
         if os.path.exists(response_file):
             with open(response_file, "r", encoding="utf-8") as f:
@@ -151,19 +233,34 @@ def check_agent_status():
                         status_label.config(text=f"🔴 {msg}")
                 except:
                     status_label.config(text="❌ Error reading agent status")
+
     root.after(1500, update_status)
 
 check_agent_status()
+
 
 def load_response():
     if os.path.exists(response_file):
         with open(response_file, "r", encoding="utf-8") as f:
             try:
                 data = json.load(f)
+
+                # 🧠 Автоаналіз відхилень
+                if isinstance(data, list):
+                    for entry in data:
+                        msg = entry.get("message", "")
+                        if "❌" in msg or "⚠️" in msg:
+                            response_area.insert(tk.END, f"❌ Відхилено: {msg}\n")
+                else:
+                    msg = data.get("message", "")
+                    if "❌" in msg or "⚠️" in msg:
+                        response_area.insert(tk.END, f"❌ Відхилено: {msg}\n")
+
                 response_area.insert(tk.END, f"✅ Відповідь: {json.dumps(data, indent=2, ensure_ascii=False)}\n")
                 response_area.see(tk.END)
             except Exception as e:
                 response_area.insert(tk.END, f"❌ Error reading response: {e}\n")
+
 
 def send_command():
     command = {
@@ -184,4 +281,9 @@ send_button.pack(pady=10)
 action_selector = ActionSelector(root, on_action_change)
 action_selector.pack(fill=tk.X, padx=20, pady=10)
 
+def on_close():
+    print("🔚 Закриття GUI")
+    root.destroy()
+
+root.protocol("WM_DELETE_WINDOW", on_close)
 root.mainloop()

@@ -1,17 +1,49 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, simpledialog
 import json
 import time
+import os
+from datetime import datetime
+import requests
+from dotenv import load_dotenv
+load_dotenv()
+
+USE_OPENAI_API = True  # 🔁 Перемикач між OpenAI API та локальним GPT-сервером
+
+class DragDropListbox(tk.Listbox):
+    def __init__(self, master, **kw):
+        kw['selectmode'] = tk.SINGLE
+        super().__init__(master, kw)
+        self.bind('<Button-1>', self.set_current)
+        self.bind('<B1-Motion>', self.shift_selection)
+        self.curIndex = None
+
+    def set_current(self, event):
+        self.curIndex = self.nearest(event.y)
+
+    def shift_selection(self, event):
+        i = self.nearest(event.y)
+        if i < self.curIndex:
+            x = self.get(i)
+            self.delete(i)
+            self.insert(i + 1, x)
+            self.curIndex = i
+        elif i > self.curIndex:
+            x = self.get(i)
+            self.delete(i)
+            self.insert(i - 1, x)
+            self.curIndex = i
 
 class MacroBuilder(ttk.Frame):
     def __init__(self, parent, response_area):
         super().__init__(parent)
         self.response_area = response_area
         self.steps = []
+        self.known_files = set()
 
         ttk.Label(self, text="🧱 Macro Builder", font=("Helvetica", 14, "bold")).pack(anchor="w", pady=(0, 5))
 
-        self.listbox = tk.Listbox(self)
+        self.listbox = DragDropListbox(self)
         self.listbox.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
         form_frame = ttk.Frame(self)
@@ -32,7 +64,8 @@ class MacroBuilder(ttk.Frame):
             "pattern": tk.StringVar(),
             "replacement": tk.StringVar(),
             "content": tk.StringVar(),
-            "delay": tk.StringVar()
+            "delay": tk.StringVar(),
+            "if": tk.StringVar()
         }
 
         for label, var in self.field_vars.items():
@@ -44,7 +77,9 @@ class MacroBuilder(ttk.Frame):
 
         ttk.Button(self, text="➕ Add Full Step", command=self.add_full_step).pack(pady=5)
         ttk.Button(self, text="🧪 Preview & Validate", command=self.preview_macro).pack(pady=5)
-        ttk.Button(self, text="💾 Save Macro", command=self.save_macro).pack(pady=5)
+        ttk.Button(self, text="📂 Save Macro", command=self.save_macro).pack(pady=5)
+        ttk.Button(self, text="📂 Show Known Files", command=self.show_known_files).pack(pady=5)
+        ttk.Button(self, text="🤖 GPT Macro Generator", command=self.generate_macro_from_prompt).pack(pady=5)
 
     def add_step(self):
         action = self.action_var.get().strip()
@@ -71,7 +106,6 @@ class MacroBuilder(ttk.Frame):
             self.listbox.insert(tk.END, step.get("action", "[No action]"))
             for var in self.field_vars.values():
                 var.set("")
-
     def remove_selected(self):
         selected = self.listbox.curselection()
         if not selected:
@@ -79,6 +113,21 @@ class MacroBuilder(ttk.Frame):
         index = selected[0]
         self.listbox.delete(index)
         del self.steps[index]
+
+    def preview_macro(self):
+        try:
+            msg = f"🧪 Превʼю макросу: {len(self.steps)} кроків\n"
+            for i, step in enumerate(self.steps, 1):
+                msg += f"  {i}. {step.get('action', '...')}"
+                if "delay" in step:
+                    msg += f" (⏳ delay: {step['delay']}s)"
+                if "if" in step:
+                    msg += f" [if: {step['if']}]"
+                msg += "\n"
+            self.response_area.insert(tk.END, msg)
+        except Exception as e:
+            self.response_area.insert(tk.END, f"❌ Помилка валідації макросу: {e}\n")
+        self.response_area.see(tk.END)
 
     def save_macro(self):
         if not self.steps:
@@ -95,38 +144,136 @@ class MacroBuilder(ttk.Frame):
         except Exception as e:
             messagebox.showerror("Error", f"❌ Failed to save macro: {e}")
 
-    def preview_macro(self):
+    def show_known_files(self):
         try:
-            msg = f"🧪 Превʼю макросу: {len(self.steps)} кроків\n"
-            for i, step in enumerate(self.steps, 1):
-                msg += f"  {i}. {step.get('action', '...')}"
-                if "delay" in step:
-                    msg += f" (⏳ delay: {step['delay']}s)"
-                msg += "\n"
-            self.response_area.insert(tk.END, msg)
+            file_list = sorted(self.known_files)
+            msg = "📂 Відомі файли:\n" + "\n".join(file_list)
+            self.response_area.insert(tk.END, msg + "\n")
+            self.response_area.see(tk.END)
         except Exception as e:
-            self.response_area.insert(tk.END, f"❌ Помилка валідації макросу: {e}\n")
+            self.response_area.insert(tk.END, f"❌ Помилка перегляду файлів: {e}\n")
+
+    def save_known_files(self):
+        try:
+            with open(".ben_memory.json", "r", encoding="utf-8") as f:
+                memory = json.load(f)
+        except:
+            memory = {}
+        memory["known_files"] = sorted(self.known_files)
+        with open(".ben_memory.json", "w", encoding="utf-8") as f:
+            json.dump(memory, f, indent=2)
+
+    def log_debug(self, message):
+        with open("debug.log", "a", encoding="utf-8") as log:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log.write(f"[{timestamp}] {message}\n")
+
+    def generate_macro_from_prompt(self):
+        prompt = simpledialog.askstring("GPT Macro", "Введіть запит для GPT:")
+        if not prompt:
+            return
+        try:
+            api_key = os.getenv("OPENAI_API_KEY")
+            api_url = "https://api.openai.com/v1/chat/completions"
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "model": "gpt-3.5-turbo",
+                "messages": [
+                    {"role": "system", "content": "You generate macro steps in JSON for code automation."},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.5
+            }
+            res = requests.post(api_url, headers=headers, json=payload)
+            res.raise_for_status()
+            content = res.json()["choices"][0]["message"]["content"]
+            parsed = json.loads(content)
+            steps = parsed.get("steps", parsed if isinstance(parsed, list) else [])
+            self.steps.extend(steps)
+            self.response_area.insert(tk.END, f"🤖 Додано {len(steps)} кроків від GPT\n")
+            self.preview_macro()
+        except Exception as e:
+            self.response_area.insert(tk.END, f"❌ GPT генерація помилка: {e}\n")
         self.response_area.see(tk.END)
 
     def run_macro(self):
         try:
             with open("macro_command.json", "r", encoding="utf-8") as f:
                 macro = json.load(f)
-
-            steps = macro.get("steps", [])
-            self.response_area.insert(tk.END, f"✅ Запущено макрос '{macro.get('name', 'Без назви')}' з {len(steps)} кроків\n")
-            self.response_area.see(tk.END)
-            for step in steps:
-                delay = step.get("delay", 0)
-                if delay > 0:
-                    self.response_area.insert(tk.END, f"⏳ Затримка {delay} сек перед дією: {step.get('action', '...')}\n")
-                    self.response_area.see(tk.END)
-                    time.sleep(delay)
-
-                with open("request.json", "w", encoding="utf-8") as f:
-                    json.dump([step], f, indent=2)
-                self.response_area.insert(tk.END, f"📤 Крок: {step.get('action', '...')} надіслано\n")
+                macro_name = macro.get("name", "Без назви")
+                steps = macro.get("steps", [])
+                self.response_area.insert(tk.END, f"🧠 Запуск макросу '{macro_name}' — {len(steps)} кроків\n")
                 self.response_area.see(tk.END)
-                time.sleep(1.5)
+                self.log_debug(f"▶️ Старт макросу '{macro_name}' з {len(steps)} кроків")
+
+            for step in steps:
+                try:
+                    condition = step.get("if")
+                    if condition:
+                        if not eval(condition, {}, {"previous_status": "success"}):
+                            msg = f"⏭ Пропущено через if: {condition}"
+                            self.response_area.insert(tk.END, msg + "\n")
+                            self.response_area.see(tk.END)
+                            self.log_debug(msg)
+                            continue
+
+                    delay = step.get("delay", 0)
+                    if delay > 0:
+                        msg = f"⏳ Затримка {delay} сек перед дією: {step.get('action', '...')}"
+                        self.response_area.insert(tk.END, msg + "\n")
+                        self.response_area.see(tk.END)
+                        self.log_debug(msg)
+                        time.sleep(delay)
+
+                    if step.get("action") == "rollback":
+                        filename = step.get("filename")
+                        if filename:
+                            backup_path = os.path.join("backups", filename)
+                            if not os.path.exists(backup_path):
+                                msg = f"⚠️ Пропущено rollback — немає резервної копії для '{filename}'"
+                                self.response_area.insert(tk.END, msg + "\n")
+                                self.response_area.see(tk.END)
+                                self.log_debug(msg)
+                                continue
+
+                    if not step.get("action"):
+                        msg = "⚠️ Пропущено крок — відсутній 'action'"
+                        self.response_area.insert(tk.END, msg + "\n")
+                        self.log_debug(msg)
+                        continue
+
+                    if step.get("action") in ["update_code", "insert"]:
+                        if not step.get("content"):
+                            msg = "⚠️ Пропущено update — відсутній 'content'"
+                            self.response_area.insert(tk.END, msg + "\n")
+                            self.log_debug(msg)
+                            continue
+
+                    if step.get("filename"):
+                        path = step.get("filename")
+                        self.known_files.add(path)
+                        if not os.path.exists(path):
+                            msg = f"⚠️ Пропущено — файл '{path}' не існує"
+                            self.response_area.insert(tk.END, msg + "\n")
+                            self.log_debug(msg)
+                            continue
+
+                    with open("request.json", "w", encoding="utf-8") as f:
+                        json.dump([step], f, indent=2)
+                    msg = f"📤 Крок: {step.get('action', '...')} надіслано"
+                    self.response_area.insert(tk.END, msg + "\n")
+                    self.response_area.see(tk.END)
+                    self.log_debug(msg)
+                    time.sleep(1.5)
+                except Exception as step_err:
+                    self.log_debug(f"❌ Помилка кроку: {step_err}")
+                    self.response_area.insert(tk.END, f"❌ Помилка кроку: {step_err}\n")
+
+            self.save_known_files()
+
         except Exception as e:
+            self.log_debug(f"❌ Помилка макросу: {e}")
             messagebox.showerror("Помилка", f"❌ Не вдалося виконати макрос: {e}")
