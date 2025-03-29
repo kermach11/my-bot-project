@@ -2,28 +2,22 @@
   "action": "update_code_bulk",
   "updates": [
     {
-      "file_path": "gpt_agent_cache.py",
+      "file_path": "ben_gui_desktop/widgets/macro_builder.py",
       "update_type": "custom_insert",
-      "insert_at_line": 17,
-      "code": "def is_valid_python_file(filepath):\n    try:\n        with open(filepath, \"r\", encoding=\"utf-8\") as f:\n            source = f.read()\n        ast.parse(source)\n        return True\n    except SyntaxError as e:\n        print(f\"❌ Syntax error in {filepath}: {e}\")\n        return False"
+      "insert_at_line": 6,
+      "code": "class MacroBuilder(ttk.Frame):\n    def __init__(self, parent, response_area):\n        super().__init__(parent)\n        self.response_area = response_area"
     },
     {
-      "file_path": "gpt_agent_cache.py",
+      "file_path": "ben_gui_desktop/widgets/macro_builder.py",
       "update_type": "custom_insert",
-      "insert_at_line": 473,
-      "code": "            if not is_valid_python_file(full_file_path):\n                return {\"status\": \"error\", \"message\": f\"❌ Syntax error before change in {filename}\"}"
+      "insert_at_line": 76,
+      "code": "            self.response_area.insert(\"end\", \"📤 ▶️ Макрос надіслано до агента\\n\")\n            self.response_area.see(\"end\")"
     },
     {
-      "file_path": "gpt_agent_cache.py",
+      "file_path": "ben_gui_desktop/main_gui.py",
       "update_type": "custom_insert",
-      "insert_at_line": 480,
-      "code": "            if not is_valid_python_file(full_file_path):\n                return {\"status\": \"error\", \"message\": f\"❌ Syntax error after change in {filename}. Revert or fix manually.\"}"
-    },
-    {
-      "file_path": "gpt_agent_cache.py",
-      "update_type": "custom_insert",
-      "insert_at_line": 212,
-      "code": "    if not is_valid_python_file(file_path):\n        return {\"status\": \"error\", \"message\": f\"❌ Syntax error after applying update_code to {file_path}\"}"
+      "insert_at_line": 143,
+      "code": "macro_builder = MacroBuilder(root, response_area)\nmacro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)"
     }
   ]
 }

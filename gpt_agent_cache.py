@@ -14,7 +14,6 @@ from config import base_path, request_file, response_file, history_file
 
 import sqlite3
 
-def create_history_table():
 def is_valid_python_file(filepath):
     try:
         with open(filepath, "r", encoding="utf-8") as f:
@@ -24,6 +23,8 @@ def is_valid_python_file(filepath):
     except SyntaxError as e:
         print(f"❌ Syntax error in {filepath}: {e}")
         return False
+
+def create_history_table():
     conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
     cursor = conn.cursor()
     cursor.execute('''
@@ -37,7 +38,7 @@ def is_valid_python_file(filepath):
     ''')
     conn.commit()
     conn.close()
-    
+
 def is_valid_python_file(filepath):
     try:
         with open(filepath, "r", encoding="utf-8") as f:
@@ -115,7 +116,7 @@ def handle_update_code(command):
     update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging', 'custom_insert'
     insert_at_line = command.get('insert_at_line')
     insert_code = command.get('code')
-
+    
     if not file_path or not update_type:
         return {"status": "error", "message": "❌ Missing 'file_path' or 'update_type'"}
     if not isinstance(file_path, str) or not isinstance(update_type, str):
@@ -144,7 +145,9 @@ def handle_update_code(command):
 
     with open(file_path, 'w', encoding='utf-8') as f:
         f.writelines(lines)
-
+    if not is_valid_python_file(file_path):
+        return {"status": "error", "message": f"❌ Syntax error after applying update_code to {file_path}"}
+    
     print(f"[BEN] update_code applied to {file_path} with type {update_type}")
     return {"status": "success", "message": f"✅ update_code applied to {file_path} with type {update_type}"}
 # ✅ ВСТАВ ЦЕ ДЕСЬ ПЕРЕД log_diff(full_file_path)
@@ -314,10 +317,15 @@ def handle_command(cmd):
         elif action == "replace_in_file":
             if filename.endswith('.py'):
                 test_result = handle_command({"action": "test_python", "filename": filename})
-            if test_result.get("status") == "error":
-                return {"status": "error", "message": f"❌ Перед зміною: {test_result.get('message')}"}
+                if test_result.get("status") == "error":
+                    return {"status": "error", "message": f"❌ Перед зміною: {test_result.get('message')}"}
+                
+                if not is_valid_python_file(full_file_path):
+                    return {"status": "error", "message": f"❌ Syntax error before change in {filename}"}
+
             if filename in ["config.py", "api_keys.py", "cache.txt"]:
-                return {"status": "error", "message": f"❌ Заборонено змінювати критичний файл: {filename}"}
+                    return {"status": "error", "message": f"❌ Заборонено змінювати критичний файл: {filename}"}
+                
             if os.path.exists(full_file_path):
                 with open(full_file_path, "r", encoding="utf-8") as f:
                     text = f.read()
@@ -325,6 +333,7 @@ def handle_command(cmd):
                 backup_path = full_file_path + ".bak"
                 with open(backup_path, "w", encoding="utf-8") as f:
                     f.write(text)
+                    
                 # 📝 Git diff перед записом
                 try:
                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
@@ -332,15 +341,20 @@ def handle_command(cmd):
                         log_action("📄 Git diff перед зміною:" + diff_output)
                 except Exception as e:
                     log_action(f"⚠️ Git diff error: {str(e)}")
+
                 # 🔁 Заміна через regex
                 new_text = re.sub(pattern, replacement, text)
                 with open(full_file_path, "w", encoding="utf-8") as f:
                     f.write(new_text)
-                    
+                
+                if not is_valid_python_file(full_file_path):
+                    return {"status": "error", "message": f"❌ Syntax error after change in {filename}. Revert or fix manually."}
+
                 # 📜 Лог змін (git diff)
                 log_diff(full_file_path)
                 save_to_memory(cmd)
                 return {"status": "success", "message": f"✏️ Replaced text in '{filename}'"}
+            
         elif action == "read_file":
             if os.path.exists(full_file_path):
                 with open(full_file_path, "r", encoding="utf-8") as f:

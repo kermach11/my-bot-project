@@ -1,23 +1,6 @@
 [
   {
-    "status": "success",
-    "results": [
-      {
-        "status": "success",
-        "message": "✅ update_code applied to gpt_agent_cache.py with type custom_insert"
-      },
-      {
-        "status": "error",
-        "message": "❌ Syntax check failed: ❌ Syntax error in gpt_agent_cache.py: expected an indented block after function definition on line 17 (gpt_agent_cache.py, line 18)"
-      },
-      {
-        "status": "error",
-        "message": "❌ Syntax check failed: ❌ Syntax error in gpt_agent_cache.py: expected an indented block after function definition on line 17 (gpt_agent_cache.py, line 18)"
-      },
-      {
-        "status": "error",
-        "message": "❌ Syntax check failed: ❌ Syntax error in gpt_agent_cache.py: expected an indented block after function definition on line 17 (gpt_agent_cache.py, line 18)"
-      }
-    ]
+    "status": "error",
+    "message": "❌ Unknown update_type: custom_insert"
   }
 ]
