@@ -4044,3 +4044,6 @@ index 5837301..37abe4e 100644
 [2025-03-29 08:07:13] 📤 Git push: ✅ Auto-commit: update_code_bulk 
 [2025-03-29 08:08:33] ❌ Перед зміною: ❌ Syntax error in ben_gui_desktop/widgets/macro_builder.py: expected an indented block after function definition on line 6 (ben_gui_desktop/widgets/macro_builder.py, line 7)
 [2025-03-29 08:18:36] {'status': 'success', 'results': [{'status': 'error', 'message': '❌ Syntax error after applying update_code to ben_gui_desktop/main_gui.py'}, {'status': 'error', 'message': '❌ Invalid insert_at_line value'}]}
+[2025-03-29 08:18:39] 📤 Git push: ✅ Auto-commit: update_code_bulk 
+[2025-03-29 08:25:23] ❌ Unknown action: insert_between_markers
+[2025-03-29 10:52:16] {'status': 'success', 'results': [{'status': 'error', 'message': '❌ Syntax check failed: File not found'}, {'status': 'error', 'message': '❌ Syntax check failed: File not found'}, {'status': 'error', 'message': '❌ Syntax check failed: File not found'}]}

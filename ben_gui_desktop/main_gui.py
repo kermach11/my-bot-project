@@ -46,20 +46,28 @@ history_memory.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
 history_sqlite = HistoryViewer(root, "📜 Історія з SQLite")
 history_sqlite.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
 def insert_from_template():
     action = action_selector.get_selected_action()
     fields = parameter_form.get_command_fields()
     template_name = f"{action}.j2"
     rendered = render_template(template_name, fields)
+
+    # 🛡️ Автовалідатор JSON
     try:
-        command = json.loads(rendered)
-        parameter_form.entries.get("filename", ttk.Entry()).delete(0, tk.END)
-        parameter_form.entries.get("filename", ttk.Entry()).insert(0, command.get("filename", ""))
-        parameter_form.entries.get("content", ttk.Entry()).delete(0, tk.END)
-        parameter_form.entries.get("content", ttk.Entry()).insert(0, command.get("content", ""))
-        response_area.insert(tk.END, f"🧩 Застосовано шаблон {template_name}\n")
-    except Exception as e:
-        response_area.insert(tk.END, f"❌ Error parsing rendered template: {e}\n")
+        parsed = json.loads(rendered)
+    except json.JSONDecodeError as e:
+        response_area.insert(tk.END, f"❌ Невірний шаблон {template_name}:\n{e}\n")
+        response_area.see(tk.END)
+        return
+
+    # ✅ Якщо JSON валідний — вставити у форму
+    parameter_form.entries.get("filename", ttk.Entry()).delete(0, tk.END)
+    parameter_form.entries.get("filename", ttk.Entry()).insert(0, parsed.get("filename", ""))
+    parameter_form.entries.get("content", ttk.Entry()).delete(0, tk.END)
+    parameter_form.entries.get("content", ttk.Entry()).insert(0, parsed.get("content", ""))
+    response_area.insert(tk.END, f"🧩 Застосовано шаблон {template_name}\n")
+    response_area.see(tk.END)
 
 insert_tpl_btn = ttk.Button(root, text="🧩 Insert from Template", command=insert_from_template)
 insert_tpl_btn.pack(pady=5)
@@ -119,10 +127,20 @@ refresh_btn = ttk.Button(root, text="🔁 Оновити історію", comman
 refresh_btn.pack(pady=5)
 response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=10)
 response_area.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+
 macro_builder = MacroBuilder(root, response_area)
 macro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+
+# [BEN-ANCHOR: run_macro_button]
+run_macro_btn = ttk.Button(root, text="▶️ Запустити макрос", command=macro_builder.run_macro)
+run_macro_btn.pack(pady=5)
+# [BEN-ANCHOR-END]
+
 status_label = ttk.Label(root, text="🟡 Перевірка статусу агента...")
 status_label.pack(pady=5)
+request_file = "request.json"
+response_file = "gpt_response.json"
+
 def test_python_file():
     filename = parameter_form.get_command_fields().get("filename")
     if not filename:
@@ -141,20 +159,33 @@ def test_python_file():
                 except Exception as e:
                     response_area.insert(tk.END, f"❌ Error: {e}\n")
     root.after(1000, show_result)
-macro_builder = MacroBuilder(root, response_area)
-macro_builder.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
 test_button = ttk.Button(root, text="🧪 Test Python File", command=test_python_file)
 test_button.pack(pady=5)
+
+def undo_last_change():
+    filename = parameter_form.get_command_fields().get("filename")
+    if not filename:
+        response_area.insert(tk.END, "⚠️ Вкажіть 'filename' для відкату.\n")
+        return
+    cmd = {"action": "undo_change", "filename": filename}
+    with open(request_file, "w", encoding="utf-8") as f:
+        json.dump([cmd], f, indent=2)
+
+    response_area.insert(tk.END, f"↩️ Відкат змін для: {filename}\n")
+    response_area.see(tk.END)
+    root.after(1000, load_response)
+
+undo_btn = ttk.Button(root, text="↩️ Undo Last Change", command=undo_last_change)
+undo_btn.pack(pady=5)
 
 def check_agent_status():
     command = {"action": "check_status"}
     with open(request_file, "w", encoding="utf-8") as f:
         json.dump([command], f, indent=2)
+
     def update_status():
         if os.path.exists(response_file):
-run_macro_btn = ttk.Button(root, text="▶️ Запустити макрос", command=macro_builder.run_macro)
-run_macro_btn.pack(pady=5)
             with open(response_file, "r", encoding="utf-8") as f:
                 try:
                     response = json.load(f)[0]
@@ -165,19 +196,34 @@ run_macro_btn.pack(pady=5)
                         status_label.config(text=f"🔴 {msg}")
                 except:
                     status_label.config(text="❌ Error reading agent status")
+
     root.after(1500, update_status)
 
 check_agent_status()
+
 
 def load_response():
     if os.path.exists(response_file):
         with open(response_file, "r", encoding="utf-8") as f:
             try:
                 data = json.load(f)
+
+                # 🧠 Автоаналіз відхилень
+                if isinstance(data, list):
+                    for entry in data:
+                        msg = entry.get("message", "")
+                        if "❌" in msg or "⚠️" in msg:
+                            response_area.insert(tk.END, f"❌ Відхилено: {msg}\n")
+                else:
+                    msg = data.get("message", "")
+                    if "❌" in msg or "⚠️" in msg:
+                        response_area.insert(tk.END, f"❌ Відхилено: {msg}\n")
+
                 response_area.insert(tk.END, f"✅ Відповідь: {json.dumps(data, indent=2, ensure_ascii=False)}\n")
                 response_area.see(tk.END)
             except Exception as e:
                 response_area.insert(tk.END, f"❌ Error reading response: {e}\n")
+
 
 def send_command():
     command = {

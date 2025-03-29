@@ -354,7 +354,39 @@ def handle_command(cmd):
                 log_diff(full_file_path)
                 save_to_memory(cmd)
                 return {"status": "success", "message": f"✏️ Replaced text in '{filename}'"}
-            
+        elif action == "insert_between_markers":
+            file_path = os.path.join(base_path, cmd.get("file_path"))
+            marker_start = cmd.get("marker_start")
+            marker_end = cmd.get("marker_end")
+            insert_code = cmd.get("code")
+
+            if not all([file_path, marker_start, marker_end, insert_code]):
+                return {"status": "error", "message": "❌ Missing required fields for marker-based insertion"}
+
+            if not os.path.exists(file_path):
+                return {"status": "error", "message": f"❌ File '{file_path}' not found"}
+
+            with open(file_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+
+            start_idx, end_idx = -1, -1
+            for i, line in enumerate(lines):
+                if marker_start in line:
+                    start_idx = i + 1
+                if marker_end in line:
+                    end_idx = i
+
+            if start_idx == -1 or end_idx == -1 or start_idx >= end_idx:
+                return {"status": "error", "message": "❌ Markers not found or invalid order"}
+
+            lines = lines[:start_idx] + [insert_code + "\n"] + lines[end_idx:]
+
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.writelines(lines)
+
+            save_to_memory(cmd)
+            return {"status": "success", "message": f"✅ Inserted code between markers in {cmd.get('file_path')}"}
+           
         elif action == "read_file":
             if os.path.exists(full_file_path):
                 with open(full_file_path, "r", encoding="utf-8") as f:
