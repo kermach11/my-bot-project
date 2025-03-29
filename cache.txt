@@ -1,4 +1,7 @@
-[
-  { "action": "read_file", "filename": "ben_gui_desktop/main_gui.py" },
-  { "action": "test_python", "filename": "ben_gui_desktop/main_gui.py" }
-]
+{
+  "action": "macro",
+  "steps": [
+    { "if": "previous_status == 'error'", "action": "rollback" },
+    { "else": true, "action": "continue_process" }
+  ]
+}
