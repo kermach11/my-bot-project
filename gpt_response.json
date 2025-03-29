@@ -1,6 +1,10 @@
 [
   {
     "status": "error",
-    "message": "❌ Unknown action: insert_between_markers"
+    "message": "File not found"
+  },
+  {
+    "status": "error",
+    "message": "File not found"
   }
 ]
