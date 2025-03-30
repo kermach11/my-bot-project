@@ -4096,3 +4096,20 @@ no changes added to commit (use "git add" and/or "git commit -a")
 [2025-03-29 20:48:02] ✅ Created file 'make_snapshot.bat'
 [2025-03-29 20:48:04] ❌ Git push помилка: Command '['git', 'push']' returned non-zero exit status 1.
 [2025-03-29 21:08:33] {'status': 'success', 'steps': [{'status': 'success', 'message': "📌 Appended to file 'gpt_agent_cache.py'"}, {'status': 'success', 'message': '✅ update_code applied to gpt_agent_cache.py with type custom_insert'}]}
+[2025-03-29 21:08:36] 📤 Git push: ✅ Auto-commit: macro 
+[2025-03-29 22:20:11] ❌ GPT API error: name 'OPENAI_API_KEY' is not defined
+[2025-03-29 22:24:13] ❌ GPT API error: name 'OPENAI_API_KEY' is not defined
+[2025-03-29 22:29:57] ❌ GPT API error: name 'OPENAI_API_KEY' is not defined
+[2025-03-29 22:45:28] ❌ GPT API error: 
+
+You tried to access openai.ChatCompletion, but this is no longer supported in openai>=1.0.0 - see the README at https://github.com/openai/openai-python for the API.
+
+You can run `openai migrate` to automatically upgrade your codebase to use the 1.0.0 interface. 
+
+Alternatively, you can pin your installation to the old version, e.g. `pip install openai==0.28`
+
+A detailed migration guide is available here: https://github.com/openai/openai-python/discussions/742
+
+[2025-03-29 23:14:37] ❌ GPT API error: Error code: 404 - {'error': {'message': 'The model `gpt-4` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+[2025-03-29 23:24:33] ❌ GPT API error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-03-30 07:01:41] 🟢 GPT API connected!

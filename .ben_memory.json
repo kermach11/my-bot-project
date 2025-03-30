@@ -1,11 +1,5 @@
 [
   {
-    "action": "create_file",
-    "filename": "temp_test1.py",
-    "content": "# Створений файл, який має зникнути при помилці",
-    "timestamp": "2025-03-28 12:42:37"
-  },
-  {
     "action": "git_push",
     "message": "✅ Auto-commit: list_history ",
     "timestamp": "2025-03-28 13:22:19"
@@ -536,5 +530,10 @@
     "filename": "gpt_agent_cache.py",
     "content": "def write_debug_log(message):\n    with open(os.path.join(base_path, 'debug.log'), 'a', encoding='utf-8') as f:\n        f.write(f'[{datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")}] {message}\\n')",
     "timestamp": "2025-03-29 21:08:33"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: macro ",
+    "timestamp": "2025-03-29 21:08:36"
   }
 ]

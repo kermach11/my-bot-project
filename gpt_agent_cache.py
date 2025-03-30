@@ -14,21 +14,23 @@ import shutil
 import subprocess
 import traceback
 from datetime import datetime, timezone
-
 from config import base_path, request_file, response_file, history_file
+from config import API_KEY
+from dotenv import load_dotenv
+load_dotenv()
+import os
+API_KEY = os.getenv("OPENAI_API_KEY")
+
+
 
 import sqlite3
 
-def is_valid_python_file(filepath):
-    try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            source = f.read()
-        ast.parse(source)
-        return True
-    except SyntaxError as e:
-        print(f"❌ Syntax error in {filepath}: {e}")
-        return False
 import subprocess
+def write_debug_log(message):
+    debug_log_path = os.path.join(base_path, "debug.log")
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    with open(debug_log_path, "a", encoding="utf-8") as f:
+        f.write(f"[{timestamp}] {message}\n")
 
 def handle_run_shell(command):
     shell_cmd = command.get("command")
@@ -133,11 +135,22 @@ def clear_cache():
     with open(request_file, "w", encoding="utf-8") as f:
         f.write("")
 
+import difflib
+
+def smart_deduplicate_insertion(existing_block, new_block):
+    existing_lines = [line.strip() for line in existing_block.strip().splitlines()]
+    new_lines = [line.strip() for line in new_block.strip().splitlines()]
+    merged = existing_block.strip().splitlines()
+    for line in new_lines:
+        if line and line.strip() not in existing_lines:
+            merged.append(line)
+    return "\n".join(merged) + "\n"
+
 def handle_update_code(command):
     file_path = command.get('file_path')
     update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging', 'custom_insert', ...
     insert_at_line = command.get('insert_at_line')
-    insert_code = command.get('code')
+    insert_code = command.get('code') 
 
     # 🆕 Підтримка простого формату без updates[]
     if "updates" not in command and all(k in command for k in ("pattern", "replacement", "update_type")):
@@ -204,15 +217,26 @@ def handle_update_code(command):
         if not all([pattern, replacement, u_type]):
             return {"status": "error", "message": "❌ Missing fields in update"}
 
+        import re
         if u_type == "replace":
-            import re
-            content = re.sub(pattern, replacement, content, flags=re.DOTALL)
+            matches = list(re.finditer(pattern, content, flags=re.DOTALL))
+            if not matches:
+                return {"status": "error", "message": "❌ Pattern not found"}
+            for match in reversed(matches):
+                span = match.span()
+                target = content[span[0]:span[1]]
+                updated = smart_deduplicate_insertion(target, replacement)
+                content = content[:span[0]] + updated + content[span[1]:]
+
         elif u_type == "append":
-            content += "\n" + replacement
+            content = smart_deduplicate_insertion(content, replacement)
+
         elif u_type == "prepend":
-            content = replacement + "\n" + content
+            content = smart_deduplicate_insertion(replacement, content)
+
         else:
             return {"status": "error", "message": f"❌ Unknown update_type: {u_type}"}
+
 
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
@@ -508,6 +532,22 @@ def handle_command(cmd):
             result = subprocess.run(["python", full_file_path], capture_output=True, text=True)
             return {"status": "success", "output": result.stdout, "errors": result.stderr}
         
+        elif action == "test_gpt_api":
+            try:
+                from openai import OpenAI
+                from config import API_KEY
+                client = OpenAI(api_key=API_KEY)
+                response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "user", "content": "Ping"}
+                    ]
+                )
+                return {"status": "success", "message": "🟢 GPT API connected!", "response": response.choices[0].message.content}
+            except Exception as e:
+                return {"status": "error", "message": f"❌ GPT API error: {str(e)}"}
+
+
         elif action == "test_python":
             if os.path.exists(full_file_path):
                 try:
@@ -812,23 +852,6 @@ import sqlite3
 def create_connection():
     conn = sqlite3.connect('history.db')
     return conn
-
-# Функція для створення таблиці історії
-def create_history_table():
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS history (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        action TEXT NOT NULL,
-        filename TEXT,
-        content TEXT,
-        result TEXT,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-    ''')
-    conn.commit()
-    conn.close()
 
 # Функція для збереження команди в історію
 def save_to_history(action, filename, content, result):
