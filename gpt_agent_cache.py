@@ -20,6 +20,8 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 API_KEY = os.getenv("OPENAI_API_KEY")
+from gpt_interpreter import interpret_user_prompt
+interpret_user_prompt("створи функцію, яка перевіряє, чи пароль має щонайменше 8 символів")
 
 
 

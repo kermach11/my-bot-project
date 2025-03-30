@@ -1,3 +1,5 @@
 {
-  "action": "test_gpt_api"
+  "action": "append_file",
+  "filename": "password_utils.py",
+  "content": "\ndef is_valid_password(password):\n    return len(password) >= 8\n"
 }
