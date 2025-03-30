@@ -1,15 +1,3 @@
 {
-  "action": "macro",
-  "rollback_on_fail": true,
-  "steps": [
-    {
-      "action": "create_folder",
-      "foldername": "ben_gui_v2"
-    },
-    {
-      "action": "create_file",
-      "filename": "ben_gui_v2/ben_gui_v2.py",
-      "content": "import os\nimport tkinter as tk\nfrom tkinter import ttk, scrolledtext\n\nclass BenAssistantGUI:\n    def __init__(self, root):\n        self.root = root\n        self.root.title(\"Ben Assistant v2\")\n        self.root.geometry(\"1200x700\")\n\n        self.setup_layout()\n\n    def setup_layout(self):\n        self.left_panel = tk.Frame(self.root, width=250, bg=\"#f0f0f0\")\n        self.left_panel.pack(side=\"left\", fill=\"y\")\n\n        self.project_label = tk.Label(self.left_panel, text=\"🗂️ Стіл\", bg=\"#f0f0f0\", font=(\"Arial\", 12, \"bold\"))\n        self.project_label.pack(pady=10)\n\n        self.project_tree = ttk.Treeview(self.left_panel)\n        self.project_tree.pack(expand=True, fill=\"both\", padx=5)\n        self.populate_tree(\".\", \"\")\n\n        self.center_panel = tk.Frame(self.root, bg=\"#ffffff\")\n        self.center_panel.pack(side=\"left\", fill=\"both\", expand=True)\n\n        self.chat_display = scrolledtext.ScrolledText(self.center_panel, wrap=\"word\", height=30)\n        self.chat_display.pack(fill=\"both\", expand=True, padx=10, pady=(10, 0))\n\n        self.prompt_entry = tk.Entry(self.center_panel, font=(\"Arial\", 12))\n        self.prompt_entry.pack(fill=\"x\", padx=10, pady=5)\n\n        self.send_button = tk.Button(self.center_panel, text=\"Відправити\", command=self.send_prompt)\n        self.send_button.pack(padx=10, pady=(0,10))\n\n        self.right_panel = tk.Frame(self.root, width=400, bg=\"#f9f9f9\")\n        self.right_panel.pack(side=\"right\", fill=\"y\")\n\n        self.code_label = tk.Label(self.right_panel, text=\"👁️ Попередній код\", bg=\"#f9f9f9\", font=(\"Arial\", 12, \"bold\"))\n        self.code_label.pack(pady=10)\n\n        self.code_preview = scrolledtext.ScrolledText(self.right_panel, wrap=\"none\", height=30)\n        self.code_preview.pack(fill=\"both\", expand=True, padx=10)\n\n    def populate_tree(self, path, parent):\n        for item in os.listdir(path):\n            abspath = os.path.join(path, item)\n            isdir = os.path.isdir(abspath)\n            oid = self.project_tree.insert(parent, \"end\", text=item, open=False)\n            if isdir:\n                self.populate_tree(abspath, oid)\n\n    def send_prompt(self):\n        user_input = self.prompt_entry.get()\n        if not user_input.strip():\n            return\n        self.chat_display.insert(tk.END, f\"👤 {user_input}\\n\")\n        self.chat_display.insert(tk.END, f\"🤖 GPT: (відповідь тут буде...)\\n\\n\")\n        self.chat_display.see(tk.END)\n        self.prompt_entry.delete(0, tk.END)\n\nif __name__ == \"__main__\":\n    root = tk.Tk()\n    app = BenAssistantGUI(root)\n    root.mainloop()\n"
-    }
-  ]
+  "action": "scan_all_files"
 }

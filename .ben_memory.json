@@ -1,98 +1,5 @@
 [
   {
-    "action": "git_push",
-    "message": "✅ Auto-commit: append_file test_append.py",
-    "timestamp": "2025-03-28 16:27:04"
-  },
-  {
-    "action": "create_file",
-    "filename": "test_append.py",
-    "content": "# Порожній файл для тесту",
-    "timestamp": "2025-03-28 16:27:26"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file test_append.py",
-    "timestamp": "2025-03-28 16:27:30"
-  },
-  {
-    "action": "append_file",
-    "filename": "test_append.py",
-    "content": "def test_func():\n    return True",
-    "timestamp": "2025-03-28 16:27:56"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: append_file test_append.py",
-    "timestamp": "2025-03-28 16:27:59"
-  },
-  {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/ben_gui.py",
-    "content": "import os\nimport json\nimport tkinter as tk\nfrom tkinter import ttk, scrolledtext\nfrom config import request_file, response_file\n\nclass BenGUI:\n    def __init__(self, root):\n        self.root = root\n        root.title(\"Ben Assistant GUI\")\n        root.geometry(\"700x500\")\n\n        # Ввід\n        self.action_var = tk.StringVar()\n        self.filename_var = tk.StringVar()\n        self.content_var = tk.StringVar()\n\n        ttk.Label(root, text=\"Action:\").pack()\n        ttk.Entry(root, textvariable=self.action_var).pack(fill=tk.X)\n\n        ttk.Label(root, text=\"Filename (optional):\").pack()\n        ttk.Entry(root, textvariable=self.filename_var).pack(fill=tk.X)\n\n        ttk.Label(root, text=\"Content (optional):\").pack()\n        ttk.Entry(root, textvariable=self.content_var).pack(fill=tk.X)\n\n        ttk.Button(root, text=\"📩 Надіслати команду\", command=self.send_command).pack(pady=10)\n\n        ttk.Label(root, text=\"Відповідь:\").pack()\n        self.response_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=15)\n        self.response_area.pack(fill=tk.BOTH, expand=True)\n\n    def send_command(self):\n        command = {\n            \"action\": self.action_var.get(),\n            \"filename\": self.filename_var.get(),\n            \"content\": self.content_var.get()\n        }\n        command = {k: v for k, v in command.items() if v.strip()}\n        with open(request_file, \"w\", encoding=\"utf-8\") as f:\n            json.dump([command], f, indent=2)\n        self.response_area.insert(tk.END, f\"📤 Відправлено: {json.dumps(command)}\\n\")\n        self.response_area.see(tk.END)\n\n        self.root.after(1000, self.load_response)\n\n    def load_response(self):\n        if os.path.exists(response_file):\n            with open(response_file, \"r\", encoding=\"utf-8\") as f:\n                try:\n                    data = json.load(f)\n                    self.response_area.insert(tk.END, f\"✅ Відповідь: {json.dumps(data, indent=2, ensure_ascii=False)}\\n\")\n                    self.response_area.see(tk.END)\n                except Exception as e:\n                    self.response_area.insert(tk.END, f\"❌ Error reading response: {e}\\n\")\n\nif __name__ == \"__main__\":\n    root = tk.Tk()\n    app = BenGUI(root)\n    root.mainloop()",
-    "timestamp": "2025-03-28 16:42:27"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_gui_desktop/ben_gui.py",
-    "timestamp": "2025-03-28 16:42:30"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-28 16:45:53"
-  },
-  {
-    "action": "update_file",
-    "filename": "ben_gui_desktop/ben_gui.py",
-    "pattern": "from config import request_file, response_file",
-    "replacement": "",
-    "timestamp": "2025-03-28 16:46:28"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_file ben_gui_desktop/ben_gui.py",
-    "timestamp": "2025-03-28 16:46:31"
-  },
-  {
-    "action": "create_file",
-    "filename": "ben_test_check.txt",
-    "content": "✅ Бен працює справно!",
-    "timestamp": "2025-03-28 16:59:15"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_test_check.txt",
-    "timestamp": "2025-03-28 16:59:18"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_folder ",
-    "timestamp": "2025-03-28 17:01:00"
-  },
-  {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/widgets/action_selector.py",
-    "content": "import tkinter as tk\nfrom tkinter import ttk\n\nclass ActionSelector(ttk.Frame):\n    def __init__(self, parent, on_action_change):\n        super().__init__(parent)\n        self.on_action_change = on_action_change\n\n        ttk.Label(self, text=\"Оберіть дію:\").pack(anchor=\"w\")\n\n        self.action_var = tk.StringVar()\n        self.combo = ttk.Combobox(self, textvariable=self.action_var)\n        self.combo['values'] = [\n            \"create_file\", \"append_file\", \"update_code\", \"update_code_bulk\",\n            \"replace_in_file\", \"delete_file\", \"rename_file\", \"macro\",\n            \"list_history\", \"view_sql_history\", \"run_python\"\n        ]\n        self.combo.bind(\"<<ComboboxSelected>>\", self.action_selected)\n        self.combo.pack(fill=tk.X)\n\n    def action_selected(self, event):\n        selected = self.action_var.get()\n        self.on_action_change(selected)\n\n    def get_selected_action(self):\n        return self.action_var.get()",
-    "timestamp": "2025-03-28 17:01:14"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_gui_desktop/widgets/action_selector.py",
-    "timestamp": "2025-03-28 17:01:17"
-  },
-  {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/main_gui.py",
-    "content": "import tkinter as tk\nfrom tkinter import ttk\nfrom widgets.action_selector import ActionSelector\n\ndef on_action_change(action):\n    print(\"🔄 Action changed to:\", action)\n\nroot = tk.Tk()\nroot.title(\"Ben GUI Interface\")\nroot.geometry(\"600x400\")\n\nttk.Label(root, text=\"Ben Assistant GUI\", font=(\"Arial\", 16)).pack(pady=10)\n\naction_selector = ActionSelector(root, on_action_change)\naction_selector.pack(fill=tk.X, padx=20, pady=10)\n\nroot.mainloop()",
-    "timestamp": "2025-03-28 17:11:18"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_gui_desktop/main_gui.py",
-    "timestamp": "2025-03-28 17:11:21"
-  },
-  {
     "action": "create_file",
     "filename": "ben_gui_desktop/widgets/parameter_form.py",
     "content": "import tkinter as tk\nfrom tkinter import ttk\n\nclass ParameterForm(ttk.Frame):\n    def __init__(self, parent):\n        super().__init__(parent)\n        self.entries = {}\n        self.fields = [\n            \"filename\", \"content\", \"pattern\", \"replacement\",\n            \"update_type\", \"insert_at_line\", \"rollback_on_fail\"\n        ]\n\n        for field in self.fields:\n            row = ttk.Frame(self)\n            row.pack(fill=tk.X, pady=2)\n\n            ttk.Label(row, text=field + \":\", width=18).pack(side=tk.LEFT)\n            entry = ttk.Entry(row)\n            entry.pack(fill=tk.X, expand=True)\n            self.entries[field] = entry\n\n    def get_command_fields(self):\n        result = {}\n        for field, entry in self.entries.items():\n            value = entry.get().strip()\n            if value:\n                # Автоматично перетворюємо rollback_on_fail в bool\n                if field == \"rollback_on_fail\":\n                    result[field] = value.lower() in [\"true\", \"1\", \"yes\"]\n                elif field == \"insert_at_line\":\n                    try:\n                        result[field] = int(value)\n                    except ValueError:\n                        pass  # Ігноруємо некоректне число\n                else:\n                    result[field] = value\n        return result\n\n    def clear(self):\n        for entry in self.entries.values():\n            entry.delete(0, tk.END)",
@@ -536,5 +443,132 @@
     "filename": "ben_gui_v2/ben_gui_v2.py",
     "content": "import os\nimport tkinter as tk\nfrom tkinter import ttk, scrolledtext\n\nclass BenAssistantGUI:\n    def __init__(self, root):\n        self.root = root\n        self.root.title(\"Ben Assistant v2\")\n        self.root.geometry(\"1200x700\")\n\n        self.setup_layout()\n\n    def setup_layout(self):\n        self.left_panel = tk.Frame(self.root, width=250, bg=\"#f0f0f0\")\n        self.left_panel.pack(side=\"left\", fill=\"y\")\n\n        self.project_label = tk.Label(self.left_panel, text=\"🗂️ Стіл\", bg=\"#f0f0f0\", font=(\"Arial\", 12, \"bold\"))\n        self.project_label.pack(pady=10)\n\n        self.project_tree = ttk.Treeview(self.left_panel)\n        self.project_tree.pack(expand=True, fill=\"both\", padx=5)\n        self.populate_tree(\".\", \"\")\n\n        self.center_panel = tk.Frame(self.root, bg=\"#ffffff\")\n        self.center_panel.pack(side=\"left\", fill=\"both\", expand=True)\n\n        self.chat_display = scrolledtext.ScrolledText(self.center_panel, wrap=\"word\", height=30)\n        self.chat_display.pack(fill=\"both\", expand=True, padx=10, pady=(10, 0))\n\n        self.prompt_entry = tk.Entry(self.center_panel, font=(\"Arial\", 12))\n        self.prompt_entry.pack(fill=\"x\", padx=10, pady=5)\n\n        self.send_button = tk.Button(self.center_panel, text=\"Відправити\", command=self.send_prompt)\n        self.send_button.pack(padx=10, pady=(0,10))\n\n        self.right_panel = tk.Frame(self.root, width=400, bg=\"#f9f9f9\")\n        self.right_panel.pack(side=\"right\", fill=\"y\")\n\n        self.code_label = tk.Label(self.right_panel, text=\"👁️ Попередній код\", bg=\"#f9f9f9\", font=(\"Arial\", 12, \"bold\"))\n        self.code_label.pack(pady=10)\n\n        self.code_preview = scrolledtext.ScrolledText(self.right_panel, wrap=\"none\", height=30)\n        self.code_preview.pack(fill=\"both\", expand=True, padx=10)\n\n    def populate_tree(self, path, parent):\n        for item in os.listdir(path):\n            abspath = os.path.join(path, item)\n            isdir = os.path.isdir(abspath)\n            oid = self.project_tree.insert(parent, \"end\", text=item, open=False)\n            if isdir:\n                self.populate_tree(abspath, oid)\n\n    def send_prompt(self):\n        user_input = self.prompt_entry.get()\n        if not user_input.strip():\n            return\n        self.chat_display.insert(tk.END, f\"👤 {user_input}\\n\")\n        self.chat_display.insert(tk.END, f\"🤖 GPT: (відповідь тут буде...)\\n\\n\")\n        self.chat_display.see(tk.END)\n        self.prompt_entry.delete(0, tk.END)\n\nif __name__ == \"__main__\":\n    root = tk.Tk()\n    app = BenAssistantGUI(root)\n    root.mainloop()\n",
     "timestamp": "2025-03-30 08:09:33"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: macro ",
+    "timestamp": "2025-03-30 08:09:36"
+  },
+  {
+    "action": "append_file",
+    "filename": "greeting.py",
+    "content": "\ndef greet_user(name):\n    print(f\"Hello, {name}!\")\n",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 12:31:44"
+  },
+  {
+    "action": "append_file",
+    "filename": "greeting.py",
+    "content": "\ndef greet_user(name):\n    print(f\"Hello, {name}!\")\n",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 12:31:44"
+  },
+  {
+    "action": "append_file",
+    "filename": "main.py",
+    "content": "\ndef print_hello():\n    print(\"Hello!\")\n",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 14:35:45"
+  },
+  {
+    "action": "append_file",
+    "filename": "main.py",
+    "content": "\ndef print_hello():\n    print(\"Hello!\")\n",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 14:35:45"
+  },
+  {
+    "action": "append_file",
+    "filename": "script.py",
+    "content": "\ndef greet(name):\n    print(f\"Hello, {name}\")\n",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 21:27:27"
+  },
+  {
+    "action": "append_file",
+    "filename": "script.py",
+    "content": "\ndef greet(name):\n    print(f\"Hello, {name}\")\n",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 21:27:27"
+  },
+  {
+    "action": "run_macro",
+    "name": "undo_last_change",
+    "parameters": {
+      "target_id": "cmd_001"
+    },
+    "history_id": "cmd_002",
+    "target_id": "id_002",
+    "timestamp": "2025-03-30 21:39:21"
+  },
+  {
+    "action": "acknowledge",
+    "response": "Так, я тут! Як я можу допомогти?",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 23:03:56"
+  },
+  {
+    "action": "run_shell",
+    "command": "pylint **/*.py && flake8 **/*.py",
+    "history_id": "cmd_002",
+    "target_id": "id_003",
+    "timestamp": "2025-03-30 23:07:32"
+  },
+  {
+    "run_macro": {
+      "name": "check_progress"
+    },
+    "history_id": "cmd_003",
+    "target_id": "id_004",
+    "timestamp": "2025-03-30 23:08:46"
+  },
+  {
+    "action": "respond",
+    "message": "Так, я тут! Як я можу допомогти?",
+    "history_id": "cmd_004",
+    "target_id": "id_005",
+    "timestamp": "2025-03-30 23:10:34"
+  },
+  {
+    "action": "respond",
+    "message": "Так, я тут! Чим можу допомогти?",
+    "history_id": "cmd_005",
+    "target_id": "id_009",
+    "timestamp": "2025-03-30 23:30:56"
+  },
+  {
+    "action": "respond",
+    "content": "Так, я тут! Чим можу допомогти?",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 23:32:15"
+  },
+  {
+    "action": "run_macro",
+    "macro_name": "read_manual_on_table",
+    "history_id": "cmd_002",
+    "target_id": "id_002",
+    "timestamp": "2025-03-30 23:32:59"
+  },
+  {
+    "error": "Insufficient context. Please provide more details or specify the document or content you are referring to.",
+    "history_id": "cmd_003",
+    "target_id": "id_003",
+    "timestamp": "2025-03-30 23:33:27"
+  },
+  {
+    "run_shell": {
+      "command": "ls *.py"
+    },
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-03-30 23:57:46"
   }
 ]

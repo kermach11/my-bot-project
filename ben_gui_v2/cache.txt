@@ -1,0 +1,7 @@
+{
+  "run_shell": {
+    "command": "ls *.py"
+  },
+  "history_id": "cmd_001",
+  "target_id": "id_001"
+}

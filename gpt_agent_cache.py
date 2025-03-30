@@ -1,4 +1,19 @@
 def handle_command(cmd):
+    # 🧠 Обробка підтвердження rollback
+    if cmd.get("action") in ["yes", "no"] and cmd.get("target_id"):
+        target_id = cmd["target_id"]
+        if cmd["action"] == "yes":
+            prev_cmd = get_command_by_id(target_id)
+            if not prev_cmd:
+                return {"status": "error", "message": f"❌ Не знайдено команду для відкату: {target_id}"}
+            file_path = prev_cmd.get("file")
+            if not file_path or not os.path.exists(file_path + ".bak"):
+                return {"status": "error", "message": f"❌ Немає резервної копії для '{target_id}'"}
+            shutil.copy(file_path + ".bak", file_path)
+            return {"status": "success", "message": f"✅ Відкат завершено для {target_id}"}
+        else:
+            return {"status": "cancelled", "message": f"⛔ Відкат скасовано для {target_id}"}
+
     if cmd.get("filename") == "env" or cmd.get("file_path", "").endswith("env"):
         if cmd["action"] in ["update_file", "append_file", "replace_in_file", "update_code", "delete_file"]:
             return {"status": "error", "message": "❌ Заборонено змінювати або комітити файл 'env'"}
@@ -23,9 +38,14 @@ API_KEY = os.getenv("OPENAI_API_KEY")
 from gpt_interpreter import interpret_user_prompt
 interpret_user_prompt("створи функцію, яка перевіряє, чи пароль має щонайменше 8 символів")
 
-
-
 import sqlite3
+
+def backup_file(filepath):
+    if not os.path.exists(filepath):
+        return
+    bak_path = filepath + ".bak"
+    if not os.path.exists(bak_path):
+        shutil.copy(filepath, bak_path)
 
 import subprocess
 def write_debug_log(message):
@@ -80,6 +100,25 @@ def log_action(message):
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     with open(history_file, "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] {message}\n")
+def get_command_by_id(target_id):
+    try:
+        with open(".ben_memory.json", "r", encoding="utf-8") as f:
+            memory = json.load(f)
+        for entry in reversed(memory):  # Останні першими
+            if entry.get("history_id") == target_id:
+                return entry
+    except:
+        pass
+    return None
+def ask_confirmation_for_rollback(prev_code, target_id):
+    prompt = (
+        f"🧠 Знайдено код, який буде відновлено з ID {target_id}:\n\n"
+        f"{prev_code}\n\n"
+        "🔁 Хочеш відкотити до цього коду? Напиши 'yes' або 'no'"
+    )
+    with open("gpt_response.json", "w", encoding="utf-8") as f:
+        json.dump({"status": "awaiting_confirmation", "message": prompt, "target_id": target_id}, f, indent=2, ensure_ascii=False)
+    return {"status": "paused", "message": "⏸️ Очікуємо підтвердження на відкат"}
 
 def save_to_memory(cmd):
     memory_file = os.path.join(base_path, ".ben_memory.json")
@@ -376,11 +415,15 @@ def handle_command(cmd):
             return {"status": "success", "message": f"✅ Created file '{filename}'"}
 
         elif action == "update_code":
+            filepath = os.path.join(base_path, cmd["file"])
+            backup_file(filepath)  
             return handle_update_code(cmd)
         elif action == "update_code_bulk":
             return handle_update_code_bulk(cmd)
 
         elif action == "append_file":
+            filepath = os.path.join(base_path, cmd["filename"])
+            backup_file(filepath)
             with open(full_file_path, "a", encoding="utf-8") as f:
                 f.write(content)
             save_to_memory(cmd)
@@ -410,6 +453,8 @@ def handle_command(cmd):
                 return {"status": "error", "message": "File not found"}
 
         elif action == "replace_in_file":
+            filepath = os.path.join(base_path, cmd["filename"])
+            backup_file(filepath)
             if filename.endswith('.py'):
                 test_result = handle_command({"action": "test_python", "filename": filename})
                 if test_result.get("status") == "error":
@@ -451,6 +496,8 @@ def handle_command(cmd):
                 return {"status": "success", "message": f"✏️ Replaced text in '{filename}'"}
             
         elif action == "insert_between_markers":
+            filepath = os.path.join(base_path, cmd["filename"])
+            backup_file(filepath)
             file_path = os.path.join(base_path, cmd.get("file_path"))
             marker_start = cmd.get("marker_start")
             marker_end = cmd.get("marker_end")
@@ -502,6 +549,8 @@ def handle_command(cmd):
             return {"status": "success", "message": f"📁 Folder '{foldername}' created"}
 
         elif action == "delete_file":
+            filepath = os.path.join(base_path, cmd["filename"])
+            backup_file(filepath)
             if os.path.exists(full_file_path):
                 os.remove(full_file_path)
                 save_to_memory(cmd)
@@ -562,16 +611,39 @@ def handle_command(cmd):
             return {"status": "error", "message": "File not found"}
 
         elif action == "undo_change":
-            if os.path.exists(full_file_path + ".bak"):
-                shutil.copy(full_file_path + ".bak", full_file_path)
-                save_to_memory(cmd)
-                return {"status": "success", "message": f"↩️ Undo: відкат до .bak для '{filename}'"}
+            target_id = cmd.get("target_id")
+
+            if target_id:
+                # 🔍 Шукаємо команду по ID з історії
+                prev_cmd = get_command_by_id(target_id)
+                if not prev_cmd:
+                    return {"status": "error", "message": f"❌ Не знайдено команду з ID: {target_id}"}
+
+                file_path = prev_cmd.get("file")
+                if not file_path or not os.path.exists(file_path + ".bak"):
+                    return {"status": "error", "message": f"❌ Немає резервної копії для ID: {target_id}"}
+
+                with open(file_path + ".bak", "r", encoding="utf-8") as f:
+                    prev_code = f.read()
+
+                return ask_confirmation_for_rollback(prev_code, target_id)
+
             else:
-                return {"status": "error", "message": f"❌ Немає резервної копії для '{filename}'"}
+                # 🕗 Стара логіка .bak
+                if os.path.exists(full_file_path + ".bak"):
+                    shutil.copy(full_file_path + ".bak", full_file_path)
+                    save_to_memory(cmd)
+                    return {"status": "success", "message": f"↩️ Undo: відкат до .bak для '{filename}'"}
+                else:
+                    return {"status": "error", "message": f"❌ Немає резервної копії для '{filename}'"}
 
         elif action == "macro":
             return handle_macro(cmd)
         
+        elif action == "run_macro":
+            from macros import run_macro  
+            return run_macro(cmd)
+
         elif cmd["action"] == "run_shell":
             return handle_run_shell(cmd)
 
@@ -781,6 +853,14 @@ if __name__ == "__main__":
 
     # Якщо не CLI і не test — запуск бота як звично
     print("🟢 Бен запущений і слухає команди з cache.txt...")
+
+    try:
+        from macros import run_macro
+        auto = run_macro({"name": "scan_all_on_start"})
+        print(f"[AUTO] {auto.get('message')}")
+    except Exception as e:
+        print(f"[AUTO] ❌ Помилка автозапуску: {e}")
+        
     while True:
         commands = read_requests()
         print("📩 Отримано команди:", commands)
