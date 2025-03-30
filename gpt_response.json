@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Unknown action: create_function"
+    "message": "❌ Exception: [Errno 2] No such file or directory: 'C:\\\\Users\\\\DC\\\\my-bot-project\\\\ben_gui_v2/ben_gui_v2.py'"
   }
 ]
