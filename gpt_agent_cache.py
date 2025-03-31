@@ -31,8 +31,9 @@ import traceback
 from datetime import datetime, timezone
 from config import base_path, request_file, response_file, history_file
 from config import API_KEY
+import os
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv("C:/Users/DC/env_files/env")
 import os
 API_KEY = os.getenv("OPENAI_API_KEY")
 from gpt_interpreter import interpret_user_prompt
@@ -41,11 +42,18 @@ interpret_user_prompt("створи функцію, яка перевіряє, �
 import sqlite3
 
 def backup_file(filepath):
-    if not os.path.exists(filepath):
+    if not filepath or not os.path.isfile(filepath):
+        print(f"⚠️ Пропущено backup — некоректний шлях: {filepath}")
         return
+
+    # Формуємо безпечну резервну копію з .bak
     bak_path = filepath + ".bak"
     if not os.path.exists(bak_path):
-        shutil.copy(filepath, bak_path)
+        try:
+            shutil.copy2(filepath, bak_path)
+            print(f"📦 Створено резервну копію: {bak_path}")
+        except Exception as e:
+            print(f"❌ Помилка резервування: {e}")
 
 import re
 
@@ -75,23 +83,31 @@ def execute_macro(macro_name, arguments=None):
         return {"status": "error", "message": f"❌ Невідома макрокоманда: {macro_name}"}
 
     for step in macro_steps:
-        for action, params in step.items():
-            if action == "run_shell":
-                command = substitute_arguments(params["command"], arguments)
-                result = os.popen(command).read().strip()
-                print(result)
+        if isinstance(step, dict):
+            if "action" in step:
+                # 🟢 Плоский формат: { "action": "...", "filename": "...", ... }
+                action = step["action"]
+                params = {k: v for k, v in step.items() if k != "action"}
             else:
-                print(f"❌ Unknown macro step action: {action}")
+                # 🔵 Класичний формат: { "replace_in_file": { ... } }
+                action, params = next(iter(step.items()))
+        else:
+            print("⚠️ Невірний формат кроку макросу, пропускаю...")
+            continue
+
+        if action == "run_shell":
+            command = substitute_arguments(params["command"], arguments)
+            result = os.popen(command).read().strip()
+            print(result)
+        else:
+            # Вставка виконання стандартних дій (replace, append, update_code, тощо)
+            response = handle_command({ "action": action, **params })
+            print(response.get("message", f"✅ {action} виконано"))
 
     return {"status": "success", "message": f"✅ Макрос '{macro_name}' виконано"}
 
 import shutil
 import datetime
-
-def backup_file(filepath):
-    timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-    backup_path = filepath + f".backup_{timestamp}"
-    shutil.copy2(filepath, backup_path)
 
 def undo_last_backup(filepath):
     backups = [f for f in os.listdir(base_path) if f.startswith(os.path.basename(filepath)) and ".backup_" in f]
@@ -273,23 +289,26 @@ def analyze_all_code():
 
         from openai import OpenAI
         client = OpenAI(api_key=API_KEY)
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "user", "content": prompt}
-            ]
-        )
 
-        raw = response.choices[0].message.content.strip()
+        # Спроба максимум 2 рази, якщо JSON невалідний
+        for attempt in range(2):
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            raw = response.choices[0].message.content.strip()
 
-        # 💾 Зберігаємо RAW-вивід для діагностики
-        with open("gpt_analysis_raw.txt", "w", encoding="utf-8") as f:
-            f.write(raw)
+            # 💾 Зберігаємо RAW-вивід для діагностики
+            with open("gpt_analysis_raw.txt", "w", encoding="utf-8") as f:
+                f.write(raw)
 
-        try:
-            report = json.loads(raw)
-        except Exception as e:
-            return {"status": "error", "message": f"❌ GPT не повернув валідний JSON: {e}"}
+            try:
+                report = json.loads(raw)
+                break  # ✅ JSON валідний, виходимо
+            except json.JSONDecodeError as e:
+                print(f"⚠️ Спроба {attempt + 1} — помилка JSON: {e}")
+                if attempt == 1:
+                    return {"status": "error", "message": f"❌ GPT не повернув валідний JSON: {e}"}
 
         # 💾 Зберігаємо у звіт
         with open("gpt_analysis.json", "w", encoding="utf-8") as f:
@@ -299,6 +318,41 @@ def analyze_all_code():
 
     except Exception as e:
         return {"status": "error", "message": f"❌ Analyze failed: {e}"}
+
+def execute_plan():
+    plan_file = os.path.join(base_path, "gpt_plan.json")
+    if not os.path.exists(plan_file):
+        return {"status": "error", "message": "❌ gpt_plan.json не знайдено"}
+
+    try:
+        with open(plan_file, "r", encoding="utf-8") as f:
+            plan = json.load(f)
+
+        if not isinstance(plan, list):
+            return {"status": "error", "message": "❌ gpt_plan.json має бути списком дій"}
+
+        results = []
+        for i, step in enumerate(plan):
+            print(f"\n⚙️ Виконую крок {i + 1}/{len(plan)}: {step.get('action')}")
+            result = handle_command(step)
+            results.append(result)
+
+            if result.get("status") != "success":
+                print(f"❌ Зупинено на кроці {i + 1} — помилка: {result.get('message')}")
+                return {
+                    "status": "error",
+                    "message": f"❌ План зупинено на кроці {i + 1}",
+                    "results": results
+                }
+
+        return {
+            "status": "success",
+            "message": f"✅ План виконано повністю ({len(plan)} кроків)",
+            "results": results
+        }
+
+    except Exception as e:
+        return {"status": "error", "message": f"❌ execute_plan помилка: {e}"}
 
 def handle_run_shell(command):
     shell_cmd = command.get("command")
@@ -750,8 +804,16 @@ def handle_command(cmd):
                 return {"status": "error", "message": "❌ No updates provided"}
 
             result = apply_updates_to_file(full_path, updates)
+
+            # 🧪 Автотест після оновлення
+            test_result = handle_command({
+                "action": "test_python",
+                "filename": filepath
+            })
+            print(f"🧪 Результат автотесту: {test_result}")
+
             return {"status": "success", "message": f"✅ Updated {filepath}", "details": result}
-        
+      
         elif action == "safe_update_code":
             result = handle_safe_update_code(cmd, base_path)
 
@@ -759,12 +821,25 @@ def handle_command(cmd):
             return handle_update_code_bulk(cmd)
 
         elif action == "append_file":
-            filepath = os.path.join(base_path, cmd["filename"])
+            filename = cmd["filename"]
+            content = cmd["content"]
+            filepath = os.path.join(base_path, filename)
             backup_file(filepath)
-            with open(full_file_path, "a", encoding="utf-8") as f:
+
+            with open(filepath, "a", encoding="utf-8") as f:
                 f.write(content)
+
             save_to_memory(cmd)
+
+            # 🧪 Автоматична перевірка коду після вставки
+            test_result = handle_command({
+                "action": "test_python",
+                "filename": filename
+            })
+            print(f"🧪 Результат автотесту: {test_result}")
+
             return {"status": "success", "message": f"📌 Appended to file '{filename}'"}
+
         
         elif action == "undo_change":
             ilename = cmd.get("filename")
@@ -796,27 +871,34 @@ def handle_command(cmd):
                 return {"status": "error", "message": "File not found"}
 
         elif action == "replace_in_file":
-            filepath = os.path.join(base_path, cmd["filename"])
+            filename = cmd["filename"]
+            pattern = cmd["pattern"]
+            replacement = cmd["replacement"]
+            filepath = os.path.join(base_path, filename)
+            full_file_path = filepath
+
             backup_file(filepath)
+
             if filename.endswith('.py'):
                 test_result = handle_command({"action": "test_python", "filename": filename})
                 if test_result.get("status") == "error":
                     return {"status": "error", "message": f"❌ Перед зміною: {test_result.get('message')}"}
-                
+
                 if not is_valid_python_file(full_file_path):
                     return {"status": "error", "message": f"❌ Syntax error before change in {filename}"}
 
             if filename in ["config.py", "api_keys.py", "cache.txt"]:
-                    return {"status": "error", "message": f"❌ Заборонено змінювати критичний файл: {filename}"}
-                
+                return {"status": "error", "message": f"❌ Заборонено змінювати критичний файл: {filename}"}
+
             if os.path.exists(full_file_path):
                 with open(full_file_path, "r", encoding="utf-8") as f:
                     text = f.read()
+
                 # 🧠 Зберігаємо резервну копію
                 backup_path = full_file_path + ".bak"
                 with open(backup_path, "w", encoding="utf-8") as f:
                     f.write(text)
-                    
+
                 # 📝 Git diff перед записом
                 try:
                     diff_output = subprocess.check_output(["git", "diff", full_file_path], cwd=base_path, text=True)
@@ -829,14 +911,23 @@ def handle_command(cmd):
                 new_text = re.sub(pattern, replacement, text)
                 with open(full_file_path, "w", encoding="utf-8") as f:
                     f.write(new_text)
-                
+
                 if not is_valid_python_file(full_file_path):
                     return {"status": "error", "message": f"❌ Syntax error after change in {filename}. Revert or fix manually."}
 
-                # 📜 Лог змін (git diff)
+                # 📜 Лог змін
                 log_diff(full_file_path)
                 save_to_memory(cmd)
+
+                # 🧪 Автотест після зміни
+                test_result = handle_command({
+                    "action": "test_python",
+                    "filename": filename
+                })
+                print(f"🧪 Результат автотесту: {test_result}")
+
                 return {"status": "success", "message": f"✏️ Replaced text in '{filename}'"}
+
             
         elif action == "insert_between_markers":
             filepath = os.path.join(base_path, cmd["filename"])
@@ -935,6 +1026,9 @@ def handle_command(cmd):
              result = generate_improvement_plan()
              return result
         
+        elif action == "run_plan":
+             return execute_plan()
+
         elif action == "analyze_all_code":
             result = analyze_all_code()
             return result

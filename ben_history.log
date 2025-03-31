@@ -4180,3 +4180,12 @@ A detailed migration guide is available here: https://github.com/openai/openai-p
 [2025-03-31 15:46:34] ❌ Exception: 'list' object has no attribute 'get'
 [2025-03-31 15:50:23] ⚠️ Function 'is_valid_password' already exists in password_utils.py
 [2025-03-31 15:50:57] ✅ Макрос 'smart_fix_basic_cleaning' виконано
+[2025-03-31 15:51:02] 📤 Git push: ✅ Auto-commit: run_macro 
+[2025-03-31 15:51:02] ⚠️ Error saving to memory: module 'datetime' has no attribute 'now'
+[2025-03-31 17:02:42] ⚠️ Function 'is_valid_password' already exists in password_utils.py
+[2025-03-31 18:34:05] ⚠️ Function 'is_valid_password' already exists in password_utils.py
+[2025-03-31 18:35:38] ❌ Невідома макрокоманда: test_smart_autovalidation
+[2025-03-31 18:36:44] ❌ Помилка Smart-планувальника: Expecting value: line 1 column 1 (char 0)
+[2025-03-31 18:48:56] ❌ Exception: [WinError 123] The filename, directory name, or volume label syntax is incorrect
+[2025-03-31 18:54:06] ⚠️ Error saving to memory: module 'datetime' has no attribute 'now'
+[2025-03-31 18:54:06] 📌 Appended to file 'password_utils.py'

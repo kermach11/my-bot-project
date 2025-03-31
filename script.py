@@ -1,3 +1,4 @@
+from utils.greetings import greet_user
 
-def greet(name):
-    print(f"Hello, {name}")
+name = "Alice"
+greet_user(name)

@@ -1,11 +1,14 @@
+import threading
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 import json
 import time
 import os
 from datetime import datetime
-timestamp = datetime.now().strftime(...)
+timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+# 💡 GPT: DO NOT DELETE — used in generate_macro_from_prompt()
 import requests
+from logic.gpt_macro_engine import GPTMacroEngine
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -167,33 +170,21 @@ class MacroBuilder(ttk.Frame):
     def log_debug(self, message):
         with open("debug.log", "a", encoding="utf-8") as log:
             import datetime
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
             log.write(f"[{timestamp}] {message}\n")
 
+    
     def generate_macro_from_prompt(self):
         prompt = simpledialog.askstring("GPT Macro", "Введіть запит для GPT:")
         if not prompt:
             return
+        self.response_area.insert(tk.END, "⏳ GPT думає...\n")
+        threading.Thread(target=self._run_gpt_macro, args=(prompt,), daemon=True).start()
+
+    def _run_gpt_macro(self, prompt):
         try:
-            api_key = os.getenv("OPENAI_API_KEY")
-            api_url = "https://api.openai.com/v1/chat/completions"
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-            payload = {
-                "model": "gpt-3.5-turbo",
-                "messages": [
-                    {"role": "system", "content": "You generate macro steps in JSON for code automation."},
-                    {"role": "user", "content": prompt}
-                ],
-                "temperature": 0.5
-            }
-            res = requests.post(api_url, headers=headers, json=payload)
-            res.raise_for_status()
-            content = res.json()["choices"][0]["message"]["content"]
-            parsed = json.loads(content)
-            steps = parsed.get("steps", parsed if isinstance(parsed, list) else [])
+            engine = GPTMacroEngine()
+            steps = engine.generate_macro(prompt)
             self.steps.extend(steps)
             self.response_area.insert(tk.END, f"🤖 Додано {len(steps)} кроків від GPT\n")
             self.preview_macro()

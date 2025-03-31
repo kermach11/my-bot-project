@@ -4,8 +4,8 @@ import os
 
 
 def fetch_binance_data(symbol="BTCUSDT", interval="1m", limit=1000):
-    api_key = "CFVGHR2sE3CudLhc7BImmxw4CoSAkRWRX8PfaNxEVboLvYYp4R5mRdqQcBrz9yqL"
-    api_secret = "EpWMO4wRe6a6EQYWZf9kz7zsOG11dnTWw7blpRONaYSB2QLtR2IS925btvOLp9No"
+    api_key = ""
+    api_secret = ""
     client = Client(api_key, api_secret)
 
     klines = client.get_klines(symbol=symbol, interval=interval, limit=limit)
