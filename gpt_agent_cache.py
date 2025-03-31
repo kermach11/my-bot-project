@@ -688,6 +688,19 @@ def handle_command(cmd):
             from macros import run_macro  
             return run_macro(cmd)
         
+        elif action == "check_file_access":
+            filename = cmd.get("filename")
+            if filename:
+                filepath = os.path.join(base_path, filename)
+                if os.path.exists(filepath):
+                    result = f"✅ File exists: {filename}"
+                else:
+                    result = f"❌ File not found: {filename}"
+            else:
+                result = "❌ No filename provided"
+            print(result)
+            return {"status": "success", "message": result}
+
         elif action == "execute_macro":
             macro_name = cmd.get("macro_name")
             arguments = cmd.get("arguments", {})
