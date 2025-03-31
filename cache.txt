@@ -1,4 +1,4 @@
 {
   "action": "check_file_access",
-  "filename": "GPT_BEN_MANUAL_FULL"
+  "filename": "GPT_BEN_MANUAL_FULL.md"
 }
