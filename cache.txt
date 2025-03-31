@@ -1,4 +1,4 @@
 {
-  "action": "check_file_access",
+  "action": "read_file",
   "filename": "GPT_BEN_MANUAL_FULL.md"
 }
