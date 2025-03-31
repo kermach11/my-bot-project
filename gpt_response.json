@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Exception: [WinError 123] The filename, directory name, or volume label syntax is incorrect"
+    "message": "❌ Safe update failed: 'NoneType' object has no attribute 'loader'. Rolled back."
   }
 ]

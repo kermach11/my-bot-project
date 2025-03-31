@@ -754,7 +754,7 @@ def handle_command(cmd):
             return {"status": "error", "message": "❌ Syntax error in new function code"}
 
         if new_func_name:
-            existing_file_path = os.path.join(base_path, cmd["filename"])
+            existing_file_path = os.path.join(base_path, cmd["filename"].replace("/", os.sep))
             if os.path.exists(existing_file_path):
                 with open(existing_file_path, "r", encoding="utf-8") as f:
                     existing_ast = ast.parse(f.read())
@@ -816,12 +816,6 @@ def handle_command(cmd):
       
         elif action == "safe_update_code":
             result = handle_safe_update_code(cmd, base_path)
-
-            # 🧠 Додано захист, щоб уникнути .get() помилки
-            if result is None:
-                result = {"status": "error", "message": "❌ handle_safe_update_code не повернув результат"}
-
-            return result
 
         elif action == "update_code_bulk":
             return handle_update_code_bulk(cmd)
@@ -1371,15 +1365,10 @@ if __name__ == "__main__":
             result = handle_command(cmd)
             print("✅ Виконано:", result)
             responses.append(result)
-            if isinstance(result, dict):
-                log_action(result.get("message", str(result)))
-            else:
-                log_action(str(result))
-
-            if isinstance(result, dict) and result.get("status") == "success":
+            log_action(result.get("message", str(result)))
+            if result.get("status") == "success":
                 push_result = git_auto_push(f"✅ Auto-commit: {cmd.get('action')} {cmd.get('filename', '')}")
                 print(push_result.get('message', ''))
-
 
         if responses:
             for r in responses:

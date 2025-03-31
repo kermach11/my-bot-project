@@ -20,7 +20,3 @@ with open(cache_file, "w", encoding="utf-8") as f:
     json.dump(commands, f, indent=2, ensure_ascii=False)
 
 print("✅ Команди надіслані агенту через cache.txt!")
-
-import logging
-logging.basicConfig(level=logging.INFO)
-logging.info('ben_writer loaded')

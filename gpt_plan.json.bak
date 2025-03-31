@@ -1,0 +1,33 @@
+[
+    {
+      "action": "replace_in_file",
+      "filename": "ben_gui_desktop/ben_gui_v2.py",
+      "pattern": "^(import os)(\\s*\\n)+(import os)",
+      "replacement": "import os",
+      "update_type": "refactor"
+    },
+    {
+      "action": "append_file",
+      "filename": "main.py",
+      "content": "\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info('App started')",
+      "update_type": "logging"
+    },
+    {
+      "action": "append_file",
+      "filename": "ben_writer.py",
+      "content": "\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info('ben_writer loaded')",
+      "update_type": "logging"
+    },
+    {
+      "action": "safe_update_code",
+      "filename": "macro_builder.py",
+      "updates": [
+        {
+          "pattern": "^(import\\s+requests[^\n]*)",
+          "replacement": "# \\1  # 🧹 видалено — не використовується",
+          "update_type": "cleanup"
+        }
+      ]
+    }
+  ]
+  

@@ -6,7 +6,3 @@ if __name__ == "__main__":
 
 def print_hello():
     print("Hello!")
-
-import logging
-logging.basicConfig(level=logging.INFO)
-logging.info('App started')

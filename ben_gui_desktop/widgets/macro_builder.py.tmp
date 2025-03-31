@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 # 💡 GPT: DO NOT DELETE — used in generate_macro_from_prompt()
-import requests
+# import requests  # 🧹 видалено — не використовується
 from logic.gpt_macro_engine import GPTMacroEngine
 from dotenv import load_dotenv
 load_dotenv()
