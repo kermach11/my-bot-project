@@ -4,6 +4,7 @@ import json
 import time
 import os
 from datetime import datetime
+timestamp = datetime.now().strftime(...)
 import requests
 from dotenv import load_dotenv
 load_dotenv()
@@ -165,7 +166,8 @@ class MacroBuilder(ttk.Frame):
 
     def log_debug(self, message):
         with open("debug.log", "a", encoding="utf-8") as log:
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            import datetime
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             log.write(f"[{timestamp}] {message}\n")
 
     def generate_macro_from_prompt(self):

@@ -64,7 +64,13 @@ def execute_macro(macro_name, arguments=None):
     with open(macro_file, "r", encoding="utf-8") as f:
         macros = json.load(f)
 
-    macro_steps = macros.get(macro_name)
+    # 🔄 Пошук макросу по імені
+    macro_steps = None
+    for macro in macros:
+        if macro.get("macro_name") == macro_name:
+            macro_steps = macro.get("steps")
+            break
+
     if not macro_steps:
         return {"status": "error", "message": f"❌ Невідома макрокоманда: {macro_name}"}
 
@@ -79,12 +85,220 @@ def execute_macro(macro_name, arguments=None):
 
     return {"status": "success", "message": f"✅ Макрос '{macro_name}' виконано"}
 
+import shutil
+import datetime
+
+def backup_file(filepath):
+    timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    backup_path = filepath + f".backup_{timestamp}"
+    shutil.copy2(filepath, backup_path)
+
+def undo_last_backup(filepath):
+    backups = [f for f in os.listdir(base_path) if f.startswith(os.path.basename(filepath)) and ".backup_" in f]
+    backups.sort(reverse=True)
+    if backups:
+        last_backup = os.path.join(base_path, backups[0])
+        shutil.copy2(last_backup, filepath)
+        return {"status": "success", "message": f"✅ Restored from backup: {last_backup}"}
+    return {"status": "error", "message": "❌ No backup found"}
+
 import subprocess
+
+import datetime
 def write_debug_log(message):
     debug_log_path = os.path.join(base_path, "debug.log")
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     with open(debug_log_path, "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] {message}\n")
+
+def generate_macro_steps_from_prompt(prompt_text):
+    from openai import OpenAI
+    client = OpenAI(api_key=API_KEY)
+
+    system_prompt = """
+Ти асистент для генерації макрокоманд для кодувального агента.
+На основі запиту користувача створи JSON-масив macro-кроків у форматі:
+
+[
+  {"action": "create_file", "filename": "example.py", "content": "..."},
+  {"action": "update_code", "file_path": "example.py", "update_type": "logging"},
+  {"action": "run_python", "filename": "example.py"}
+]
+
+Поверни ТІЛЬКИ масив JSON без пояснень.
+"""
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt_text}
+        ]
+    )
+
+    try:
+        steps = json.loads(response.choices[0].message.content.strip())
+        return {"status": "success", "steps": steps}
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Не вдалося згенерувати кроки: {e}"}
+
+def self_improve_agent(filename="gpt_agent_cache.py"):
+    try:
+        filepath = os.path.join(base_path, filename)
+        with open(filepath, "r", encoding="utf-8") as f:
+            code = f.read()
+
+        prompt = f"""
+🔍 Ти GPT-агент, який аналізує свій власний код.  
+Файл: `{filename}`  
+Ось його вміст:
+
+{code}
+
+🧠 Визнач, які мікропокращення можна внести: оптимізації, спрощення, додавання перевірок або чистого рефакторингу.
+
+⚙️ Згенеруй Python-JSON обʼєкт із дією `safe_update_code`, у форматі:
+
+{{
+  "action": "safe_update_code",
+  "filename": "{filename}",
+  "updates": [
+    {{
+      "pattern": "REGEX-ПАТЕРН",
+      "replacement": "НОВИЙ КОД",
+      "update_type": "replace"
+    }}
+  ]
+}}
+
+Поверни тільки об'єкт JSON, без пояснень.
+"""
+
+        from openai import OpenAI
+        client = OpenAI(api_key=API_KEY)
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        result = json.loads(response.choices[0].message.content.strip())
+
+        # 💾 Зберігаємо результат для попереднього перегляду
+        with open("gpt_response.json", "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2, ensure_ascii=False)
+
+        # ⛑️ Автоматичне safe update
+        update_result = handle_safe_update_code(result, base_path)
+        return update_result
+
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Self-improvement failed: {e}"}
+def generate_improvement_plan():
+    try:
+        # 1. Отримати всі .py файли
+        files = scan_all_files(base_path, [".py"])
+        file_snippets = []
+
+        for path in files:
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    file_snippets.append({"file": path, "code": content[:2000]})  # до 2k символів
+            except:
+                continue
+
+        # 2. GPT prompt
+        prompt = f"""
+📁 У мене є Python-проєкт із такими файлами:
+{json.dumps(file_snippets, indent=2, ensure_ascii=False)}
+
+🧠 Згенеруй покращення для цього проєкту — список macro-кроків для рефакторингу, оптимізації, захисту або нового функціоналу.
+
+Поверни тільки JSON у форматі:
+
+{{
+  "action": "run_macro",
+  "steps": [ ... ]
+}}
+"""
+
+        from openai import OpenAI
+        client = OpenAI(api_key=API_KEY)
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        plan = json.loads(response.choices[0].message.content.strip())
+
+        # 💾 Зберігаємо в gpt_plan.json
+        with open("gpt_plan.json", "w", encoding="utf-8") as f:
+            json.dump(plan, f, indent=2, ensure_ascii=False)
+
+        return {"status": "success", "message": "📋 План збережено в gpt_plan.json", "steps": plan.get("steps", [])}
+
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Помилка Smart-планувальника: {e}"}
+
+def analyze_all_code():
+    try:
+        files = scan_all_files(base_path, [".py"])
+        file_snippets = []
+
+        for path in files:
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    file_snippets.append({"file": path, "code": content[:2000]})
+            except:
+                continue
+
+        prompt = f"""
+📁 Проаналізуй якість наступного Python-коду.  
+Перевір: дублікати функцій, відсутність логування, неефективні місця, погане структурування.
+
+Файли:
+{json.dumps(file_snippets, indent=2, ensure_ascii=False)}
+
+🧠 Поверни детальний звіт у форматі:
+{{
+  "status": "ok",
+  "recommendations": [ ... ]
+}}
+"""
+
+        from openai import OpenAI
+        client = OpenAI(api_key=API_KEY)
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        raw = response.choices[0].message.content.strip()
+
+        # 💾 Зберігаємо RAW-вивід для діагностики
+        with open("gpt_analysis_raw.txt", "w", encoding="utf-8") as f:
+            f.write(raw)
+
+        try:
+            report = json.loads(raw)
+        except Exception as e:
+            return {"status": "error", "message": f"❌ GPT не повернув валідний JSON: {e}"}
+
+        # 💾 Зберігаємо у звіт
+        with open("gpt_analysis.json", "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+
+        return {"status": "success", "message": "📊 Аналіз збережено в gpt_analysis.json"}
+
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Analyze failed: {e}"}
 
 def handle_run_shell(command):
     shell_cmd = command.get("command")
@@ -129,7 +343,7 @@ def is_valid_python_file(filepath):
 create_history_table()
 
 def log_action(message):
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     with open(history_file, "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] {message}\n")
 def get_command_by_id(target_id):
@@ -151,6 +365,65 @@ def ask_confirmation_for_rollback(prev_code, target_id):
     with open("gpt_response.json", "w", encoding="utf-8") as f:
         json.dump({"status": "awaiting_confirmation", "message": prompt, "target_id": target_id}, f, indent=2, ensure_ascii=False)
     return {"status": "paused", "message": "⏸️ Очікуємо підтвердження на відкат"}
+
+import importlib.util
+import shutil
+
+CRITICAL_FILES = [
+    "gpt_agent_cache.py",
+    "ben_writer.py",
+    "cache.txt",
+    "gpt_response.json",
+    "macro_commands.json"
+]
+
+def handle_safe_update_code(cmd, base_path):
+    filename = cmd.get("filename")
+    updates = cmd.get("updates", [])
+    filepath = os.path.join(base_path, filename)
+
+    if not os.path.exists(filepath):
+        return {"status": "error", "message": f"❌ File not found: {filename}"}
+
+    # 1. Create backup
+    backup_path = filepath + ".bak"
+    shutil.copyfile(filepath, backup_path)
+
+    # 2. Read original
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # 3. Apply updates
+    try:
+        for update in updates:
+            pattern = update["pattern"]
+            replacement = update["replacement"]
+            multiple = update.get("multiple", False)
+            flags = re.MULTILINE | re.DOTALL
+            if multiple:
+                content = re.sub(pattern, replacement, content, flags=flags)
+            else:
+                content = re.sub(pattern, replacement, content, count=1, flags=flags)
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Regex error: {str(e)}"}
+
+    # 4. Write to temp
+    tmp_path = filepath + ".tmp"
+    with open(tmp_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    # 5. Test: try import (only for .py files)
+    if filename.endswith(".py"):
+        try:
+            spec = importlib.util.spec_from_file_location("tmp_module", tmp_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+        except Exception as e:
+            return {"status": "error", "message": f"❌ Safe update failed: {str(e)}. Rolled back."}
+
+    # 6. All good — apply
+    shutil.move(tmp_path, filepath)
+    return {"status": "success", "message": f"✅ Safe update applied to {filename}"}
 
 def save_to_memory(cmd):
     memory_file = os.path.join(base_path, ".ben_memory.json")
@@ -228,6 +501,17 @@ def smart_deduplicate_insertion(existing_block, new_block):
 
 def handle_update_code(command):
     file_path = command.get('file_path')
+
+    # 🛡️ Захищені файли
+    protected_files = ["gpt_agent_cache.py", "cache.txt", "ben_gui_v2.py"]
+    filename = os.path.basename(file_path)
+    if filename in protected_files:
+        return {"status": "error", "message": f"❌ Cannot modify protected file: {filename}"}
+    
+    # ✅ Бекап перед змінами
+    if file_path and os.path.exists(file_path):
+        backup_file(file_path)
+
     update_type = command.get('update_type')  # 'validation', 'exceptions', 'logging', 'custom_insert', ...
     insert_at_line = command.get('insert_at_line')
     insert_code = command.get('code') 
@@ -323,13 +607,12 @@ def handle_update_code(command):
 
     return {"status": "success", "message": f"✅ Updated {file_path}"}
 
-
 def log_diff(filepath):
     try:
         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
         diff = result.stdout.strip()
         if diff:
-            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+            timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
             with open(history_file, "a", encoding="utf-8") as f:
                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
     except Exception as e:
@@ -468,6 +751,9 @@ def handle_command(cmd):
 
             result = apply_updates_to_file(full_path, updates)
             return {"status": "success", "message": f"✅ Updated {filepath}", "details": result}
+        
+        elif action == "safe_update_code":
+            result = handle_safe_update_code(cmd, base_path)
 
         elif action == "update_code_bulk":
             return handle_update_code_bulk(cmd)
@@ -479,6 +765,12 @@ def handle_command(cmd):
                 f.write(content)
             save_to_memory(cmd)
             return {"status": "success", "message": f"📌 Appended to file '{filename}'"}
+        
+        elif action == "undo_change":
+            ilename = cmd.get("filename")
+            result = undo_last_backup(os.path.join(base_path, filename))
+            results.append(result)
+
         elif action == "scan_all_files":
             result = {}
             for fname in os.listdir(base_path):
@@ -634,6 +926,19 @@ def handle_command(cmd):
             result = subprocess.run(["python", full_file_path], capture_output=True, text=True)
             return {"status": "success", "output": result.stdout, "errors": result.stderr}
         
+        elif action == "self_improve":
+            filename = cmd.get("filename", "gpt_agent_cache.py")
+            result = self_improve_agent(filename)
+            return result
+        
+        elif action == "smart_plan":
+             result = generate_improvement_plan()
+             return result
+        
+        elif action == "analyze_all_code":
+            result = analyze_all_code()
+            return result
+
         elif action == "test_gpt_api":
             try:
                 from openai import OpenAI
@@ -743,6 +1048,10 @@ def handle_command(cmd):
 
         elif action == "view_sql_history":
             return get_history()
+        
+        elif action == "safe_update":
+            result = handle_safe_update_code(cmd, base_path)
+            results.append(result)
 
         else:
             return {"status": "error", "message": f"❌ Unknown action: {action}"}
@@ -761,10 +1070,18 @@ def handle_command(cmd):
         except Exception as e:
             log_action(f"⚠️ SQLite save error: {e}")
 
-
     except Exception as e:
         traceback.print_exc()
+
+        # 🛠️ Спроба автодебагу при синтаксичній помилці
+        if "Syntax error" in str(e):
+            filepath = os.path.join(base_path, cmd.get("filename") or cmd.get("file_path", ""))
+            auto_result = attempt_autodebug(filepath, str(e))
+            return auto_result
+
         return {"status": "error", "message": f"❌ Exception: {str(e)}"}
+  
+    
 def run_self_tests():
     print("\n🧪 Running self-tests...")
     tests_passed = 0
@@ -895,6 +1212,14 @@ def handle_update_code_bulk(command):
         result = handle_update_code(update)
         results.append(result)
     return {"status": "success", "results": results}
+
+def scan_all_files(folder, extensions=None):
+    matched_files = []
+    for root, _, files in os.walk(folder):
+        for file in files:
+            if not extensions or any(file.endswith(ext) for ext in extensions):
+                matched_files.append(os.path.join(root, file))
+    return matched_files
    
 if __name__ == "__main__":
     import argparse
@@ -1003,6 +1328,40 @@ def fix_indentation(filepath):
         return {'status': 'success', 'message': f'🧹 Виправлені відступи в файлі {filepath}'}
     except Exception as e:
         return {'status': 'error', 'message': f'❌ Помилка виправлення відступів: {str(e)}'}
+    
+def attempt_autodebug(filepath, error_message):
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            faulty_code = f.read()
+
+        prompt = f"""
+🔍 У коді нижче виникла помилка під час виконання або компіляції:
+
+❌ Помилка:
+{error_message}
+
+📄 Код:
+{faulty_code}
+
+🎯 Виправ, будь ласка, код так, щоб помилка зникла. Поверни лише виправлений код, без пояснень.
+"""
+
+        from openai import OpenAI
+        client = OpenAI(api_key=API_KEY)
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        fixed_code = response.choices[0].message.content.strip()
+
+        backup_file(filepath)
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(fixed_code)
+
+        write_debug_log("🔁 Автовиправлення застосовано GPT")
+        return {"status": "success", "message": "✅ Автовиправлення застосовано"}
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Автовиправлення не вдалося: {e}"}
 
 import sqlite3
 

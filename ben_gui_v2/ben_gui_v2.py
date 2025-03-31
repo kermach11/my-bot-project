@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, Menu
 import json
 from datetime import datetime
+timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 from gpt_interpreter import interpret_user_prompt  # 🔌 Підключення інтерпретатора
 from gpt_agent_cache import handle_command, save_to_memory       # 🧠 Автовиконання команд
 from openai import OpenAI                          # 🧠 GPT API для пояснення коду
@@ -153,7 +154,8 @@ class BenAssistantGUI:
             self.create_new_chat()
 
     def create_new_chat(self):
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        import datetime
+        timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
         self.current_chat_file = f"chats/chat_{timestamp}.json"
         self.chat_history = []
         self.save_chat()

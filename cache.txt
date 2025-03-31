@@ -1,4 +1,32 @@
 {
-  "action": "read_file",
-  "filename": "GPT_BEN_MANUAL_FULL.md"
+  "action": "run_macro",
+  "macro_name": "smart_fix_basic_cleaning",
+  "steps": [
+    {
+      "action": "replace_in_file",
+      "filename": "get_binance_data.py",
+      "pattern": "^(import os)(\\s*\\n)+(import os)",
+      "replacement": "import os",
+      "update_type": "refactor"
+    },
+    {
+      "action": "replace_in_file",
+      "filename": "ben_gui_desktop/ben_gui.py",
+      "pattern": "^(import os)(\\s*\\n)+(import os)",
+      "replacement": "import os",
+      "update_type": "refactor"
+    },
+    {
+      "action": "append_file",
+      "filename": "main.py",
+      "content": "\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info('App started')",
+      "update_type": "logging"
+    },
+    {
+      "action": "append_file",
+      "filename": "ben_writer.py",
+      "content": "\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info('ben_writer loaded')",
+      "update_type": "logging"
+    }
+  ]
 }
