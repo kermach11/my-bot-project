@@ -4154,3 +4154,5 @@ A detailed migration guide is available here: https://github.com/openai/openai-p
 [2025-03-31 10:14:13] 📤 Git push: ✅ Auto-commit: check_file_access GPT_BEN_MANUAL_FULL
 [2025-03-31 10:23:14] ⚠️ Function 'is_valid_password' already exists in password_utils.py
 [2025-03-31 10:23:26] ✅ Макрос 'check_file_access' виконано
+[2025-03-31 10:23:29] 📤 Git push: ✅ Auto-commit: run_macro 
+[2025-03-31 10:37:33] ❌ File not found: GPT_BEN_MANUAL_FULL

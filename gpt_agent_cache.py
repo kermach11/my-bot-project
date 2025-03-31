@@ -187,6 +187,13 @@ def get_history():
     except Exception as e:
         return {"status": "error", "message": f"❌ Failed to fetch from SQLite: {e}"}
 
+def handle_check_file_access(filename):
+    filepath = os.path.join(base_path, filename)
+    if os.path.isfile(filepath):
+        return {"status": "success", "message": "✅ File exists"}
+    else:
+        return {"status": "error", "message": f"❌ File not found: {filename}"}
+
 def read_requests():
     if not os.path.exists(request_file):
         return []
@@ -684,6 +691,10 @@ def handle_command(cmd):
         elif action == "macro":
             return handle_macro(cmd)
         
+        elif cmd.get("action") == "check_file_access":
+            filename = cmd.get("filename")
+            return handle_check_file_access(filename)
+
         elif action == "run_macro":
             macro_name = cmd.get("macro_name")
             arguments = cmd.get("arguments", {})
