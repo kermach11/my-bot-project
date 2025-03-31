@@ -1,3 +1,4 @@
 {
-  "action": "scan_all_files"
+  "action": "check_status"
 }
+

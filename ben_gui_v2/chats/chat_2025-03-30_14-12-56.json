@@ -206,5 +206,17 @@
   {
     "role": "assistant",
     "content": "GPT: Згенеровано дію ✅ [id_004]"
+  },
+  {
+    "role": "user",
+    "content": "ти тут?"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_004]"
+  },
+  {
+    "role": "assistant",
+    "content": "🟢 Agent is running"
   }
 ]

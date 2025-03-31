@@ -1,7 +1,5 @@
 {
-  "run_shell": {
-    "command": "ls *.py"
-  },
-  "history_id": "cmd_001",
-  "target_id": "id_001"
+  "action": "check_status",
+  "history_id": "cmd_004",
+  "target_id": "id_004"
 }

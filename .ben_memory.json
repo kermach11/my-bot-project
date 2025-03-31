@@ -1,26 +1,5 @@
 [
   {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/widgets/parameter_form.py",
-    "content": "import tkinter as tk\nfrom tkinter import ttk\n\nclass ParameterForm(ttk.Frame):\n    def __init__(self, parent):\n        super().__init__(parent)\n        self.entries = {}\n        self.fields = [\n            \"filename\", \"content\", \"pattern\", \"replacement\",\n            \"update_type\", \"insert_at_line\", \"rollback_on_fail\"\n        ]\n\n        for field in self.fields:\n            row = ttk.Frame(self)\n            row.pack(fill=tk.X, pady=2)\n\n            ttk.Label(row, text=field + \":\", width=18).pack(side=tk.LEFT)\n            entry = ttk.Entry(row)\n            entry.pack(fill=tk.X, expand=True)\n            self.entries[field] = entry\n\n    def get_command_fields(self):\n        result = {}\n        for field, entry in self.entries.items():\n            value = entry.get().strip()\n            if value:\n                # Автоматично перетворюємо rollback_on_fail в bool\n                if field == \"rollback_on_fail\":\n                    result[field] = value.lower() in [\"true\", \"1\", \"yes\"]\n                elif field == \"insert_at_line\":\n                    try:\n                        result[field] = int(value)\n                    except ValueError:\n                        pass  # Ігноруємо некоректне число\n                else:\n                    result[field] = value\n        return result\n\n    def clear(self):\n        for entry in self.entries.values():\n            entry.delete(0, tk.END)",
-    "timestamp": "2025-03-28 17:12:19"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_gui_desktop/widgets/parameter_form.py",
-    "timestamp": "2025-03-28 17:12:22"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-28 17:13:06"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-28 17:13:39"
-  },
-  {
     "action": "git_push",
     "message": "✅ Auto-commit: update_code ",
     "timestamp": "2025-03-28 17:14:25"
@@ -570,5 +549,32 @@
     "history_id": "cmd_001",
     "target_id": "id_001",
     "timestamp": "2025-03-30 23:57:46"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: scan_all_files ",
+    "timestamp": "2025-03-30 23:58:38"
+  },
+  {
+    "run_macro": {
+      "macro_name": "GPT_BEN_MANUAL_FULL"
+    },
+    "history_id": "cmd_002",
+    "target_id": "id_002",
+    "timestamp": "2025-03-31 00:02:08"
+  },
+  {
+    "run_macro": {
+      "macro_name": "explain_last_action"
+    },
+    "history_id": "cmd_003",
+    "target_id": "id_003",
+    "timestamp": "2025-03-31 00:03:20"
+  },
+  {
+    "action": "check_status",
+    "history_id": "cmd_004",
+    "target_id": "id_004",
+    "timestamp": "2025-03-31 00:04:07"
   }
 ]
