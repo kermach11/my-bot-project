@@ -1,4 +1,7 @@
 {
-  "action": "check_status"
+  "action": "execute_macro",
+  "macro_name": "check_file_access",
+  "arguments": {
+    "filename": "GPT_BEN_MANUAL_FULL"
+  }
 }
-

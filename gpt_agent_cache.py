@@ -47,6 +47,38 @@ def backup_file(filepath):
     if not os.path.exists(bak_path):
         shutil.copy(filepath, bak_path)
 
+import re
+
+def substitute_arguments(command_str, arguments):
+    if not arguments:
+        return command_str
+    for key, value in arguments.items():
+        command_str = command_str.replace(f"{{{{{key}}}}}", str(value))
+    return command_str
+
+def execute_macro(macro_name, arguments=None):
+    macro_file = os.path.join(base_path, "macro_commands.json")
+    if not os.path.isfile(macro_file):
+        return {"status": "error", "message": "❌ macro_commands.json not found"}
+
+    with open(macro_file, "r", encoding="utf-8") as f:
+        macros = json.load(f)
+
+    macro_steps = macros.get(macro_name)
+    if not macro_steps:
+        return {"status": "error", "message": f"❌ Невідома макрокоманда: {macro_name}"}
+
+    for step in macro_steps:
+        for action, params in step.items():
+            if action == "run_shell":
+                command = substitute_arguments(params["command"], arguments)
+                result = os.popen(command).read().strip()
+                print(result)
+            else:
+                print(f"❌ Unknown macro step action: {action}")
+
+    return {"status": "success", "message": f"✅ Макрос '{macro_name}' виконано"}
+
 import subprocess
 def write_debug_log(message):
     debug_log_path = os.path.join(base_path, "debug.log")
@@ -415,9 +447,21 @@ def handle_command(cmd):
             return {"status": "success", "message": f"✅ Created file '{filename}'"}
 
         elif action == "update_code":
-            filepath = os.path.join(base_path, cmd["file"])
-            backup_file(filepath)  
-            return handle_update_code(cmd)
+            filepath = cmd.get("file_path") or cmd.get("file")
+            if not filepath:
+                return {"status": "error", "message": "❌ Missing 'file_path'"}
+
+            full_path = os.path.join(base_path, filepath)
+            if not os.path.isfile(full_path):
+                return {"status": "error", "message": f"❌ File not found: {filepath}"}
+
+            updates = cmd.get("updates", [])
+            if not updates:
+                return {"status": "error", "message": "❌ No updates provided"}
+
+            result = apply_updates_to_file(full_path, updates)
+            return {"status": "success", "message": f"✅ Updated {filepath}", "details": result}
+
         elif action == "update_code_bulk":
             return handle_update_code_bulk(cmd)
 
@@ -643,7 +687,12 @@ def handle_command(cmd):
         elif action == "run_macro":
             from macros import run_macro  
             return run_macro(cmd)
-
+        
+        elif action == "execute_macro":
+            macro_name = cmd.get("macro_name")
+            arguments = cmd.get("arguments", {})
+            return execute_macro(macro_name, arguments)
+        
         elif cmd["action"] == "run_shell":
             return handle_run_shell(cmd)
 
@@ -860,7 +909,7 @@ if __name__ == "__main__":
         print(f"[AUTO] {auto.get('message')}")
     except Exception as e:
         print(f"[AUTO] ❌ Помилка автозапуску: {e}")
-        
+
     while True:
         commands = read_requests()
         print("📩 Отримано команди:", commands)

@@ -1,5 +1,9 @@
 {
-  "action": "check_status",
-  "history_id": "cmd_004",
-  "target_id": "id_004"
+  "action": "run_macro",
+  "macro_name": "check_file_access",
+  "arguments": {
+    "filename": "GPT_BEN_MANUAL_FULL"
+  },
+  "history_id": "cmd_002",
+  "target_id": "id_003"
 }

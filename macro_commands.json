@@ -1,0 +1,10 @@
+{
+    "check_file_access": [
+      {
+        "run_shell": {
+          "command": "if exist GPT_BEN_MANUAL_FULL (echo ✅ File exists) else (echo ❌ File not found)"
+        }
+      }
+    ]
+  }
+  
