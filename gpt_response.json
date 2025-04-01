@@ -1,6 +1,6 @@
 [
   {
-    "status": "error",
-    "message": "❌ Файл 'password_validator.py' не знайдено — не можна додати."
+    "status": "skipped",
+    "message": "⚠️ Function 'is_valid_password' already exists in password_utils.py"
   }
 ]
