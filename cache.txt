@@ -1,6 +1,7 @@
 {
-  "action": "run_shell",
-  "command": "echo 'Так, я тут!'",
-  "history_id": "cmd_003",
-  "target_id": "id_003"
+  "action": "append_file",
+  "filename": "log.txt",
+  "content": "Assistant was checked for presence.",
+  "history_id": "cmd_001",
+  "target_id": "id_001"
 }

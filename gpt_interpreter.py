@@ -96,6 +96,9 @@ def interpret_user_prompt(prompt, context_code=None, history_context=False, retu
     if raw_retry.endswith("```"):
         raw_retry = raw_retry[:-3]
     raw_retry = raw_retry.strip()
+    
+    if 'self' in globals():
+        self.chat_display.insert(tk.END, f"🤖 Smart Loop GPT: {raw_retry}\n", "gpt_action")
 
     print("[SMART LOOP GPT RAW OUTPUT]\n", raw_retry)
 

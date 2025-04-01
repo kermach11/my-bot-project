@@ -24,7 +24,7 @@ def generate_ai_insight(response_json):
 - Що рекомендуєш покращити?
 - Який наступний логічний крок?
 
-Ось відповідь:
+Ось відповідь:З
 {json.dumps(response_json, indent=2, ensure_ascii=False)}
 """
 
@@ -444,6 +444,10 @@ class BenAssistantGUI:
                         history_context=True,
                         return_data=True
                     )
+                    
+                    gpt_text = response_json.get("comment") or response_json.get("message") or "🤖 GPT: Дія сформована."
+                    self.chat_display.insert(tk.END, f"{gpt_text}\n", "gpt_action")
+                    self.chat_display.see(tk.END)
 
                     if not response_json:
                         prompt = "❌ GPT не дав валідної дії. Повторити спробу."
@@ -473,6 +477,7 @@ class BenAssistantGUI:
                     try:
                         ai_insight = generate_ai_insight(result)
                         self.chat_display.insert(tk.END, f"🧠 AI Insight: {ai_insight}\n", "gpt_action")
+                        self.chat_display.insert(tk.END, f"🗣️ GPT Feedback:\n{ai_insight}\n", "gpt_action")
                     except Exception as insight_err:
                         print("⚠️ AI Insight помилка:", insight_err)
                     # 💡 Smart Suggestion — наступний крок GPT
