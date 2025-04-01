@@ -445,12 +445,16 @@ class BenAssistantGUI:
                         return_data=True
                     )
                     
+                    print("🔍 DEBUG: Відповідь GPT:", response_json)
+
                     gpt_text = response_json.get("comment") or response_json.get("message") or "🤖 GPT: Дія сформована."
                     self.chat_display.insert(tk.END, f"{gpt_text}\n", "gpt_action")
                     self.chat_display.see(tk.END)
 
                     if not response_json:
-                        prompt = "❌ GPT не дав валідної дії. Повторити спробу."
+                        self.chat_display.insert(tk.END, "❌ GPT не повернув валідну дію.\n", "gpt_action")
+                        self.chat_display.see(tk.END)
+                        prompt = "❌ GPT не дав дії. Повторити..."
                         continue
 
                     # 3. Присвоюємо унікальний ID
