@@ -71,6 +71,7 @@ def interpret_user_prompt(prompt, context_code=None, history_context=False, retu
             with open("cache.txt", "w", encoding="utf-8") as f:
                 f.write(json.dumps(data, indent=2, ensure_ascii=False))
             print("✅ Збережено в cache.txt")
+            print("📤 GPT final JSON:", json.dumps(data, indent=2, ensure_ascii=False))
             if return_data:
                 return data
             else:

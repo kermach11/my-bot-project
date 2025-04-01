@@ -429,7 +429,7 @@ class BenAssistantGUI:
             self.chat_display.insert(tk.END, "🧠 Autopilot увімкнено. GPT сам керує діями...\n", "gpt_action")
             self.chat_display.see(tk.END)
 
-            prompt = "Додай print('Hello') у файл hello.py"
+            prompt = "Просто скажи Привіт"
 
             while True:
                 try:
@@ -447,7 +447,8 @@ class BenAssistantGUI:
                     
                     print("🔍 DEBUG: Відповідь GPT:", response_json)
                     print("🧠 DEBUG response_json:", response_json)
-                   
+                    print("✅ Перевірка JSON пройдена.")
+
                     if not isinstance(response_json, dict):
                         self.chat_display.insert(tk.END, f"⚠️ GPT повернув не JSON: {response_json}\n", "gpt_action")
                         self.chat_display.see(tk.END)
