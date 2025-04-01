@@ -1,5 +1,7 @@
 {
   "action": "append_file",
   "filename": "log.txt",
-  "content": "New entry added to the log.\n"
+  "content": "User asked if assistant is present on 2025-03-31 at 19:23:00.",
+  "history_id": "cmd_002",
+  "target_id": "id_002"
 }
