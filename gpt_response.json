@@ -1,6 +1,6 @@
 [
   {
-    "status": "error",
-    "message": "❌ Файл 'password_checker.py' не знайдено — не можна додати."
+    "status": "success",
+    "message": "📌 Appended to file 'log.txt'"
   }
 ]
