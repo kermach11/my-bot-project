@@ -62,8 +62,6 @@ def backup_file(filepath):
         except Exception as e:
             print(f"❌ Помилка резервування: {e}")
 
-import re
-
 def substitute_arguments(command_str, arguments):
     if not arguments:
         return command_str
@@ -79,7 +77,6 @@ def execute_macro(macro_name, arguments=None):
     with open(macro_file, "r", encoding="utf-8") as f:
         macros = json.load(f)
 
-    # 🔄 Пошук макросу по імені
     macro_steps = None
     for macro in macros:
         if macro.get("macro_name") == macro_name:
@@ -92,28 +89,39 @@ def execute_macro(macro_name, arguments=None):
     for step in macro_steps:
         if isinstance(step, dict):
             if "action" in step:
-                # 🟢 Плоский формат: { "action": "...", "filename": "...", ... }
                 action = step["action"]
-                params = {k: v for k, v in step.items() if k != "action"}
+                params = {k: substitute_arguments(v, arguments) if isinstance(v, str) else v for k, v in step.items() if k != "action"}
             else:
-                # 🔵 Класичний формат: { "replace_in_file": { ... } }
-                action, params = next(iter(step.items()))
+                action, raw_params = next(iter(step.items()))
+                params = {k: substitute_arguments(v, arguments) if isinstance(v, str) else v for k, v in raw_params.items()}
         else:
             print("⚠️ Невірний формат кроку макросу, пропускаю...")
             continue
 
         if action == "run_shell":
-            command = substitute_arguments(params["command"], arguments)
-            result = os.popen(command).read().strip()
-            print(result)
+            try:
+                result = subprocess.run(params["command"], shell=True, capture_output=True, text=True)
+                print(result.stdout.strip())
+            except Exception as e:
+                print(f"❌ Shell помилка: {e}")
         else:
-            # Вставка виконання стандартних дій (replace, append, update_code, тощо)
-            response = handle_command({ "action": action, **params })
+            response = handle_command({"action": action, **params})
             print(response.get("message", f"✅ {action} виконано"))
 
     return {"status": "success", "message": f"✅ Макрос '{macro_name}' виконано"}
 
-import shutil
+def run_macro():
+    try:
+        with open("macro_command.json", "r", encoding="utf-8") as f:
+            macro = json.load(f)
+        steps = macro.get("steps", [])
+        for step in steps:
+            print(f"📤 Крок: {step.get('action', '...')} надіслано")
+            result = handle_command(step)
+            print("✅ Виконано:", result)
+        return {"status": "success", "message": "✅ Макрос виконано"}
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Макрос помилка: {e}"}
 
 def undo_last_backup(filepath):
     backups = [f for f in os.listdir(base_path) if f.startswith(os.path.basename(filepath)) and ".backup_" in f]
@@ -123,8 +131,6 @@ def undo_last_backup(filepath):
         shutil.copy2(last_backup, filepath)
         return {"status": "success", "message": f"✅ Restored from backup: {last_backup}"}
     return {"status": "error", "message": "❌ No backup found"}
-
-import subprocess
 
 def write_debug_log(message):
     debug_log_path = os.path.join(base_path, "debug.log")
@@ -441,8 +447,8 @@ def handle_safe_update_code(cmd, base_path):
     updates = cmd.get("updates", [])
     filepath = os.path.join(base_path, filename)
 
-    if not os.path.exists(filepath):
-        return {"status": "error", "message": f"❌ File not found: {filename}"}
+    if not os.path.exists(filepath) or not os.path.isfile(filepath):
+        return {"status": "error", "message": f"❌ Файл не знайдено або це не файл: {filename}"}
 
     # 🔧 Додаємо base_path у sys.path
     import sys
@@ -460,9 +466,20 @@ def handle_safe_update_code(cmd, base_path):
     # 3. Apply updates
     try:
         for update in updates:
-            pattern = update["pattern"]
-            replacement = update["replacement"]
+            pattern = update.get("pattern", "")
+            if not pattern.strip():
+                return {"status": "error", "message": "❌ Порожній regex pattern — зміни скасовано."}
+            try:
+                re.compile(pattern)
+            except re.error as regex_error:
+                return {"status": "error", "message": f"❌ Некоректний regex pattern: {regex_error}"}
+
+            replacement = update.get("replacement", "")
             multiple = update.get("multiple", False)
+
+            if not pattern.strip():
+                return {"status": "error", "message": "❌ Пропущено — pattern не вказано або порожній"}
+
             flags = re.MULTILINE | re.DOTALL
             if multiple:
                 content = re.sub(pattern, replacement, content, flags=flags)
@@ -763,9 +780,9 @@ def handle_analyze_json(cmd, base_path="."):
         return {"status": "error", "message": "❌ Не вказано 'filename'"}
     
     filepath = os.path.join(base_path, filename)
-    if not os.path.exists(filepath):
-        return {"status": "error", "message": f"❌ Файл не знайдено: {filepath}"}
-    
+    if not os.path.exists(filepath) or not os.path.isfile(filepath):
+        return {"status": "error", "message": f"❌ Файл не знайдено або це не файл: {filename}"}
+   
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
@@ -893,6 +910,8 @@ def handle_command(cmd):
             filename = cmd["filename"]
             content = cmd["content"]
             filepath = os.path.join(base_path, filename)
+            if not os.path.exists(filepath):
+                return {"status": "error", "message": f"❌ Файл '{filename}' не знайдено — не можна додати."}
             backup_file(filepath)
 
             with open(filepath, "a", encoding="utf-8") as f:
@@ -958,6 +977,9 @@ def handle_command(cmd):
 
             if filename in ["config.py", "api_keys.py", "cache.txt"]:
                 return {"status": "error", "message": f"❌ Заборонено змінювати критичний файл: {filename}"}
+
+            if not os.path.exists(full_file_path):
+                return {"status": "error", "message": f"❌ Файл '{filename}' не знайдено для заміни"}
 
             if os.path.exists(full_file_path):
                 with open(full_file_path, "r", encoding="utf-8") as f:
@@ -1169,10 +1191,14 @@ def handle_command(cmd):
         elif action == "run_macro":
             macro_name = cmd.get("macro_name")
             arguments = cmd.get("arguments", {})
-            if not macro_name:
-                return {"status": "error", "message": "❌ No macro_name provided"}
-            return execute_macro(macro_name, arguments)
+            if macro_name:
+                return execute_macro(macro_name, arguments)
+            else:
+                return run_macro()  # fallback для macro_command.json
 
+        elif action == "run_macro_from_file":
+            return execute_macro_from_file()
+   
         elif action == "check_file_access":
             filename = cmd.get("filename")
             if filename:
@@ -1386,7 +1412,20 @@ def scan_all_files(folder, extensions=None):
             if not extensions or any(file.endswith(ext) for ext in extensions):
                 matched_files.append(os.path.join(root, file))
     return matched_files
-   
+
+def execute_macro_from_file():
+    try:
+        with open("macro_command.json", "r", encoding="utf-8") as f:
+            macro = json.load(f)
+        steps = macro.get("steps", [])
+        for step in steps:
+            print(f"📤 Крок: {step.get('action', '...')} надіслано")
+            result = handle_command(step)
+            print("✅ Виконано:", result)
+        return {"status": "success", "message": "✅ Макрос з macro_command.json виконано"}
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Помилка виконання макросу з файлу: {e}"}
+
 if __name__ == "__main__":
     import argparse
     import sys

@@ -1,5 +1,5 @@
 [
   {
-    "action": "check_status"
+    "action": "run_macro_from_file"
   }
 ]

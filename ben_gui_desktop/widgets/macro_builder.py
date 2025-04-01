@@ -106,6 +106,10 @@ class MacroBuilder(ttk.Frame):
                 else:
                     step[key] = value
         if step:
+            step["description"] = f"Дія: {step.get('action', '')} на {step.get('filename', '')}"
+            step["timestamp"] = datetime.utcnow().isoformat()
+            step["type"] = "custom"
+            
             self.steps.append(step)
             self.listbox.insert(tk.END, step.get("action", "[No action]"))
             for var in self.field_vars.values():

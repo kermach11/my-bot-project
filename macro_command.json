@@ -1,0 +1,11 @@
+{
+    "action": "macro",
+    "steps": [
+      {
+        "action": "append_file",
+        "filename": "test_macro.py",
+        "content": "\ndef test_macro():\n    print('Привіт із макросу!')\n"
+      }
+    ]
+  }
+  
