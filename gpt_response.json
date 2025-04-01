@@ -1,6 +1,6 @@
 [
   {
-    "status": "error",
-    "message": "❌ Файл 'gpt_comment.txt' не знайдено — не можна додати."
+    "status": "success",
+    "message": "✅ Shell OK: 'Checking if Cygwin is installed' \n'Cygwin is not installed. Please install it from https://cygwin.com/'"
   }
 ]

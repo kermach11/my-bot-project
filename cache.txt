@@ -1,7 +1,5 @@
 {
   "action": "run_shell",
-  "command": "echo 'Checking if Cygwin is installed' && cygcheck -c cygwin || echo 'Cygwin is not installed. Please install it from https://cygwin.com/'",
-  "comment": "🤖 GPT створив дію, але не залишив коментар.",
-  "history_id": "cmd_007",
-  "target_id": "id_007"
+  "command": "echo 'Cygwin is not installed. Please install it from https://cygwin.com/'",
+  "comment": "🤖 GPT створив дію, але не залишив коментар."
 }
