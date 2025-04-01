@@ -1,5 +1,4 @@
 {
-  "action": "append_file",
-  "filename": "ben_gui_desktop/widgets/__init__.py",
-  "content": "# Ініціалізація модуля widgets\n"
+  "action": "analyze_json",
+  "filename": "gpt_plan.json"
 }

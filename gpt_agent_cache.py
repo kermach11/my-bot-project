@@ -19,27 +19,34 @@ def handle_command(cmd):
             return {"status": "error", "message": "❌ Заборонено змінювати або комітити файл 'env'"}
 
 import os
+import sys
 import json
-from colorama import init, Fore, Style
-init()
 import time
 import re
 import ast
 import shutil
 import subprocess
 import traceback
+import sqlite3
 from datetime import datetime, timezone
-from config import base_path, request_file, response_file, history_file
-from config import API_KEY
-import os
+from colorama import init, Fore, Style
 from dotenv import load_dotenv
+
+init()
+
+# 🧠 Завантаження змінних середовища
 load_dotenv("C:/Users/DC/env_files/env")
-import os
-API_KEY = os.getenv("OPENAI_API_KEY")
+
+# 🧩 Додавання base_path до sys.path для імпорту
+if os.getcwd() not in sys.path:
+    sys.path.append(os.getcwd())
+
+# ⚙️ Імпорт конфігурації
+from config import base_path, request_file, response_file, history_file, API_KEY
+
+# 🧠 GPT-інтерпретація
 from gpt_interpreter import interpret_user_prompt
 interpret_user_prompt("створи функцію, яка перевіряє, чи пароль має щонайменше 8 символів")
-
-import sqlite3
 
 def backup_file(filepath):
     if not filepath or not os.path.isfile(filepath):
@@ -107,7 +114,6 @@ def execute_macro(macro_name, arguments=None):
     return {"status": "success", "message": f"✅ Макрос '{macro_name}' виконано"}
 
 import shutil
-import datetime
 
 def undo_last_backup(filepath):
     backups = [f for f in os.listdir(base_path) if f.startswith(os.path.basename(filepath)) and ".backup_" in f]
@@ -120,10 +126,9 @@ def undo_last_backup(filepath):
 
 import subprocess
 
-import datetime
 def write_debug_log(message):
     debug_log_path = os.path.join(base_path, "debug.log")
-    timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     with open(debug_log_path, "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] {message}\n")
 
@@ -397,7 +402,7 @@ def is_valid_python_file(filepath):
 create_history_table()
 
 def log_action(message):
-    timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     with open(history_file, "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] {message}\n")
 def get_command_by_id(target_id):
@@ -439,6 +444,11 @@ def handle_safe_update_code(cmd, base_path):
     if not os.path.exists(filepath):
         return {"status": "error", "message": f"❌ File not found: {filename}"}
 
+    # 🔧 Додаємо base_path у sys.path
+    import sys
+    if base_path not in sys.path:
+        sys.path.append(base_path)
+
     # 1. Create backup
     backup_path = filepath + ".bak"
     shutil.copyfile(filepath, backup_path)
@@ -466,16 +476,26 @@ def handle_safe_update_code(cmd, base_path):
     with open(tmp_path, "w", encoding="utf-8") as f:
         f.write(content)
 
-    # 5. Test: try import (only for .py files)
+    # 5. Синтаксична перевірка через ast
     if filename.endswith(".py"):
         try:
-            spec = importlib.util.spec_from_file_location("tmp_module", tmp_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
+            with open(tmp_path, "r", encoding="utf-8") as f:
+                code = f.read()
+                ast.parse(code)  # 🛡️ Перевірка на синтаксичну валідність
         except Exception as e:
-            return {"status": "error", "message": f"❌ Safe update failed: {str(e)}. Rolled back."}
+            return {"status": "error", "message": f"❌ Syntax error: {str(e)}. Rolled back."}
 
-    # 6. All good — apply
+        # 6. (опціонально) Повна перевірка імпорту
+        try:
+            spec = importlib.util.spec_from_file_location("tmp_module", tmp_path)
+            if spec and spec.loader:
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+        except Exception as e:
+            return {"status": "error", "message": f"❌ Import error: {str(e)}. Rolled back."}
+
+
+    # 7. All good — apply
     shutil.move(tmp_path, filepath)
     return {"status": "success", "message": f"✅ Safe update applied to {filename}"}
 
@@ -666,7 +686,7 @@ def log_diff(filepath):
         result = subprocess.run(["git", "diff", filepath], capture_output=True, text=True)
         diff = result.stdout.strip()
         if diff:
-            timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
             with open(history_file, "a", encoding="utf-8") as f:
                 f.write(f"[DIFF {timestamp}] File: {filepath}\n{diff}\n---\n")
     except Exception as e:
@@ -736,6 +756,49 @@ def handle_macro(cmd):
             }
 
     return {"status": "success", "steps": results}
+
+def handle_analyze_json(cmd, base_path="."):
+    filename = cmd.get("filename")
+    if not filename:
+        return {"status": "error", "message": "❌ Не вказано 'filename'"}
+    
+    filepath = os.path.join(base_path, filename)
+    if not os.path.exists(filepath):
+        return {"status": "error", "message": f"❌ Файл не знайдено: {filepath}"}
+    
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read()
+        data = json.loads(content)  # валідність
+    except Exception as e:
+        return {"status": "error", "message": f"❌ JSON помилка: {e}"}
+    
+    from openai import OpenAI
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+    prompt = f"""
+Проаналізуй наступний JSON і дай поради:
+- чи добре структуровано?
+- що можна покращити?
+- чи є логічні проблеми?
+
+Ось JSON:
+{json.dumps(data, indent=2, ensure_ascii=False)}
+"""
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    reply = response.choices[0].message.content.strip()
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    out_path = f"gpt_json_analysis_{timestamp}.txt"
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(reply)
+
+    return {"status": "success", "message": f"📄 Збережено аналіз у {out_path}"}
+
 
 def handle_command(cmd):
     if not isinstance(cmd, dict):
@@ -1038,6 +1101,9 @@ def handle_command(cmd):
         elif action == "analyze_all_code":
             result = analyze_all_code()
             return result
+        
+        elif action == "analyze_json":
+             return handle_analyze_json(cmd, base_path)
 
         elif action == "test_gpt_api":
             try:

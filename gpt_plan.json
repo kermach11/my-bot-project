@@ -1,0 +1,9 @@
+[
+    {
+      "action": "replace_in_file",
+      "filename": "main.py",
+      "pattern": "old_value",
+      "replacement": "new_value"
+    }
+  ]
+  

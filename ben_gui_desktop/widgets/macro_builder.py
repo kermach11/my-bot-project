@@ -4,8 +4,8 @@ from tkinter import ttk, messagebox, simpledialog
 import json
 import time
 import os
-from datetime import datetime
-timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+from datetime import datetime, timezone
+timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 # 💡 GPT: DO NOT DELETE — used in generate_macro_from_prompt()
 import requests
 from logic.gpt_macro_engine import GPTMacroEngine
@@ -168,12 +168,11 @@ class MacroBuilder(ttk.Frame):
             json.dump(memory, f, indent=2)
 
     def log_debug(self, message):
+        from datetime import datetime, timezone
         with open("debug.log", "a", encoding="utf-8") as log:
-            import datetime
-            timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
             log.write(f"[{timestamp}] {message}\n")
 
-    
     def generate_macro_from_prompt(self):
         prompt = simpledialog.askstring("GPT Macro", "Введіть запит для GPT:")
         if not prompt:
