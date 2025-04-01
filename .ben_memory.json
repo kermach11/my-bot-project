@@ -1,16 +1,5 @@
 [
   {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/widgets/git_log_viewer.py",
-    "content": "import tkinter as tk\nfrom tkinter import ttk, scrolledtext\nimport subprocess\n\nclass GitLogViewer(ttk.Frame):\n    def __init__(self, parent):\n        super().__init__(parent)\n        ttk.Label(self, text=\"🕘 Git Log\").pack(anchor=\"w\")\n        self.text_area = scrolledtext.ScrolledText(self, height=10, wrap=tk.WORD)\n        self.text_area.pack(fill=tk.BOTH, expand=True)\n\n        refresh_btn = ttk.Button(self, text=\"🔄 Оновити Git Log\", command=self.load_git_log)\n        refresh_btn.pack(pady=5)\n\n    def load_git_log(self):\n        try:\n            output = subprocess.check_output([\"git\", \"log\", \"-n\", \"10\", \"--oneline\"], stderr=subprocess.STDOUT, text=True)\n            self.text_area.delete(\"1.0\", tk.END)\n            self.text_area.insert(tk.END, output)\n            self.text_area.see(tk.END)\n        except subprocess.CalledProcessError as e:\n            self.text_area.insert(tk.END, f\"❌ Git Error: {e.output}\\n\")",
-    "timestamp": "2025-03-28 17:34:34"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_gui_desktop/widgets/git_log_viewer.py",
-    "timestamp": "2025-03-28 17:34:37"
-  },
-  {
     "action": "git_push",
     "message": "✅ Auto-commit: update_code ",
     "timestamp": "2025-03-28 17:35:10"
@@ -583,5 +572,16 @@
     "action": "git_push",
     "message": "✅ Auto-commit: append_file password_utils.py",
     "timestamp": "2025-04-01 10:48:57"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: run_macro_from_file ",
+    "timestamp": "2025-04-01 10:59:49"
+  },
+  {
+    "action": "append_file",
+    "filename": "test_macro.py",
+    "content": "\ndef test_macro():\n    print('Привіт із макросу!')\n",
+    "timestamp": "2025-04-01 11:04:40"
   }
 ]

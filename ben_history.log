@@ -4246,3 +4246,7 @@ A detailed migration guide is available here: https://github.com/openai/openai-p
 [2025-04-01 10:48:57] 📤 Git push: ✅ Auto-commit: append_file password_utils.py
 [2025-04-01 10:59:35] ❌ Unknown action: run_macro_from_file
 [2025-04-01 10:59:35] ✅ Макрос з macro_command.json виконано
+[2025-04-01 10:59:49] 📤 Git push: ✅ Auto-commit: run_macro_from_file 
+[2025-04-01 11:04:10] ❌ Unknown action: run_macro_from_file
+[2025-04-01 11:04:41] ✅ Макрос з macro_command.json виконано
+[2025-04-01 11:04:41] ❌ Unknown action: run_macro_from_file
