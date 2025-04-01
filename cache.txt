@@ -1,5 +1,0 @@
-{
-  "action": "append_file",
-  "filename": "password_utils.py",
-  "content": "\ndef is_password_strong(password):\n    return len(password) >= 8\n"
-}

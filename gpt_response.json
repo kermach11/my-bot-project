@@ -1,6 +1,6 @@
 [
   {
-    "status": "skipped",
-    "message": "⚠️ Function 'is_valid_password' already exists in password_utils.py"
+    "status": "error",
+    "message": "❌ Unknown action: run_macro_from_file"
   }
 ]
