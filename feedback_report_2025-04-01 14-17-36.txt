@@ -1,0 +1,4 @@
+{
+  "action": "run_macro",
+  "cmd": "provide the missing command"
+}

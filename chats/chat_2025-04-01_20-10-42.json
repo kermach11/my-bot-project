@@ -1,0 +1,14 @@
+[
+  {
+    "role": "user",
+    "content": "ти тут?"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_001]"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Файл 'log.txt' не знайдено — не можна додати."
+  }
+]

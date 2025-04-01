@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Unknown action: run_macro_from_file"
+    "message": "❌ Файл 'password_checker.py' не знайдено — не можна додати."
   }
 ]

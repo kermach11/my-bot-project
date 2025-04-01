@@ -1,9 +1,5 @@
 {
-  "action": "run_macro",
-  "macro_name": "check_file_access",
-  "arguments": {
-    "filename": "GPT_BEN_MANUAL_FULL"
-  },
-  "history_id": "cmd_002",
-  "target_id": "id_003"
+  "action": "append_file",
+  "filename": "password_checker.py",
+  "content": "def is_valid_password(password):\n    return len(password) >= 8\n"
 }

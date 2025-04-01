@@ -1,4 +1,5 @@
 def handle_command(cmd):
+    create_history_table()
     # 🧠 Обробка підтвердження rollback
     if cmd.get("action") in ["yes", "no"] and cmd.get("target_id"):
         target_id = cmd["target_id"]
@@ -29,10 +30,21 @@ import subprocess
 import traceback
 import sqlite3
 from datetime import datetime, timezone
-from colorama import init, Fore, Style
-from dotenv import load_dotenv
 
-init()
+from colorama import init as colorama_init, Fore, Style
+colorama_init()
+from dotenv import load_dotenv
+from init_history_db import create_history_table
+
+# 🧠 Завантаження змінних середовища (з перевіркою)
+env_path = "C:/Users/DC/env_files/env"
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    print(Fore.YELLOW + f"⚠️ Файл .env не знайдено: {env_path}" + Style.RESET_ALL)
+
+# 🧱 Створення таблиці історії команд
+create_history_table()
 
 # 🧠 Завантаження змінних середовища
 load_dotenv("C:/Users/DC/env_files/env")
@@ -43,6 +55,22 @@ if os.getcwd() not in sys.path:
 
 # ⚙️ Імпорт конфігурації
 from config import base_path, request_file, response_file, history_file, API_KEY
+import sqlite3
+
+def create_history_table():
+    conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS command_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            action TEXT,
+            file_path TEXT,
+            update_type TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
 # 🧠 GPT-інтерпретація
 from gpt_interpreter import interpret_user_prompt
@@ -1246,7 +1274,7 @@ def handle_command(cmd):
             results.append(result)
 
         else:
-            return {"status": "error", "message": f"❌ Unknown action: {action}"}
+            result = {"status": "error", "message": f"❌ Unknown action: {action}"}
 
         # 📝 Зберігаємо дію в SQLite
         try:
@@ -1262,6 +1290,15 @@ def handle_command(cmd):
         except Exception as e:
             log_action(f"⚠️ SQLite save error: {e}")
 
+        # 🔁 Автоматичний запуск auto_feedback після успішної дії
+        try:
+            if result.get("status") == "success":
+                subprocess.run(["python", "auto_feedback.py"], check=True)
+        except Exception as e:
+            print(f"⚠️ Не вдалося виконати auto_feedback: {e}")
+
+        return result
+
     except Exception as e:
         traceback.print_exc()
 
@@ -1273,7 +1310,6 @@ def handle_command(cmd):
 
         return {"status": "error", "message": f"❌ Exception: {str(e)}"}
   
-    
 def run_self_tests():
     print("\n🧪 Running self-tests...")
     tests_passed = 0
@@ -1336,6 +1372,7 @@ def run_self_tests():
     # ✅ Тільки тепер — фінал
     print(f"\n🧪 Test results: {tests_passed} passed, {tests_failed} failed")
     return tests_failed == 0
+
 # 🧰 CLI-інтерфейс для ручного введення команд
 import argparse
 

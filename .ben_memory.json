@@ -2,48 +2,6 @@
   {
     "action": "git_push",
     "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-28 17:35:10"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-28 17:35:20"
-  },
-  {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/template_manager.py",
-    "content": "from jinja2 import Environment, FileSystemLoader\nimport os\n\nTEMPLATE_DIR = os.path.join(os.path.dirname(__file__), \"templates\")\nenv = Environment(loader=FileSystemLoader(TEMPLATE_DIR))\n\ndef render_template(template_name, context):\n    try:\n        template = env.get_template(template_name)\n        return template.render(context)\n    except Exception as e:\n        return f\"❌ Template rendering error: {e}\"",
-    "timestamp": "2025-03-28 17:39:29"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_gui_desktop/template_manager.py",
-    "timestamp": "2025-03-28 17:39:32"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_folder ",
-    "timestamp": "2025-03-28 17:48:51"
-  },
-  {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/templates/create_file.j2",
-    "content": "{\n  \"action\": \"create_file\",\n  \"filename\": \"{{ filename }}\",\n  \"content\": \"{{ content }}\"\n}",
-    "timestamp": "2025-03-28 17:49:18"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_gui_desktop/templates/create_file.j2",
-    "timestamp": "2025-03-28 17:49:22"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-28 17:51:03"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
     "timestamp": "2025-03-28 17:51:13"
   },
   {
@@ -583,5 +541,66 @@
     "filename": "test_macro.py",
     "content": "\ndef test_macro():\n    print('Привіт із макросу!')\n",
     "timestamp": "2025-04-01 11:04:40"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: run_macro_from_file ",
+    "timestamp": "2025-04-01 11:04:52"
+  },
+  {
+    "action": "append_file",
+    "filename": "log.txt",
+    "content": "Assistant is active and ready to help.\n",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 18:11:02"
+  },
+  {
+    "action": "append_file",
+    "filename": "log.txt",
+    "content": "User checked if the assistant is active on 2025-03-31.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 18:27:23"
+  },
+  {
+    "action": "append_file",
+    "filename": "log.txt",
+    "content": "User checked if the assistant is active on 2025-03-31.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 18:57:57"
+  },
+  {
+    "action": "append_file",
+    "filename": "log.txt",
+    "content": "User checked for assistant presence on 2025-03-31 at 19:23:51.\n",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 19:37:59"
+  },
+  {
+    "action": "append_file",
+    "filename": "log.txt",
+    "content": "User checked if the assistant is active on 2025-03-31 at 19:25.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 19:46:16"
+  },
+  {
+    "action": "append_file",
+    "filename": "log.txt",
+    "content": "User checked if the assistant is active on 2025-03-31 at 19:25.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 19:46:16"
+  },
+  {
+    "action": "append_file",
+    "filename": "log.txt",
+    "content": "User checked if the assistant is active on 2025-03-31 at 19:25.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 19:46:16"
   }
 ]

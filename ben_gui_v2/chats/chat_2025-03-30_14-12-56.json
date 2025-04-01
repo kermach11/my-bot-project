@@ -218,5 +218,61 @@
   {
     "role": "assistant",
     "content": "🟢 Agent is running"
+  },
+  {
+    "role": "user",
+    "content": "ти тут"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Помилка GPT: interpret_user_prompt() got an unexpected keyword argument 'history_context'"
+  },
+  {
+    "role": "user",
+    "content": "ти тут?"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Помилка GPT: no such table: command_history"
+  },
+  {
+    "role": "user",
+    "content": "ти тут?"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Помилка GPT: no such table: command_history"
+  },
+  {
+    "role": "user",
+    "content": "ти тут?"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Помилка GPT: no such table: command_history"
+  },
+  {
+    "role": "user",
+    "content": "ти тут?"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Помилка GPT: no such table: command_history"
+  },
+  {
+    "role": "user",
+    "content": "ти тут"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Помилка GPT: no such table: command_history"
+  },
+  {
+    "role": "user",
+    "content": "ти  тут?"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Помилка GPT: no such table: command_history"
   }
 ]
