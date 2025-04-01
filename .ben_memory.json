@@ -1,53 +1,5 @@
 [
   {
-    "action": "create_file",
-    "filename": "ben_gui_desktop/widgets/macro_builder.py",
-    "content": "import tkinter as tk\nfrom tkinter import ttk, messagebox\nimport json\n\nclass MacroBuilder(ttk.Frame):\n    def __init__(self, parent):\n        super().__init__(parent)\n\n        self.steps = []\n\n        ttk.Label(self, text=\"🧱 Macro Builder\", font=(\"Helvetica\", 14, \"bold\")).pack(anchor=\"w\", pady=(0, 5))\n\n        self.listbox = tk.Listbox(self)\n        self.listbox.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)\n\n        form_frame = ttk.Frame(self)\n        form_frame.pack(fill=tk.X, padx=5)\n\n        ttk.Label(form_frame, text=\"Action:\").pack(side=tk.LEFT)\n        self.action_var = tk.StringVar()\n        self.action_entry = ttk.Entry(form_frame, textvariable=self.action_var)\n        self.action_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 5))\n        ttk.Button(form_frame, text=\"➕ Add\", command=self.add_step).pack(side=tk.LEFT)\n        ttk.Button(form_frame, text=\"🗑 Remove\", command=self.remove_selected).pack(side=tk.LEFT, padx=(5, 0))\n\n        ttk.Button(self, text=\"💾 Save Macro\", command=self.save_macro).pack(pady=5)\n\n    def add_step(self):\n        action = self.action_var.get().strip()\n        if action:\n            self.steps.append({\"action\": action})\n            self.listbox.insert(tk.END, action)\n            self.action_var.set(\"\")\n\n    def remove_selected(self):\n        selected = self.listbox.curselection()\n        if not selected:\n            return\n        index = selected[0]\n        self.listbox.delete(index)\n        del self.steps[index]\n\n    def save_macro(self):\n        if not self.steps:\n            messagebox.showerror(\"Error\", \"No steps to save\")\n            return\n        macro = {\n            \"action\": \"macro\",\n            \"steps\": self.steps\n        }\n        with open(\"macro_command.json\", \"w\", encoding=\"utf-8\") as f:\n            json.dump(macro, f, indent=2)\n        messagebox.showinfo(\"Saved\", \"✅ Macro saved to macro_command.json\")",
-    "timestamp": "2025-03-28 21:19:24"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: create_file ben_gui_desktop/widgets/macro_builder.py",
-    "timestamp": "2025-03-28 21:19:27"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-28 21:23:28"
-  },
-  {
-    "action": "replace_in_file",
-    "filename": "ben_gui_desktop/widgets/macro_builder.py",
-    "pattern": "# def add_full_step\\(self\\):",
-    "replacement": "    def add_full_step(self):\n        step = {k: v.get().strip() for k, v in self.field_vars.items() if v.get().strip()}\n        if \"action\" not in step:\n            messagebox.showerror(\"Error\", \"⚠️ Action is required\")\n            return\n        self.steps.append(step)\n        label = step.get(\"action\", \"<unnamed>\")\n        self.listbox.insert(tk.END, label)\n        for var in self.field_vars.values():\n            var.set(\"\")",
-    "timestamp": "2025-03-28 21:25:20"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: replace_in_file ben_gui_desktop/widgets/macro_builder.py",
-    "timestamp": "2025-03-28 21:25:24"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-29 06:56:30"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code ",
-    "timestamp": "2025-03-29 07:01:38"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code_bulk ",
-    "timestamp": "2025-03-29 07:34:18"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: update_code_bulk ",
-    "timestamp": "2025-03-29 07:35:05"
-  },
-  {
     "action": "git_push",
     "message": "✅ Auto-commit: update_code_bulk ",
     "timestamp": "2025-03-29 07:35:43"
@@ -654,5 +606,82 @@
     "history_id": "cmd_002",
     "target_id": "id_002",
     "timestamp": "2025-04-01 21:27:58"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: append_file log.txt",
+    "timestamp": "2025-04-01 21:28:02"
+  },
+  {
+    "action": "append_file",
+    "filename": "example.txt",
+    "content": "Так, я тут!",
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 21:57:25"
+  },
+  {
+    "action": "run_macro",
+    "macro_name": "confirm_presence",
+    "parameters": {
+      "message": "Так, я тут!"
+    },
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-01 22:14:19"
+  },
+  {
+    "action": "append_file",
+    "filename": "ben_identity.txt",
+    "content": "I am Ben, your assistant.",
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_002",
+    "target_id": "id_002",
+    "timestamp": "2025-04-01 22:16:35"
+  },
+  {
+    "action": "append_file",
+    "filename": "example.py",
+    "content": "print('Hello')",
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_003",
+    "target_id": "id_003",
+    "timestamp": "2025-04-01 22:18:05"
+  },
+  {
+    "action": "append_file",
+    "filename": "error_log.txt",
+    "content": "Помилка: Не вдалося розпізнати JSON: Expecting value: line 1 column 1 (char 0) - це означає, що JSON, який ви намагаєтеся обробити, є порожнім або неправильно сформатованим. Перевірте, чи JSON має правильну структуру та чи не містить зайвих символів.",
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_004",
+    "target_id": "id_004",
+    "timestamp": "2025-04-01 22:20:41"
+  },
+  {
+    "action": "append_file",
+    "filename": "purpose.txt",
+    "content": "My purpose is to generate code actions in JSON format based on user prompts.",
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_005",
+    "target_id": "id_005",
+    "timestamp": "2025-04-01 22:22:02"
+  },
+  {
+    "action": "run_shell",
+    "command": "cat GPT_BEN_MANUAL_FULL",
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_006",
+    "target_id": "id_006",
+    "timestamp": "2025-04-01 22:24:03"
+  },
+  {
+    "action": "run_shell",
+    "command": "echo 'Checking if Cygwin is installed' && cygcheck -c cygwin || echo 'Cygwin is not installed. Please install it from https://cygwin.com/'",
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_007",
+    "target_id": "id_007",
+    "timestamp": "2025-04-01 22:28:15"
   }
 ]

@@ -68,8 +68,7 @@ class BenAssistantGUI:
         self.setup_layout()
         self.start_feedback_report_updater()
         
-        # 🎨 Стилізація для тегу gpt_action
-        self.chat_display.tag_configure("gpt_action", foreground="#0066cc", font=("Arial", 10, "bold", "italic"))
+        # 🎨 Стилізація для тегу gpt_action  
         self.chat_display.tag_configure("gpt_action", foreground="#0a84ff", font=("Arial", 10, "bold"))
         self.root.bind_all("<Control-c>", lambda e: self.root.focus_get().event_generate("<<Copy>>"))
         self.root.bind_all("<Control-v>", lambda e: self.root.focus_get().event_generate("<<Paste>>"))

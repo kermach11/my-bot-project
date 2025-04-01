@@ -67,15 +67,16 @@ def interpret_user_prompt(prompt, context_code=None, history_context=False, retu
     # ✅ Основна спроба розпізнати JSON
     try:
         data = json.loads(raw)
+        if "comment" not in data:
+            data["comment"] = "🤖 GPT створив дію, але не залишив коментар."
+
         if isinstance(data, dict) and "action" in data:
             with open("cache.txt", "w", encoding="utf-8") as f:
                 f.write(json.dumps(data, indent=2, ensure_ascii=False))
             print("✅ Збережено в cache.txt")
             print("📤 GPT final JSON:", json.dumps(data, indent=2, ensure_ascii=False))
-            if return_data:
-                return data
-            else:
-                return json.dumps(data, indent=2, ensure_ascii=False)
+            return data if return_data else json.dumps(data, indent=2, ensure_ascii=False)
+
 
     except Exception as e:
         print(f"❌ Не вдалося розпізнати JSON: {e}")
@@ -109,16 +110,21 @@ def interpret_user_prompt(prompt, context_code=None, history_context=False, retu
 
     try:
         data_retry = json.loads(raw_retry)
+        if "comment" not in data_retry:
+            data_retry["comment"] = "🤖 GPT створив дію, але не залишив коментар."
+
         if isinstance(data_retry, dict) and "action" in data_retry:
             with open("cache.txt", "w", encoding="utf-8") as f:
                 f.write(json.dumps(data_retry, indent=2, ensure_ascii=False))
             print("✅ Smart Loop: дія збережена в cache.txt")
+            print("📤 GPT final JSON:", json.dumps(data_retry, indent=2, ensure_ascii=False))
             return data_retry if return_data else json.dumps(data_retry, indent=2, ensure_ascii=False)
         else:
             return raw_retry
     except Exception as e2:
         print(f"❌ Smart Loop теж не дав валідний JSON: {e2}")
         return raw_retry
+    
 def suggest_next_action(previous_result):
     try:
         import json
