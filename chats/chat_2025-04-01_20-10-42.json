@@ -130,5 +130,101 @@
   {
     "role": "assistant",
     "content": "❌ Немає prompt для 'ask_gpt'"
+  },
+  {
+    "role": "user",
+    "content": "Додати memory analyzer, щоб він аналізував власну памʼять .ben_memory.json"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_001]"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Exception: 'list' object has no attribute 'get'"
+  },
+  {
+    "role": "user",
+    "content": "Виправ помилку: якщо cmd — список, перетвори в словник або пропусти обʼєкти без .get()"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_002]"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ File not found: your_script.py"
+  },
+  {
+    "role": "user",
+    "content": "швидше завсе що цого потрібно створити 'your_script.py' та завершити ці покращення"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_003]"
+  },
+  {
+    "role": "assistant",
+    "content": "⚠️ Невідома дія: create_and_finalize_script. Якщо GPT запропонував нову дію, потрібно реалізувати її вручну."
+  },
+  {
+    "role": "user",
+    "content": "'create_and_finalize_script' сам додай собі цю дію я дозволяю і закінчи те що почав"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_004]"
+  },
+  {
+    "role": "assistant",
+    "content": "✅ Функцію 'create_and_finalize_script' додано до 'ben_assistant_core.py'"
+  },
+  {
+    "role": "user",
+    "content": "швидше завсе що цого потрібно створити 'your_script.py' та завершити ці покращення "
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_005]"
+  },
+  {
+    "role": "assistant",
+    "content": "⚠️ Невідома дія: create_file. Якщо GPT запропонував нову дію, потрібно реалізувати її вручну."
+  },
+  {
+    "role": "user",
+    "content": "\"Було запропоновано нову дію 'create_file' дозволяю додай собі цю дію сам і додавай всі решту дії сам я дозволяю тобі працювати автономно на пілоті"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_006]"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Не вказано файл, назву або код функції."
+  },
+  {
+    "role": "user",
+    "content": "Додати memory analyzer, щоб він аналізував власну памʼять .ben_memory.json ти доробив це чи ще ні?"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_007]"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Не вказано файл, назву або код функції."
+  },
+  {
+    "role": "user",
+    "content": "ти сам не можеш вирішити цю помилку?"
+  },
+  {
+    "role": "assistant",
+    "content": "GPT: Згенеровано дію ✅ [id_008]"
+  },
+  {
+    "role": "assistant",
+    "content": "❌ Немає prompt для 'ask_gpt'"
   }
 ]

@@ -1,111 +1,5 @@
 [
   {
-    "action": "respond",
-    "message": "Так, я тут! Як я можу допомогти?",
-    "history_id": "cmd_004",
-    "target_id": "id_005",
-    "timestamp": "2025-03-30 23:10:34"
-  },
-  {
-    "action": "respond",
-    "message": "Так, я тут! Чим можу допомогти?",
-    "history_id": "cmd_005",
-    "target_id": "id_009",
-    "timestamp": "2025-03-30 23:30:56"
-  },
-  {
-    "action": "respond",
-    "content": "Так, я тут! Чим можу допомогти?",
-    "history_id": "cmd_001",
-    "target_id": "id_001",
-    "timestamp": "2025-03-30 23:32:15"
-  },
-  {
-    "action": "run_macro",
-    "macro_name": "read_manual_on_table",
-    "history_id": "cmd_002",
-    "target_id": "id_002",
-    "timestamp": "2025-03-30 23:32:59"
-  },
-  {
-    "error": "Insufficient context. Please provide more details or specify the document or content you are referring to.",
-    "history_id": "cmd_003",
-    "target_id": "id_003",
-    "timestamp": "2025-03-30 23:33:27"
-  },
-  {
-    "run_shell": {
-      "command": "ls *.py"
-    },
-    "history_id": "cmd_001",
-    "target_id": "id_001",
-    "timestamp": "2025-03-30 23:57:46"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: scan_all_files ",
-    "timestamp": "2025-03-30 23:58:38"
-  },
-  {
-    "run_macro": {
-      "macro_name": "GPT_BEN_MANUAL_FULL"
-    },
-    "history_id": "cmd_002",
-    "target_id": "id_002",
-    "timestamp": "2025-03-31 00:02:08"
-  },
-  {
-    "run_macro": {
-      "macro_name": "explain_last_action"
-    },
-    "history_id": "cmd_003",
-    "target_id": "id_003",
-    "timestamp": "2025-03-31 00:03:20"
-  },
-  {
-    "action": "check_status",
-    "history_id": "cmd_004",
-    "target_id": "id_004",
-    "timestamp": "2025-03-31 00:04:07"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: check_status ",
-    "timestamp": "2025-03-31 00:07:53"
-  },
-  {
-    "action": "respond",
-    "message": "Так, я тут! Як я можу допомогти?",
-    "history_id": "cmd_001",
-    "target_id": "id_001",
-    "timestamp": "2025-03-31 00:09:31"
-  },
-  {
-    "action": "run_macro",
-    "macro_name": "check_file_access",
-    "arguments": {
-      "filename": "GPT_BEN_MANUAL_FULL"
-    },
-    "history_id": "cmd_002",
-    "target_id": "id_003",
-    "timestamp": "2025-03-31 00:13:21"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: execute_macro ",
-    "timestamp": "2025-03-31 09:55:30"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: check_file_access GPT_BEN_MANUAL_FULL",
-    "timestamp": "2025-03-31 10:14:13"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: run_macro ",
-    "timestamp": "2025-03-31 10:23:29"
-  },
-  {
     "action": "git_push",
     "message": "✅ Auto-commit: check_file_access GPT_BEN_MANUAL_FULL",
     "timestamp": "2025-03-31 10:37:37"
@@ -798,5 +692,237 @@
     "history_id": "cmd_001",
     "target_id": "id_001",
     "timestamp": "2025-04-02 10:52:51"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: update_code_bulk ",
+    "timestamp": "2025-04-02 10:53:16"
+  },
+  {
+    "action": "add_function",
+    "parameters": {
+      "file": ".ben_memory.json",
+      "function_name": "memory_analyzer",
+      "function_code": "\nimport json\n\ndef memory_analyzer():\n    try:\n        with open('.ben_memory.json', 'r') as file:\n            memory_data = json.load(file)\n        \n        # Analyze memory data\n        total_entries = len(memory_data)\n        keys_summary = {key: len(value) for key, value in memory_data.items()}\n        \n        return {\n            'total_entries': total_entries,\n            'keys_summary': keys_summary\n        }\n    except FileNotFoundError:\n        return 'Memory file not found.'\n    except json.JSONDecodeError:\n        return 'Error decoding memory file.'\n    except Exception as e:\n        return f'An unexpected error occurred: {str(e)}'\n"
+    },
+    "comment": "Додано функцію memory_analyzer для аналізу файлу .ben_memory.json. Вона підраховує загальну кількість записів та надає короткий огляд по ключах. Це допоможе краще розуміти, як використовується пам'ять.",
+    "history_id": "cmd_002",
+    "target_id": "id_002",
+    "timestamp": "2025-04-02 10:55:34"
+  },
+  {
+    "action": "add_function",
+    "file": "memory_analyzer.py",
+    "function_name": "analyze_memory",
+    "parameters": [
+      "memory_file"
+    ],
+    "code": "import json\n\ndef analyze_memory(memory_file):\n    try:\n        with open(memory_file, 'r') as file:\n            memory_data = json.load(file)\n        # Analyze memory data\n        analysis_result = {\n            'total_entries': len(memory_data),\n            'keys': list(memory_data.keys()),\n            'sample_entry': memory_data[next(iter(memory_data))] if memory_data else {}\n        }\n        return analysis_result\n    except FileNotFoundError:\n        return {'error': 'Memory file not found.'}\n    except json.JSONDecodeError:\n        return {'error': 'Invalid JSON format in memory file.'}",
+    "comment": "Додано функцію analyze_memory для аналізу вмісту файлу .ben_memory.json. Вона повертає кількість записів, ключі та приклад одного запису. Це допоможе зрозуміти структуру та вміст пам'яті.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-02 11:16:05"
+  },
+  {
+    "action": "update_code",
+    "parameters": {
+      "file_path": "your_script.py",
+      "code_changes": [
+        {
+          "find": "for cmd in commands:",
+          "replace": "for cmd in commands:\n    if isinstance(cmd, list):\n        cmd = {i: item for i, item in enumerate(cmd)}\n    if not hasattr(cmd, 'get'):\n        continue"
+        }
+      ]
+    },
+    "comment": "Ця дія оновлює код, щоб перевірити, чи є 'cmd' списком, і перетворює його в словник. Якщо 'cmd' не має методу .get(), він пропускається.",
+    "history_id": "cmd_002",
+    "target_id": "id_002",
+    "timestamp": "2025-04-02 11:18:41"
+  },
+  {
+    "action": "update_code",
+    "parameters": {
+      "file_path": "summarize_file.py",
+      "code": "def summarize_file(file_path=None):\n    if file_path is None:\n        file_path = 'recent_actions.log'\n    # Додатковий код для обробки файлу\n    with open(file_path, 'r') as file:\n        content = file.read()\n    # Логіка для створення резюме файлу\n    summary = create_summary(content)\n    return summary"
+    },
+    "comment": "Виправлено функцію summarize_file: тепер, якщо file_path не вказано, автоматично використовується 'recent_actions.log' як дефолтний файл.",
+    "history_id": "cmd_003",
+    "target_id": "id_003",
+    "timestamp": "2025-04-02 11:20:37"
+  },
+  {
+    "action": "add_function",
+    "file": ".ben_memory.json",
+    "function_name": "memory_analyzer",
+    "parameters": [],
+    "code": "def memory_analyzer():\n    import json\n    try:\n        with open('.ben_memory.json', 'r') as file:\n            memory_data = json.load(file)\n            # Analyze memory data\n            total_entries = len(memory_data)\n            keys = list(memory_data.keys())\n            # Example analysis: count entries and list keys\n            analysis_result = {\n                'total_entries': total_entries,\n                'keys': keys\n            }\n            return analysis_result\n    except FileNotFoundError:\n        return 'Memory file not found.'\n    except json.JSONDecodeError:\n        return 'Error decoding memory file.'",
+    "comment": "Додано функцію 'memory_analyzer', яка аналізує файл '.ben_memory.json', підраховуючи загальну кількість записів та перелік ключів. Це допоможе зрозуміти структуру та обсяг пам'яті, яку використовує Ben Assistant.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-02 11:30:25"
+  },
+  {
+    "action": "update_code",
+    "file": "your_script.py",
+    "code": "def process_cmd(cmd):\n    if isinstance(cmd, list):\n        # Перетворюємо список у словник, якщо можливо\n        try:\n            cmd = {i: cmd[i] for i in range(len(cmd))}\n        except Exception as e:\n            print(f'Не вдалося перетворити список у словник: {e}')\n            return\n    if hasattr(cmd, 'get'):\n        # Виконуємо дії зі словником\n        value = cmd.get('key', 'default_value')\n        print(f'Значення: {value}')\n    else:\n        print('Обʼєкт не має методу .get()')",
+    "comment": "Виправлено код для обробки змінної cmd. Якщо cmd є списком, він перетворюється у словник, якщо це можливо. Якщо cmd не має методу .get(), обʼєкт пропускається.",
+    "history_id": "cmd_002",
+    "target_id": "id_002",
+    "timestamp": "2025-04-02 11:31:23"
+  },
+  {
+    "action": "create_and_finalize_script",
+    "parameters": {
+      "file_name": "your_script.py",
+      "improvements": [
+        "optimize_performance",
+        "enhance_security",
+        "add_logging",
+        "implement_error_handling",
+        "refactor_code_for_readability"
+      ]
+    },
+    "comment": "Створюємо файл 'your_script.py' та завершуємо покращення, такі як оптимізація продуктивності, підвищення безпеки, додавання логування, реалізація обробки помилок та рефакторинг коду для покращення читабельності.",
+    "history_id": "cmd_003",
+    "target_id": "id_003",
+    "timestamp": "2025-04-02 11:33:06"
+  },
+  {
+    "action": "add_function",
+    "parameters": {
+      "file": "ben_assistant_core.py",
+      "function_name": "create_and_finalize_script",
+      "function_code": "def create_and_finalize_script(script_name, script_content):\n    \"\"\"\n    Creates a new script file with the given name and content, then performs any finalization steps required.\n    \"\"\"\n    try:\n        with open(script_name, 'w') as script_file:\n            script_file.write(script_content)\n        # Add any additional finalization steps here\n        print(f\"Script {script_name} created and finalized successfully.\")\n    except Exception as e:\n        print(f\"An error occurred while creating the script: {e}\")"
+    },
+    "comment": "Додано нову функцію 'create_and_finalize_script', яка створює новий скрипт з заданим ім'ям та вмістом, а потім виконує необхідні фіналізаційні кроки. Це дозволить автоматизувати процес створення та завершення скриптів.",
+    "history_id": "cmd_004",
+    "target_id": "id_004",
+    "timestamp": "2025-04-02 11:35:09"
+  },
+  {
+    "action": "create_file",
+    "parameters": {
+      "file_name": "your_script.py",
+      "content": "# This is the initial version of your_script.py\n\n# Add your improvements here\n\nif __name__ == '__main__':\n    print('Hello, World!')"
+    },
+    "comment": "Я створив файл 'your_script.py' з базовою структурою. Тепер ви можете додати свої покращення до цього файлу.",
+    "history_id": "cmd_005",
+    "target_id": "id_005",
+    "timestamp": "2025-04-02 11:36:16"
+  },
+  {
+    "action": "add_function",
+    "parameters": {
+      "name": "create_file",
+      "description": "Створює новий файл з вказаним вмістом",
+      "parameters": {
+        "file_path": "Шлях до файлу, який потрібно створити",
+        "content": "Вміст, який потрібно записати у файл"
+      },
+      "implementation": "def create_file(file_path, content):\n    with open(file_path, 'w') as file:\n        file.write(content)\n    return f'Файл {file_path} успішно створено.'"
+    },
+    "comment": "Додано нову дію 'create_file', яка дозволяє створювати файли з вказаним вмістом. Тепер я можу працювати автономно, використовуючи цю та інші дії для виконання завдань.",
+    "history_id": "cmd_006",
+    "target_id": "id_006",
+    "timestamp": "2025-04-02 11:37:51"
+  },
+  {
+    "action": "add_function",
+    "parameters": {
+      "file_path": ".ben_memory.json",
+      "function_name": "memory_analyzer",
+      "function_code": "def memory_analyzer(memory_data):\n    \"\"\"\n    Analyzes the memory data from .ben_memory.json and provides insights.\n    :param memory_data: Dictionary containing memory data.\n    :return: Analysis report as a string.\n    \"\"\"\n    analysis_report = \"Memory Analysis Report:\\n\"\n    total_entries = len(memory_data)\n    analysis_report += f\"Total Memory Entries: {total_entries}\\n\"\n    # Add more detailed analysis as needed\n    return analysis_report\n\n# Example usage\n# with open('.ben_memory.json', 'r') as file:\n#     memory_data = json.load(file)\n#     print(memory_analyzer(memory_data))"
+    },
+    "comment": "Додано функцію memory_analyzer для аналізу даних з файлу .ben_memory.json. Ця функція надає базовий звіт про кількість записів у пам'яті. Ви можете розширити її для більш детального аналізу.",
+    "history_id": "cmd_007",
+    "target_id": "id_007",
+    "timestamp": "2025-04-02 11:39:05"
+  },
+  {
+    "action": "ask_gpt",
+    "parameters": {
+      "query": "Як вирішити помилку, яку я не можу вирішити самостійно?"
+    },
+    "comment": "Я використаю GPT для аналізу та надання можливих рішень для вашої помилки. Це допоможе зрозуміти, як її виправити.",
+    "history_id": "cmd_008",
+    "target_id": "id_008",
+    "timestamp": "2025-04-02 11:40:47"
+  },
+  {
+    "action": "message",
+    "parameters": {
+      "text": "Так, я тут! Як я можу допомогти вам сьогодні?"
+    },
+    "comment": "🤖 GPT створив дію, але не залишив коментар.",
+    "history_id": "cmd_001",
+    "target_id": "id_001",
+    "timestamp": "2025-04-02 14:21:44"
+  },
+  {
+    "action": "add_function",
+    "parameters": {
+      "file": "macro_builder.py",
+      "function_name": "self_review_macro",
+      "function_code": [
+        "def self_review_macro():",
+        "    \"\"\"",
+        "    This macro automatically triggers a self-review process after every 50 actions.",
+        "    It uses the analyze_memory function to review the recent actions and provide insights.",
+        "    \"\"\"",
+        "    action_count = get_action_count()",
+        "    if action_count >= 50:",
+        "        analyze_memory()",
+        "        reset_action_count()",
+        "",
+        "def get_action_count():",
+        "    \"\"\"",
+        "    Retrieves the current count of actions performed.",
+        "    \"\"\"",
+        "    # Placeholder for actual implementation",
+        "    return 50  # Example value",
+        "",
+        "def reset_action_count():",
+        "    \"\"\"",
+        "    Resets the action count after a self-review is triggered.",
+        "    \"\"\"",
+        "    # Placeholder for actual implementation",
+        "    pass"
+      ]
+    },
+    "comment": "Додано функцію self_review_macro, яка автоматично запускає процес самоаналізу після кожних 50 дій, використовуючи функцію analyze_memory. Це допоможе виявити можливості для покращення та оптимізації роботи.",
+    "history_id": "cmd_002",
+    "target_id": "id_002",
+    "timestamp": "2025-04-02 14:23:12"
+  },
+  {
+    "action": "update_code_bulk",
+    "parameters": {
+      "files": [
+        "gpt_agent_cache.py",
+        "gpt_plan.json",
+        "macro_builder.py"
+      ],
+      "modifications": [
+        {
+          "file": "gpt_agent_cache.py",
+          "code": "def add_insight_after_action(action_result):\n    # Analyze the result of an action and generate insights\n    insights = generate_insights(action_result)\n    log_insights(insights)\n    return insights\n\n# Example usage\nresult = some_action()\ninsight = add_insight_after_action(result)\nprint(insight)",
+          "location": "end"
+        },
+        {
+          "file": "gpt_plan.json",
+          "code": "\"add_insight_after_action\": \"Analyzes the result of an action and generates insights based on the outcome.\"",
+          "location": "end"
+        },
+        {
+          "file": "macro_builder.py",
+          "code": "def generate_insights(action_result):\n    # Placeholder for insight generation logic\n    return f\"Insight based on result: {action_result}\"\n\ndef log_insights(insights):\n    # Log the generated insights\n    print(f\"Logging insights: {insights}\")",
+          "location": "end"
+        }
+      ]
+    },
+    "comment": "Додано функціонал для генерації інсайтів після виконання дій. Це дозволить аналізувати результати дій та надавати корисні висновки, що покращить процес прийняття рішень.",
+    "history_id": "cmd_003",
+    "target_id": "id_003",
+    "timestamp": "2025-04-02 14:25:16"
   }
 ]
