@@ -1,6 +1,6 @@
 [
   {
     "status": "error",
-    "message": "❌ Unknown action: add_function"
+    "message": "❌ Не вказано 'filename'"
   }
 ]

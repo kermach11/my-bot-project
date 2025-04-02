@@ -1,48 +1,6 @@
 [
   {
     "action": "git_push",
-    "message": "✅ Auto-commit: check_file_access GPT_BEN_MANUAL_FULL",
-    "timestamp": "2025-03-31 10:37:37"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: check_file_access GPT_BEN_MANUAL_FULL.md",
-    "timestamp": "2025-03-31 10:44:12"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: read_file GPT_BEN_MANUAL_FULL.md",
-    "timestamp": "2025-03-31 10:46:16"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: analyze_json gpt_plan.json",
-    "timestamp": "2025-04-01 08:31:49"
-  },
-  {
-    "action": "append_file",
-    "filename": "password_utils.py",
-    "content": "\ndef is_password_strong(password):\n    return len(password) >= 8\n",
-    "timestamp": "2025-04-01 10:48:44"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: append_file password_utils.py",
-    "timestamp": "2025-04-01 10:48:57"
-  },
-  {
-    "action": "git_push",
-    "message": "✅ Auto-commit: run_macro_from_file ",
-    "timestamp": "2025-04-01 10:59:49"
-  },
-  {
-    "action": "append_file",
-    "filename": "test_macro.py",
-    "content": "\ndef test_macro():\n    print('Привіт із макросу!')\n",
-    "timestamp": "2025-04-01 11:04:40"
-  },
-  {
-    "action": "git_push",
     "message": "✅ Auto-commit: run_macro_from_file ",
     "timestamp": "2025-04-01 11:04:52"
   },
@@ -924,5 +882,93 @@
     "history_id": "cmd_003",
     "target_id": "id_003",
     "timestamp": "2025-04-02 14:25:16"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: update_code_bulk ",
+    "timestamp": "2025-04-02 14:25:21"
+  },
+  {
+    "action": "update_code_bulk",
+    "filename": "self_review.py",
+    "updates": [
+      {
+        "function_name": "get_action_count",
+        "content": "def get_action_count():\n    import sqlite3\n    try:\n        conn = sqlite3.connect('actions.db')\n        cursor = conn.cursor()\n        cursor.execute('CREATE TABLE IF NOT EXISTS action_count (count INTEGER)')\n        cursor.execute('SELECT count FROM action_count')\n        result = cursor.fetchone()\n        if result is None:\n            cursor.execute('INSERT INTO action_count (count) VALUES (0)')\n            conn.commit()\n            return 0\n        return result[0]\n    finally:\n        conn.close()"
+      },
+      {
+        "function_name": "reset_action_count",
+        "content": "def reset_action_count():\n    import sqlite3\n    try:\n        conn = sqlite3.connect('actions.db')\n        cursor = conn.cursor()\n        cursor.execute('CREATE TABLE IF NOT EXISTS action_count (count INTEGER)')\n        cursor.execute('UPDATE action_count SET count = 0')\n        conn.commit()\n    finally:\n        conn.close()"
+      }
+    ],
+    "comment": "Додано функції get_action_count() та reset_action_count() для роботи з лічильником дій у базі даних SQLite. Це забезпечить збереження та скидання лічильника для Self-Review.",
+    "history_id": "cmd_004",
+    "target_id": "id_004",
+    "timestamp": "2025-04-02 14:28:19"
+  },
+  {
+    "action": "add_function",
+    "parameters": {
+      "file": "prompt_optimizer.py",
+      "function_name": "optimize_prompts",
+      "function_code": "def optimize_prompts(prompts):\n    \"\"\"\n    Аналізує список промптів, зберігає їх та вибирає кращу версію.\n    \"\"\"\n    analyzed_prompts = [analyze_prompt(prompt) for prompt in prompts]\n    best_prompt = select_best_prompt(analyzed_prompts)\n    save_prompt(best_prompt)\n    return best_prompt\n\n\ndef analyze_prompt(prompt):\n    # Аналізуємо промпт, наприклад, за допомогою оцінки довжини, ключових слів тощо\n    return {\n        'prompt': prompt,\n        'score': len(prompt)  # Проста оцінка за довжиною, можна додати інші метрики\n    }\n\n\ndef select_best_prompt(analyzed_prompts):\n    # Вибираємо промпт з найвищим балом\n    return max(analyzed_prompts, key=lambda x: x['score'])['prompt']\n\n\ndef save_prompt(prompt):\n    # Зберігаємо кращий промпт у файл або базу даних\n    with open('best_prompt.txt', 'w') as file:\n        file.write(prompt)\n"
+    },
+    "comment": "Я додав функцію для авто-оптимізації промптів. Вона аналізує список промптів, зберігає їх та вибирає кращу версію на основі простих метрик. Це базова реалізація, яку можна вдосконалити, додаючи складніші алгоритми аналізу та вибору.",
+    "history_id": "cmd_005",
+    "target_id": "id_005",
+    "timestamp": "2025-04-02 14:36:59"
+  },
+  {
+    "action": "validate_template",
+    "parameters": {
+      "template_name": "recent_actions_verification"
+    },
+    "comment": "Я пропоную створити та зберегти шаблон дій, які ти хочеш перевірити. Потім ми можемо запустити валідацію цього шаблону, щоб переконатися, що всі дії були виконані коректно. Це дозволить тобі перевірити, чи дійсно я виконав вказані дії.",
+    "history_id": "cmd_006",
+    "target_id": "id_006",
+    "timestamp": "2025-04-02 14:37:54"
+  },
+  {
+    "action": "analyze_json",
+    "parameters": {
+      "file_path": "gpt_plan.json"
+    },
+    "comment": "Перевіряю останні зміни у файлі gpt_plan.json на предмет коректності та відповідності очікуваному формату.",
+    "history_id": "cmd_007",
+    "target_id": "id_007",
+    "timestamp": "2025-04-02 14:39:12"
+  },
+  {
+    "action": "analyze_json",
+    "parameters": {
+      "file_path": "gpt_plan.json"
+    },
+    "comment": "Я проаналізую файл gpt_plan.json, щоб перевірити його цілісність та правильність структури. Це допоможе визначити, чи все добре з тим, що було перевірено.",
+    "history_id": "cmd_008",
+    "target_id": "id_008",
+    "timestamp": "2025-04-02 14:40:06"
+  },
+  {
+    "action": "analyze_json",
+    "parameters": {
+      "file_path": "gpt_plan.json"
+    },
+    "comment": "Аналізую файл 'gpt_plan.json', щоб визначити, чи проект завершено. Це допоможе зрозуміти, чи всі необхідні кроки виконані.",
+    "history_id": "cmd_009",
+    "target_id": "id_009",
+    "timestamp": "2025-04-02 14:40:56"
+  },
+  {
+    "action": "analyze_json",
+    "filename": "gpt_plan.json",
+    "comment": "Аналізую файл 'gpt_plan.json', щоб визначити, чи проект завершено. Це допоможе зрозуміти, чи всі необхідні кроки виконані.",
+    "message": "🔄 Аналізую файл 'gpt_plan.json'. Будь ласка, зачекайте... [⏳]",
+    "progress": {
+      "status": "in_progress",
+      "percentage": 0
+    },
+    "history_id": "cmd_010",
+    "target_id": "id_010",
+    "timestamp": "2025-04-02 14:51:27"
   }
 ]

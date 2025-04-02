@@ -4421,3 +4421,11 @@ operable program or batch file.
 [2025-04-02 14:21:45] ❌ Unknown action: message
 [2025-04-02 14:23:13] ❌ Unknown action: add_function
 [2025-04-02 14:25:17] {'status': 'success', 'results': []}
+[2025-04-02 14:25:21] 📤 Git push: ✅ Auto-commit: update_code_bulk 
+[2025-04-02 14:28:20] ❌ Exception: expected str, bytes or os.PathLike object, not NoneType
+[2025-04-02 14:37:00] ❌ Unknown action: add_function
+[2025-04-02 14:37:55] ❌ Unknown action: validate_template
+[2025-04-02 14:39:13] ❌ Не вказано 'filename'
+[2025-04-02 14:40:07] ❌ Не вказано 'filename'
+[2025-04-02 14:40:57] ❌ Не вказано 'filename'
+[2025-04-02 14:51:41] 📄 Збережено аналіз у gpt_json_analysis_2025-04-02_16-51-41.txt
