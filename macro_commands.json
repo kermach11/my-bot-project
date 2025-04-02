@@ -1,77 +1,94 @@
 [
-    {
-      "macro_name": "safe_update",
-      "steps": [
-        {
-          "action": "check_file_access",
-          "filename": "{{filename}}"
-        },
-        {
-          "action": "safe_update_code",
-          "filename": "{{filename}}",
-          "updates": "{{updates}}"
+  {
+    "macro_name": "safe_update",
+    "steps": [
+      {
+        "action": "check_file_access",
+        "filename": "{{filename}}"
+      },
+      {
+        "action": "safe_update_code",
+        "filename": "{{filename}}",
+        "updates": "{{updates}}"
+      }
+    ]
+  },
+  {
+    "macro_name": "undo_change",
+    "steps": [
+      {
+        "action": "restore_backup",
+        "filename": "{{filename}}"
+      }
+    ]
+  },
+  {
+    "macro_name": "reset_cache",
+    "steps": [
+      {
+        "action": "clear_cache"
+      },
+      {
+        "action": "clear_memory"
+      }
+    ]
+  },
+  {
+    "macro_name": "run_macro_template",
+    "steps": [
+      {
+        "action": "run_macro",
+        "macro_name": "{{macro_name}}",
+        "arguments": "{{arguments}}"
+      }
+    ]
+  },
+  {
+    "macro_name": "smart_fix_basic_cleaning",
+    "steps": [
+      {
+        "action": "replace_in_file",
+        "filename": "get_binance_data.py",
+        "pattern": "^(import os)(\\s*\\n)+(import os)",
+        "replacement": "import os",
+        "update_type": "refactor"
+      },
+      {
+        "action": "replace_in_file",
+        "filename": "ben_gui_desktop/ben_gui.py",
+        "pattern": "^(import os)(\\s*\\n)+(import os)",
+        "replacement": "import os",
+        "update_type": "refactor"
+      },
+      {
+        "action": "append_file",
+        "filename": "main.py",
+        "content": "\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info('App started')",
+        "update_type": "logging"
+      },
+      {
+        "action": "append_file",
+        "filename": "ben_writer.py",
+        "content": "\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info('ben_writer loaded')",
+        "update_type": "logging"
+      }
+    ]
+  },
+  {
+    "macro_name": "on_fail_retry_corrected",
+    "steps": [
+      {
+        "action": "ask_gpt",
+        "parameters": {
+          "prompt": "Попередня дія завершилась помилкою. Згенеруй кориговану версію з правильними параметрами."
         }
-      ]
-    },
-    {
-      "macro_name": "undo_change",
-      "steps": [
-        {
-          "action": "restore_backup",
-          "filename": "{{filename}}"
+      },
+      {
+        "action": "run_macro",
+        "parameters": {
+          "macro_name": "retry_last_action"
         }
-      ]
-    },
-    {
-      "macro_name": "reset_cache",
-      "steps": [
-        {
-          "action": "clear_cache"
-        },
-        {
-          "action": "clear_memory"
-        }
-      ]
-    },
-    {
-      "macro_name": "run_macro_template",
-      "steps": [
-        {
-          "action": "run_macro",
-          "macro_name": "{{macro_name}}",
-          "arguments": "{{arguments}}"
-        }
-      ]
-    },
-    {
-      "macro_name": "smart_fix_basic_cleaning",
-      "steps": [
-        {
-          "action": "replace_in_file",
-          "filename": "get_binance_data.py",
-          "pattern": "^(import os)(\\s*\\n)+(import os)",
-          "replacement": "import os",
-          "update_type": "refactor"
-        },
-        {
-          "action": "replace_in_file",
-          "filename": "ben_gui_desktop/ben_gui.py",
-          "pattern": "^(import os)(\\s*\\n)+(import os)",
-          "replacement": "import os",
-          "update_type": "refactor"
-        },
-        {
-          "action": "append_file",
-          "filename": "main.py",
-          "content": "\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info('App started')",
-          "update_type": "logging"
-        },
-        {
-          "action": "append_file",
-          "filename": "ben_writer.py",
-          "content": "\nimport logging\nlogging.basicConfig(level=logging.INFO)\nlogging.info('ben_writer loaded')",
-          "update_type": "logging"
-        }
-      ]
-    }
-  ]
+      }
+    ]
+  }
+]

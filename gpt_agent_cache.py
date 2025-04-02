@@ -27,9 +27,13 @@ import re
 import ast
 import shutil
 import subprocess
+import openai
 import traceback
 import sqlite3
 from datetime import datetime, timezone
+autopilot_mode = True
+
+# Інші глобальні змінні, функції...
 
 from colorama import init as colorama_init, Fore, Style
 colorama_init()
@@ -803,24 +807,35 @@ def handle_macro(cmd):
     return {"status": "success", "steps": results}
 
 def handle_analyze_json(cmd, base_path="."):
-    filename = cmd.get("filename")
-    if not filename:
-        return {"status": "error", "message": "❌ Не вказано 'filename'"}
-    
-    filepath = os.path.join(base_path, filename)
-    if not os.path.exists(filepath) or not os.path.isfile(filepath):
-        return {"status": "error", "message": f"❌ Файл не знайдено або це не файл: {filename}"}
-   
-    try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            content = f.read()
-        data = json.loads(content)  # валідність
-    except Exception as e:
-        return {"status": "error", "message": f"❌ JSON помилка: {e}"}
-    
+    import os
+    import json
+    from datetime import datetime
     from openai import OpenAI
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+    # Уніфіковане витягування
+    json_data = cmd.get("parameters", {}).get("json_data")
+    filename = (
+        cmd.get("filename")
+        or cmd.get("parameters", {}).get("filename")
+        or cmd.get("parameters", {}).get("file_path")
+    )
+
+    if json_data:
+        data = json_data  # напряму переданий JSON
+    elif filename:
+        filepath = os.path.join(base_path, filename)
+        if not os.path.exists(filepath) or not os.path.isfile(filepath):
+            return {"status": "error", "message": f"❌ Файл не знайдено або це не файл: {filename}"}
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except Exception as e:
+            return {"status": "error", "message": f"❌ JSON помилка: {e}"}
+    else:
+        return {"status": "error", "message": "❌ Не вказано 'filename', 'file_path' або 'json_data'"}
+
+    # GPT-аналіз
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     prompt = f"""
 Проаналізуй наступний JSON і дай поради:
 - чи добре структуровано?
@@ -834,7 +849,6 @@ def handle_analyze_json(cmd, base_path="."):
         model="gpt-4o",
         messages=[{"role": "user", "content": prompt}]
     )
-
     reply = response.choices[0].message.content.strip()
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -844,10 +858,104 @@ def handle_analyze_json(cmd, base_path="."):
 
     return {"status": "success", "message": f"📄 Збережено аналіз у {out_path}"}
 
+def handle_summarize_file(cmd, base_path="."):
+    import os
+    import openai
+
+    filename = (
+        cmd.get("filename")
+        or cmd.get("parameters", {}).get("filename")
+        or cmd.get("parameters", {}).get("file_path")
+    )
+
+    if not filename:
+        return {"status": "error", "message": "❌ Не вказано 'filename' або 'file_path'"}
+
+    file_path = os.path.join(base_path, filename)
+    if not os.path.exists(file_path):
+        return {"status": "error", "message": f"❌ Файл '{filename}' не знайдено"}
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Помилка читання: {e}"}
+
+    prompt = f"""
+Зроби короткий підсумок наступного файлу. Вкажи:
+1. Що міститься в ньому?
+2. Яка основна логіка або структура?
+3. Чи є потенційні покращення?
+
+Ось вміст файлу `{filename}`:
+{content[:3000]}  # обмежимо обсяг
+"""
+
+    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    reply = response.choices[0].message.content.strip()
+
+    out_file = f"summarized_{filename}.txt"
+    with open(out_file, "w", encoding="utf-8") as f:
+        f.write(reply)
+
+    return {"status": "success", "message": f"📄 Підсумок збережено у {out_file}"}
+
+def handle_validate_shell_command(cmd, base_path="."):
+    command = (
+        cmd.get("parameters", {}).get("command")
+        or cmd.get("command")
+    )
+
+    if not command:
+        return {"status": "error", "message": "❌ Не вказано команду для перевірки."}
+
+    dangerous_keywords = ["rm", "shutdown", "reboot", "sudo", "mkfs", ":(){", ">:(", "dd if=", "kill -9"]
+    if any(danger in command for danger in dangerous_keywords):
+        return {
+            "status": "error",
+            "message": f"⚠️ Виявлено потенційно небезпечну команду: '{command}'"
+        }
+
+    return {
+        "status": "ok",
+        "message": f"✅ Shell-команда '{command}' виглядає безпечно."
+    }
 
 def handle_command(cmd):
     if not isinstance(cmd, dict):
         return {"status": "error", "message": "❌ Invalid command format — expected a JSON object"}
+
+    action = cmd.get("action")
+
+    # ✅ Відразу обробка відомих внутрішніх дій
+    if action == "ask_gpt":
+        from gpt_interpreter import interpret_user_prompt
+        inner_prompt = cmd.get("parameters", {}).get("prompt", "")
+        if inner_prompt:
+            answer = interpret_user_prompt(inner_prompt, return_data=False)
+            return {"status": "ok", "message": answer}
+        else:
+            return {"status": "error", "message": "❌ Немає prompt для 'ask_gpt'"}
+
+    known_actions = ["append_file", "update_code", "run_macro", "insert_between_markers",
+                     "run_shell", "read_file", "undo_change", "test_python", "summarize_file",
+                     "analyze_json", "ask_gpt", "save_template", "load_template",
+                     "validate_template", "add_function", "update_code_bulk", "run_macro_from_file"]
+
+    if action not in known_actions:
+        # 🔴 Логуємо нову дію
+        with open("unknown_actions.json", "a", encoding="utf-8") as log:
+            json.dump(cmd, log, ensure_ascii=False)
+            log.write(",\n")
+        return {
+            "status": "error",
+            "message": f"⚠️ Невідома дія: {action}. Якщо GPT запропонував нову дію, потрібно реалізувати її вручну."
+        }
 
     # 🛡️ Захист: перевірка на дублювання при вставці функцій
     if cmd.get("action") == "append_file" and "def " in cmd.get("content", ""):
@@ -878,8 +986,9 @@ def handle_command(cmd):
         if key not in cmd:
             return {"status": "error", "message": f"❌ Missing required field: {key}"}
     try:
+        
         action = cmd.get("action")
-        filename = cmd.get("filename")
+        filename = cmd.get("filename") or cmd.get("file_path") or cmd.get("parameters", {}).get("file_path")
         foldername = cmd.get("foldername")
         content = cmd.get("content", "")
         pattern = cmd.get("pattern")
@@ -1154,6 +1263,52 @@ def handle_command(cmd):
         
         elif action == "analyze_json":
              return handle_analyze_json(cmd, base_path)
+        
+        elif action == "summarize_file":
+            file_path = (
+                cmd.get("parameters", {}).get("file_path")
+                or cmd.get("filename")
+                or cmd.get("parameters", {}).get("filename")
+            )
+
+            if not file_path and autopilot_mode:
+                file_path = "recent_actions.log"  # Або інший дефолт
+
+            if not file_path:
+                return {"status": "error", "message": "❌ Не вказано 'file_path'."}
+
+            cmd["parameters"]["file_path"] = file_path
+            return handle_summarize_file(cmd, base_path)
+
+        elif action == "validate_shell_command":
+            return handle_validate_shell_command(cmd, base_path)
+
+        elif action == "ask_gpt":
+            prompt = (
+                cmd.get("prompt")
+                or cmd.get("parameters", {}).get("prompt")
+                or cmd.get("parameters", {}).get("question")
+            )
+
+            if not prompt and autopilot_mode:
+                prompt = "Автоматичний prompt: сформулюй нову ідею для покращення Ben Assistant."
+
+            if not prompt:
+                return {"status": "error", "message": "❌ Не вказано prompt для ask_gpt"}
+
+            from openai import OpenAI
+            from config import API_KEY
+            client = OpenAI(api_key=API_KEY)
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            return {
+                "status": "success",
+                "message": f"🧠 GPT response: {response.choices[0].message.content.strip()}"
+            }
 
         elif action == "test_gpt_api":
             try:
@@ -1166,21 +1321,36 @@ def handle_command(cmd):
                         {"role": "user", "content": "Ping"}
                     ]
                 )
-                return {"status": "success", "message": "🟢 GPT API connected!", "response": response.choices[0].message.content}
+                return {
+                    "status": "success",
+                    "message": "🟢 GPT API connected!",
+                    "response": response.choices[0].message.content
+                }
             except Exception as e:
-                return {"status": "error", "message": f"❌ GPT API error: {str(e)}"}
-
-
+                return {
+                    "status": "error",
+                    "message": f"❌ GPT API error: {str(e)}"
+                }
+            
         elif action == "test_python":
             if os.path.exists(full_file_path):
                 try:
                     with open(full_file_path, "r", encoding="utf-8") as f:
                         source = f.read()
                     compile(source, filename, 'exec')
-                    return {"status": "success", "message": f"✅ {filename} пройшов синтаксичну перевірку"}
+                    return {
+                        "status": "success",
+                        "message": f"✅ {filename} пройшов синтаксичну перевірку"
+                    }
                 except SyntaxError as e:
-                    return {"status": "error", "message": f"❌ Syntax error in {filename}: {e}"}
-            return {"status": "error", "message": "File not found"}
+                    return {
+                        "status": "error",
+                        "message": f"❌ Syntax error in {filename}: {e}"
+                    }
+            return {
+                "status": "error",
+                "message": "File not found"
+            }
 
         elif action == "undo_change":
             target_id = cmd.get("target_id")
@@ -1223,10 +1393,10 @@ def handle_command(cmd):
                 return execute_macro(macro_name, arguments)
             else:
                 return run_macro()  # fallback для macro_command.json
-
+            
         elif action == "run_macro_from_file":
             return execute_macro_from_file()
-   
+        
         elif action == "check_file_access":
             filename = cmd.get("filename")
             if filename:
@@ -1245,8 +1415,27 @@ def handle_command(cmd):
             arguments = cmd.get("arguments", {})
             return execute_macro(macro_name, arguments)
         
-        elif cmd["action"] == "run_shell":
-            return handle_run_shell(cmd)
+        elif action == "run_shell":
+            command = cmd.get("command") or cmd.get("parameters", {}).get("command")
+
+            if not command and autopilot_mode:
+                command = "echo Автоматична команда: нічого не було вказано."
+
+            if not command:
+                return {"status": "error", "message": "❌ Не вказано команду для виконання."}
+
+            try:
+                result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                return {
+                    "status": "success" if result.returncode == 0 else "error",
+                    "stdout": result.stdout.strip(),
+                    "stderr": result.stderr.strip()
+                }
+            except Exception as e:
+                return {
+                    "status": "error",
+                    "message": f"❌ Shell команда не вдалася: {str(e)}"
+                }
 
         elif action == "list_files":
             return {"status": "success", "files": os.listdir(base_path)}
@@ -1273,18 +1462,47 @@ def handle_command(cmd):
             result = handle_safe_update_code(cmd, base_path)
             results.append(result)
 
+        # ⛔ Автообробка невідомої дії, якщо autopilot увімкнений
+        elif autopilot_mode:
+            supported_actions = [
+                "append_file", "update_code", "run_macro", "insert_between_markers",
+                "run_shell", "read_file", "undo_change", "test_python", "summarize_file",
+                "analyze_json", "ask_gpt", "save_template", "load_template",
+                "validate_template", "add_function", "update_code_bulk", "validate_shell_command",
+                "test_gpt_api", "smart_plan", "run_plan", "analyze_all_code", "safe_update",
+                "show_memory", "list_history", "view_sql_history", "macro"
+            ]
+            if action not in supported_actions:
+                result = {
+                    "status": "auto_generated",
+                    "message": f"🚀 Створюємо нову дію '{action}' у режимі autopilot.",
+                    "auto_action": {
+                        "action": "add_function",
+                        "parameters": {
+                            "file": "handler.py",
+                            "function_name": f"handle_{action}",
+                            "function_code": f"def handle_{action}(cmd, base_path='.'):\n    # TODO: реалізувати логіку\n    return {{'status': 'ok', 'message': '🔧 Заготовка функції {action}'}}"
+                        }
+                    }
+                }
+            else:
+                result = {"status": "error", "message": f"❌ Unknown action: {action}"}
+        
         else:
             result = {"status": "error", "message": f"❌ Unknown action: {action}"}
 
         # 📝 Зберігаємо дію в SQLite
         try:
-            import sqlite3
             conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO command_history (action, file_path, update_type)
                 VALUES (?, ?, ?)
-            """, (cmd.get("action"), cmd.get("file_path") or cmd.get("filename"), cmd.get("update_type")))
+            """, (
+                cmd.get("action"),
+                cmd.get("file_path") or cmd.get("filename"),
+                cmd.get("update_type")
+            ))
             conn.commit()
             conn.close()
         except Exception as e:
@@ -1309,7 +1527,7 @@ def handle_command(cmd):
             return auto_result
 
         return {"status": "error", "message": f"❌ Exception: {str(e)}"}
-  
+
 def run_self_tests():
     print("\n🧪 Running self-tests...")
     tests_passed = 0

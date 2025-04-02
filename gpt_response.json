@@ -1,6 +1,6 @@
 [
   {
-    "status": "success",
-    "message": "✅ Shell OK: 'Checking if Cygwin is installed' \n'Cygwin is not installed. Please install it from https://cygwin.com/'"
+    "status": "error",
+    "message": "❌ Unknown action: add_function"
   }
 ]

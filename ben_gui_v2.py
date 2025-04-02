@@ -483,6 +483,10 @@ class BenAssistantGUI:
                     result = handle_command(response_json)
                     self.chat_display.insert(tk.END, f"📤 Виконано: {result.get('message', '⛔')}\n", "gpt_action")
                     self.chat_display.see(tk.END)
+                    
+                    if result.get("status") == "error" and "Невідома дія" in result.get("message", ""):
+                        self.chat_display.insert(tk.END, f"🆕 GPT запропонував нову дію: {response_json.get('action')}.\n", "gpt_action")
+                        self.chat_display.see(tk.END)
 
                     # 6. AI Insight
                     try:

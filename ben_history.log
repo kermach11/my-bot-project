@@ -4329,3 +4329,64 @@ operable program or batch file.
 'Cygwin is not installed. Please install it from https://cygwin.com/'
 [2025-04-01 22:28:20] 📤 Git push: ✅ Auto-commit: run_shell 
 [2025-04-01 22:28:21] ✅ Shell OK: 'Cygwin is not installed. Please install it from https://cygwin.com/'
+[2025-04-01 22:28:24] 📤 Git push: ✅ Auto-commit: run_shell 
+[2025-04-01 22:41:35] ❌ Shell error: 'cat' is not recognized as an internal or external command,
+operable program or batch file.
+[2025-04-01 22:41:38] ❌ Файл 'feedback.txt' не знайдено — не можна додати.
+[2025-04-01 23:48:26] ❌ Unknown action: add_function
+[2025-04-01 23:48:47] ❌ Unknown action: ask_gpt
+[2025-04-01 23:48:52] ❌ Unknown action: summarize_file
+[2025-04-02 00:05:24] ❌ Unknown action: add_function
+[2025-04-02 00:05:36] ❌ Unknown action: ask_gpt
+[2025-04-02 00:05:38] ❌ Unknown action: ask_gpt
+[2025-04-02 00:05:44] ❌ Unknown action: summarize_file
+[2025-04-02 00:07:06] ❌ Не вказано 'filename'
+[2025-04-02 00:07:11] ❌ Не вказано 'filename'
+[2025-04-02 08:36:43] ❌ Не вказано 'filename'
+[2025-04-02 08:36:48] ❌ Unknown action: summarize_file
+[2025-04-02 08:37:21] ❌ Unknown action: add_function
+[2025-04-02 08:40:06] ❌ Unknown action: ask_gpt
+[2025-04-02 08:40:18] ❌ Unknown action: add_function
+[2025-04-02 08:40:24] ❌ Unknown action: summarize_file
+[2025-04-02 08:51:58] ❌ Не вказано 'filename'
+[2025-04-02 08:52:12] ❌ Unknown action: summarize_file
+[2025-04-02 08:55:38] ❌ Unknown action: summarize_file
+[2025-04-02 08:55:44] ❌ Unknown action: ask_gpt
+[2025-04-02 09:11:06] ❌ Unknown action: add_function
+[2025-04-02 09:11:43] ❌ Missing 'file_path'
+[2025-04-02 09:11:48] ❌ Unknown action: summarize_file
+[2025-04-02 09:12:39] ❌ Exception: run_macro() missing 1 required positional argument: 'cmd'
+[2025-04-02 09:12:43] ❌ Unknown action: summarize_file
+[2025-04-02 09:23:35] ❌ Exception: run_macro() missing 1 required positional argument: 'cmd'
+[2025-04-02 09:23:40] ❌ Unknown action: summarize_file
+[2025-04-02 09:24:40] ❌ Не вказано 'filename'
+[2025-04-02 09:24:55] ❌ Unknown action: summarize_file
+[2025-04-02 09:25:50] ❌ Exception: _path_exists: path should be string, bytes, os.PathLike or integer, not NoneType
+[2025-04-02 09:25:54] ❌ Unknown action: summarize_file
+[2025-04-02 09:26:52] ❌ Missing shell command
+[2025-04-02 09:26:56] ❌ Unknown action: summarize_file
+[2025-04-02 09:27:27] ❌ Unknown action: summarize_file
+[2025-04-02 09:27:30] ❌ Unknown action: summarize_file
+[2025-04-02 09:28:00] ❌ Unknown action: ask_gpt
+[2025-04-02 09:28:04] ❌ Unknown action: ask_gpt
+[2025-04-02 09:28:08] ❌ Unknown action: summarize_file
+[2025-04-02 09:30:27] ❌ Unknown action: validate_shell_command
+[2025-04-02 09:30:34] ❌ Unknown action: summarize_file
+[2025-04-02 09:37:11] ❌ Unknown action: add_function
+[2025-04-02 09:38:25] ❌ Unknown action: summarize_file
+[2025-04-02 09:38:41] ❌ Unknown action: summarize_file
+[2025-04-02 09:39:41] ❌ Не вказано 'filename'
+[2025-04-02 09:40:02] ❌ Unknown action: summarize_file
+[2025-04-02 09:41:05] ❌ Не вказано 'filename'
+[2025-04-02 09:41:23] ❌ Unknown action: summarize_file
+[2025-04-02 09:42:41] ❌ Не вказано 'filename'
+[2025-04-02 09:43:01] ❌ Unknown action: summarize_file
+[2025-04-02 09:43:46] ❌ Unknown action: ask_gpt
+[2025-04-02 09:43:54] ❌ Не вказано 'filename'
+[2025-04-02 09:44:04] ❌ Unknown action: summarize_file
+[2025-04-02 09:52:38] ❌ Unknown action: add_function
+[2025-04-02 09:52:47] ❌ Не вказано 'filename'
+[2025-04-02 09:53:43] ❌ Unknown action: ask_gpt
+[2025-04-02 09:53:51] ❌ Unknown action: summarize_file
+[2025-04-02 10:50:52] ❌ Unknown action: add_function
+[2025-04-02 10:52:51] {'status': 'success', 'results': []}

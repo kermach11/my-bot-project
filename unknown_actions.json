@@ -1,0 +1,1 @@
+{"action": "validate_shell_command", "parameters": {"command": "run_shell", "expected_format": "shell_command"}, "comment": "Перевірка правильності вказаної команди shell. Якщо команда некоректна, буде запропоновано виправлення для уникнення подібних помилок у майбутньому.", "history_id": "cmd_009", "target_id": "id_009", "timestamp": "2025-04-02 09:30:27"},
