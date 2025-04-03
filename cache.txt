@@ -1,15 +1,13 @@
 {
   "action": "update_code",
   "parameters": {
-    "file_path": "debug_test.py",
-    "update_type": "test_debug_path",
+    "file_path": "неіснуючий_файл.py",
     "updates": [
       {
         "pattern": ".*",
-        "multiple": false,
-        "replacement": "print('✅ DEBUG TEST WORKING')"
+        "replacement": "print('Hello')"
       }
     ]
   },
-  "comment": "🧪 Тест оновлення файлу з правильним file_path"
+  "comment": "🔁 Тест SmartLoop — свідомо викликаємо помилку"
 }

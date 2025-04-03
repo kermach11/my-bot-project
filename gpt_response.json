@@ -1,6 +1,6 @@
 [
   {
     "status": "ok",
-    "message": "{\n  \"action\": \"update_code\",\n  \"file_path\": \"вкажіть_шлях_до_файлу\",\n  \"name\": \"вкажіть_назву_функції_або_класу\",\n  \"code\": \"вкажіть_новий_код\",\n  \"comment\": \"Щоб уникнути помилки, потрібно вказати всі необхідні параметри: 'file_path', 'name' та 'code'. Будь ласка, надайте ці дані, щоб я міг виконати дію 'update_code'.\"\n}"
+    "message": "{\n  \"action\": \"update_code\",\n  \"file_path\": \"path/to/your/file.py\",\n  \"name\": \"function_name\",\n  \"code\": \"def function_name():\\n    # ваш код тут\\n    pass\",\n  \"comment\": \"Щоб уникнути помилки, переконайтеся, що ви вказали всі необхідні параметри: 'file_path', 'name' та 'code'. Це дозволить Ben Assistant правильно виконати дію 'update_code'.\"\n}"
   }
 ]

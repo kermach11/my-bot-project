@@ -2,16 +2,6 @@
   {
     "action": "ask_gpt",
     "parameters": {
-      "prompt": "Так, я тут! Як я можу допомогти вам сьогодні?"
-    },
-    "comment": "Відповідаю користувачеві, що я готовий допомогти.",
-    "history_id": "cmd_001",
-    "target_id": "id_001",
-    "timestamp": "2025-04-01 23:48:47"
-  },
-  {
-    "action": "ask_gpt",
-    "parameters": {
       "prompt": "Чи ти тут?"
     },
     "message": "Так, я тут! Як я можу допомогти вам сьогодні?",
@@ -1437,5 +1427,10 @@
     "history_id": "cmd_002",
     "target_id": "id_002",
     "timestamp": "2025-04-03 11:37:42"
+  },
+  {
+    "action": "git_push",
+    "message": "✅ Auto-commit: update_code ",
+    "timestamp": "2025-04-03 14:50:30"
   }
 ]

@@ -205,3 +205,12 @@
 {"action": "update_code", "parameters": {"file_path": "debug_test.py", "update_type": "test_debug_path", "updates": [{"pattern": ".*", "multiple": false, "replacement": "print('✅ DEBUG TEST WORKING')"}]}, "comment": "🧪 Тест оновлення файлу з правильним file_path"}
 {"status": "success", "message": "✅ Updated debug_test.py", "details": {"status": "success", "message": "✅ Applied updates to C:\\Users\\DC\\my-bot-project\\debug_test.py"}}
 ---
+{"action": "add_function", "function_name": "is_valid_password", "parameters": {"password": "str"}, "code": "def is_valid_password(password: str) -> bool:\n    return len(password) >= 8", "comment": "Функція перевіряє, чи пароль має щонайменше 8 символів. Якщо так, повертає True, інакше — False."}
+{"status": "error", "message": "❌ Не вказано file_path, name або code"}
+---
+{"action": "ask_gpt", "parameters": {"prompt": "❌ Помилка в останній дії: ❌ Не вказано file_path, name або code. Як виправити цю помилку або яку дію потрібно виконати, щоб її уникнути?"}, "comment": "Автоматичний SmartLoop — GPT допомагає виправити останню помилку"}
+{"status": "ok", "message": "{\n  \"action\": \"update_code\",\n  \"file_path\": \"path/to/your/file.py\",\n  \"name\": \"function_name\",\n  \"code\": \"def function_name():\\n    # ваш код тут\\n    pass\",\n  \"comment\": \"Щоб уникнути помилки, переконайтеся, що ви вказали всі необхідні параметри: 'file_path', 'name' та 'code'. Це дозволить Ben Assistant правильно виконати дію 'update_code'.\"\n}"}
+---
+{"action": "update_code", "parameters": {"file_path": "неіснуючий_файл.py", "updates": [{"pattern": ".*", "replacement": "print('Hello')"}]}, "comment": "🔁 Тест SmartLoop — свідомо викликаємо помилку"}
+{"status": "success", "message": "✅ Updated неіснуючий_файл.py", "details": {"status": "success", "message": "✅ Applied updates to C:\\Users\\DC\\my-bot-project\\неіснуючий_файл.py"}}
+---

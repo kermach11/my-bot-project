@@ -25,6 +25,7 @@ from handlers.file_creation import handle_create_file, handle_create_and_finaliz
 from handlers.memory_manager import is_forbidden_action, remember_phrase, forget_phrase
 from handlers.auto_guess import auto_guess_missing_parameters
 from utils.json_tools import clean_json_text
+from utils.log_utils import log_action
 
 # 🧠 Завантаження змінних середовища (з перевіркою)
 env_path = "C:/Users/DC/env_files/env"
@@ -66,17 +67,31 @@ def handle_command(cmd):
 
 def apply_updates_to_file(file_path, updates):
     import re
+
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
     for update in updates:
-        pattern = re.compile(update['pattern'], re.DOTALL)
-        content = pattern.sub(update['replacement'], content, count=0 if update.get('multiple') else 1)
+        pattern_str = update.get('pattern')
+        replacement = update.get('replacement', '')
+        multiple = update.get('multiple', False)
+
+        if not pattern_str or not isinstance(pattern_str, str):
+            return {"status": "error", "message": "❌ Невірний або порожній pattern"}
+
+        try:
+            pattern = re.compile(pattern_str, re.DOTALL | re.MULTILINE)
+        except re.error as e:
+            return {"status": "error", "message": f"❌ Некоректний regex: {e}"}
+
+        count = 0 if multiple else 1
+        content = pattern.sub(replacement, content, count=count)
 
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
     return {"status": "success", "message": f"✅ Applied updates to {file_path}"}
+
 
 # ⚙️ Імпорт конфігурації
 from config import base_path, request_file, response_file, history_file, API_KEY
@@ -461,10 +476,6 @@ def is_valid_python_file(filepath):
 
 create_history_table()
 
-def log_action(message):
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-    with open(history_file, "a", encoding="utf-8") as f:
-        f.write(f"[{timestamp}] {message}\n")
 def get_command_by_id(target_id):
     try:
         with open(".ben_memory.json", "r", encoding="utf-8") as f:
