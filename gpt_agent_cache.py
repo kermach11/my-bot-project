@@ -1,3 +1,48 @@
+
+import os
+import sys
+sys.path.append(os.path.abspath("."))
+import json
+import time
+import re
+import ast
+import shutil
+import subprocess
+import openai
+import traceback
+import sqlite3
+from datetime import datetime, timezone
+autopilot_mode = True
+
+
+# Інші глобальні змінні, функції...
+
+from colorama import init as colorama_init, Fore, Style
+colorama_init()
+from dotenv import load_dotenv
+from init_history_db import create_history_table
+from handlers.file_creation import handle_create_file, handle_create_and_finalize_script
+from handlers.memory_manager import is_forbidden_action, remember_phrase, forget_phrase
+from handlers.auto_guess import auto_guess_missing_parameters
+from utils.json_tools import clean_json_text
+
+# 🧠 Завантаження змінних середовища (з перевіркою)
+env_path = "C:/Users/DC/env_files/env"
+if os.path.exists(env_path):
+    load_dotenv(env_path)
+else:
+    print(Fore.YELLOW + f"⚠️ Файл .env не знайдено: {env_path}" + Style.RESET_ALL)
+
+# 🧱 Створення таблиці історії команд
+create_history_table()
+
+# 🧠 Завантаження змінних середовища
+load_dotenv("C:/Users/DC/env_files/env")
+
+# 🧩 Додавання base_path до sys.path для імпорту
+if os.getcwd() not in sys.path:
+    sys.path.append(os.getcwd())
+
 def handle_command(cmd):
     create_history_table()
     # 🧠 Обробка підтвердження rollback
@@ -19,49 +64,24 @@ def handle_command(cmd):
         if cmd["action"] in ["update_file", "append_file", "replace_in_file", "update_code", "delete_file"]:
             return {"status": "error", "message": "❌ Заборонено змінювати або комітити файл 'env'"}
 
-import os
-import sys
-import json
-import time
-import re
-import ast
-import shutil
-import subprocess
-import openai
-import traceback
-import sqlite3
-from datetime import datetime, timezone
-autopilot_mode = True
+def apply_updates_to_file(file_path, updates):
+    import re
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
 
-# Інші глобальні змінні, функції...
+    for update in updates:
+        pattern = re.compile(update['pattern'], re.DOTALL)
+        content = pattern.sub(update['replacement'], content, count=0 if update.get('multiple') else 1)
 
-from colorama import init as colorama_init, Fore, Style
-colorama_init()
-from dotenv import load_dotenv
-from init_history_db import create_history_table
-from handlers.retry_logic import handle_retry_last_action_with_fix
-from handlers.file_creation import handle_create_file, handle_create_and_finalize_script
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
 
-# 🧠 Завантаження змінних середовища (з перевіркою)
-env_path = "C:/Users/DC/env_files/env"
-if os.path.exists(env_path):
-    load_dotenv(env_path)
-else:
-    print(Fore.YELLOW + f"⚠️ Файл .env не знайдено: {env_path}" + Style.RESET_ALL)
-
-# 🧱 Створення таблиці історії команд
-create_history_table()
-
-# 🧠 Завантаження змінних середовища
-load_dotenv("C:/Users/DC/env_files/env")
-
-# 🧩 Додавання base_path до sys.path для імпорту
-if os.getcwd() not in sys.path:
-    sys.path.append(os.getcwd())
+    return {"status": "success", "message": f"✅ Applied updates to {file_path}"}
 
 # ⚙️ Імпорт конфігурації
 from config import base_path, request_file, response_file, history_file, API_KEY
 import sqlite3
+
 
 def create_history_table():
     conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
@@ -592,6 +612,8 @@ def handle_check_file_access(filename):
     else:
         return {"status": "error", "message": f"❌ File not found: {filename}"}
 
+from utils.json_tools import clean_json_text
+
 def read_requests():
     if not os.path.exists(request_file):
         return []
@@ -600,6 +622,7 @@ def read_requests():
             text = f.read().strip()
             if not text:
                 return []
+            text = clean_json_text(text)
             data = json.loads(text)
             return data if isinstance(data, list) else [data]
         except Exception as e:
@@ -908,11 +931,16 @@ def handle_summarize_file(cmd, base_path="."):
 
     return {"status": "success", "message": f"📄 Підсумок збережено у {out_file}"}
 
+from handlers.memory_manager import remember_phrase
+
 def handle_validate_shell_command(cmd, base_path="."):
     command = (
         cmd.get("parameters", {}).get("command")
         or cmd.get("command")
     )
+
+    if command and isinstance(command, str) and len(command.strip()) > 3:
+        remember_phrase(command.strip())
 
     if not command:
         return {"status": "error", "message": "❌ Не вказано команду для перевірки."}
@@ -972,22 +1000,47 @@ def handle_add_function(cmd, base_path="."):
             "message": f"❌ Помилка при додаванні функції: {str(e)}"
         }
 
+from handlers.memory_manager import remember_phrase
+
+def try_remember_dialogue(cmd):
+    fields = [
+        cmd.get("comment"),
+        cmd.get("parameters", {}).get("prompt"),
+        cmd.get("parameters", {}).get("query"),
+        cmd.get("parameters", {}).get("text")
+    ]
+    for phrase in fields:
+        if phrase and isinstance(phrase, str) and len(phrase.strip()) > 3:
+            remember_phrase(phrase.strip())
+
+
 def handle_command(cmd):
 
+    print("🧪 DEBUG — початкова команда:", cmd)
+    print("📦 DEBUG — parameters:", cmd.get("parameters", {}))
+
     # ❌ Перевірка заборонених дій з long_term_memory.json
-    from memory_manager import is_action_forbidden
-    if is_action_forbidden(cmd):
+    from handlers.memory_manager import is_forbidden_action
+    if is_forbidden_action(cmd):
         return {
             "status": "error",
             "message": f"🚫 Ця дія заборонена відповідно до побажань користувача"
         }
-    
+
     if not isinstance(cmd, dict):
         return {"status": "error", "message": "❌ Invalid command format — expected a JSON object"}
 
     # 🧠 Автоматичне розпізнавання побажань у коментарях/промптах
-    from memory_manager import remember, forget
-
+    cmd = auto_guess_missing_parameters(cmd)
+    
+    if "file_path" in cmd.get("parameters", {}):
+        fp = cmd["parameters"]["file_path"]
+        if not os.path.exists(fp):
+            os.makedirs(os.path.dirname(fp), exist_ok=True)
+            with open(fp, "w", encoding="utf-8") as f:
+                f.write("# 🆕 Автоматично створений файл\n")
+            print(f"📁 Автоматично створено файл: {fp}")
+   
     user_text = (
         cmd.get("comment") or
         cmd.get("parameters", {}).get("prompt") or
@@ -997,11 +1050,11 @@ def handle_command(cmd):
 
     if "пам" in user_text or "запам" in user_text:
         phrase = user_text.strip()
-        remember(phrase)
+        remember_phrase(phrase)
 
     if "не роби" in user_text or "заборон" in user_text:
         phrase = user_text.strip()
-        forget(phrase)
+        forget_phrase(phrase)
 
     action = cmd.get("action")
 
@@ -1011,14 +1064,28 @@ def handle_command(cmd):
         inner_prompt = cmd.get("parameters", {}).get("prompt", "")
         if inner_prompt:
             answer = interpret_user_prompt(inner_prompt, return_data=False)
+            try_remember_dialogue(cmd)
             return {"status": "ok", "message": answer}
         else:
+            try_remember_dialogue(cmd)
             return {"status": "error", "message": "❌ Немає prompt для 'ask_gpt'"}
+    if action == "scan_all_files":
+        from handlers.scan_all import handle_scan_all_files
+        return handle_scan_all_files(cmd.get("parameters", {}))
+
+    if action == "message":
+        try_remember_dialogue(cmd)
+        return {
+            "status": "ok",
+            "message": cmd.get("parameters", {}).get("text", "✅ Повідомлення отримано.")
+        }
 
     known_actions = ["append_file", "update_code", "run_macro", "insert_between_markers",
                      "run_shell", "read_file", "undo_change", "test_python", "summarize_file",
                      "analyze_json", "ask_gpt", "save_template", "load_template",
-                     "validate_template", "add_function", "update_code_bulk", "run_macro_from_file"]
+                     "validate_template", "add_function", "update_code_bulk", "run_macro_from_file",
+                     "message","create_file", "create_and_finalize_script","scan_all_files",
+                     "retry_last_action_with_fix"]  # ✅ додано message
 
     if action not in known_actions:
         # 🔴 Логуємо нову дію
@@ -1073,7 +1140,22 @@ def handle_command(cmd):
         full_folder_path = os.path.join(base_path, foldername) if foldername else None
         dst_folder_path = os.path.join(base_path, target_folder) if target_folder else None
         dst_file_path = os.path.join(dst_folder_path, filename) if target_folder and filename else None
+        
 
+        if action == "add_function":
+            params = cmd.get("parameters", {})
+            code = params.get("code")
+            file_path = params.get("file_path")
+            name = params.get("name")
+            if code and file_path and name:
+                full_path = os.path.join(base_path, file_path)
+                os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                with open(full_path, "a", encoding="utf-8") as f:
+                    f.write("\n" + code + "\n")
+                return {"status": "success", "message": f"✅ Функцію {name} додано до {file_path}"}
+            else:
+                return {"status": "error", "message": "❌ Не вказано file_path, name або code"}
+              
         if action == "create_file":
             with open(full_file_path, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -1081,7 +1163,9 @@ def handle_command(cmd):
             return {"status": "success", "message": f"✅ Created file '{filename}'"}
 
         elif action == "update_code":
-            filepath = cmd.get("file_path") or cmd.get("file")
+            params = cmd.get("parameters", {})
+            filepath = cmd.get("file_path") or params.get("file_path") or cmd.get("file")
+
             if not filepath:
                 return {"status": "error", "message": "❌ Missing 'file_path'"}
 
@@ -1089,7 +1173,7 @@ def handle_command(cmd):
             if not os.path.isfile(full_path):
                 return {"status": "error", "message": f"❌ File not found: {filepath}"}
 
-            updates = cmd.get("updates", [])
+            updates = cmd.get("updates") or params.get("updates", [])
             if not updates:
                 return {"status": "error", "message": "❌ No updates provided"}
 
@@ -1118,6 +1202,16 @@ def handle_command(cmd):
 
         elif action == "update_code_bulk":
             return handle_update_code_bulk(cmd)
+        
+        elif action == "retry_last_action_with_fix":
+            from handlers.retry_logic import handle_retry_last_action_with_fix
+            return handle_retry_last_action_with_fix(cmd, base_path)
+
+        elif action == "create_file":
+            return handle_create_file(cmd, base_path)
+
+        elif action == "create_and_finalize_script":
+            return handle_create_and_finalize_script(cmd, base_path)
 
         elif action == "append_file":
             filename = cmd["filename"]
@@ -1476,16 +1570,7 @@ def handle_command(cmd):
 
         elif action == "macro":
             return handle_macro(cmd)
-        
-        elif action == "create_file":
-            return handle_create_file(cmd, base_path)
-
-        elif action == "create_and_finalize_script":
-            return handle_create_and_finalize_script(cmd, base_path)
-        
-        elif action == "retry_last_action_with_fix":
-            return handle_retry_last_action_with_fix(cmd, base_path)
-    
+                
         elif cmd.get("action") == "check_file_access":
             filename = cmd.get("filename")
             return handle_check_file_access(filename)
@@ -1658,6 +1743,8 @@ def handle_command(cmd):
                     print("⚠️ Не вдалося отримати GPT пояснення:", str(e))
 
                 return retry_result
+        # ✅ Запамʼятовуємо розмовну команду після завершення дії
+        try_remember_dialogue(cmd)   
         return result
 
     except Exception as e:
@@ -1914,9 +2001,20 @@ if __name__ == "__main__":
 
             # 🔁 Якщо останній результат — помилка, пробуємо повторити з виправленням
             if responses[-1].get("status") == "error":
-                print("🔁 Помилка в останній дії — запускаю retry_last_action_with_fix")
-                retry_result = handle_command({"action": "retry_last_action_with_fix"})
-                print("🔁 Результат повтору:", retry_result)
+                print("🔁 Помилка в останній дії — запускаю SmartFix через GPT")
+
+                ask_gpt_cmd = {
+                    "action": "ask_gpt",
+                    "parameters": {
+                        "prompt": f"❌ Помилка в останній дії: {responses[-1].get('message', '')}. Як виправити цю помилку або яку дію потрібно виконати, щоб її уникнути?"
+                    },
+                    "comment": "Автоматичний SmartLoop — GPT допомагає виправити останню помилку"
+                }
+
+                with open("cache.txt", "w", encoding="utf-8") as f:
+                    f.write(json.dumps(ask_gpt_cmd, ensure_ascii=False, indent=2))
+
+                print("🧠 GPT запит на виправлення збережено в cache.txt. Очікую нову дію...")
         time.sleep(1)
 
 def repeat_last_action():

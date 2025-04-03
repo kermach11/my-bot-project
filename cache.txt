@@ -1,12 +1,15 @@
 {
-  "action": "analyze_json",
-  "filename": "gpt_plan.json",
-  "comment": "Аналізую файл 'gpt_plan.json', щоб визначити, чи проект завершено. Це допоможе зрозуміти, чи всі необхідні кроки виконані.",
-  "message": "🔄 Аналізую файл 'gpt_plan.json'. Будь ласка, зачекайте... [⏳]",
-  "progress": {
-    "status": "in_progress",
-    "percentage": 0
+  "action": "update_code",
+  "parameters": {
+    "file_path": "debug_test.py",
+    "update_type": "test_debug_path",
+    "updates": [
+      {
+        "pattern": ".*",
+        "multiple": false,
+        "replacement": "print('✅ DEBUG TEST WORKING')"
+      }
+    ]
   },
-  "history_id": "cmd_010",
-  "target_id": "id_010"
+  "comment": "🧪 Тест оновлення файлу з правильним file_path"
 }

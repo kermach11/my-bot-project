@@ -10,6 +10,9 @@ def run_feedback_analysis():
         with open("gpt_response.json", "r", encoding="utf-8") as f:
             response = json.load(f)
 
+        if isinstance(response, list):
+            response = response[-1]
+
         filename = response.get("filename") or response.get("file_path")
 
         # 🛡️ Перевірка типу файлу — аналізувати тільки .py

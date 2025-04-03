@@ -236,7 +236,7 @@ class BenAssistantGUI:
 
         try:
             from gpt_interpreter import interpret_user_prompt
-            from gpt_agent_cache import handle_command
+            from gpt_agent_cache import handle_command 
             from utils import save_to_memory
 
             response_json = interpret_user_prompt(user_input, history_context=True, return_data=True)

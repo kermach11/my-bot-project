@@ -1,6 +1,7 @@
+import os
+import json
+
 def handle_retry_last_action_with_fix(cmd, base_path="."):
-    import json
-    import os
     from .auto_fix import auto_fix_parameters
     from gpt_agent_cache import handle_command
 
@@ -17,7 +18,7 @@ def handle_retry_last_action_with_fix(cmd, base_path="."):
     last_cmd = memory[-1]
     fixed_cmd = auto_fix_parameters(last_cmd)
 
-    result = handle_command(fixed_cmd, base_path)
+    result = handle_command(fixed_cmd)
     return {
         "status": "retry",
         "original": last_cmd,

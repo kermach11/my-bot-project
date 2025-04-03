@@ -1,3 +1,5 @@
+import os
+
 def auto_fix_parameters(cmd):
     """
     Автоматично виправляє некоректні параметри в команді (наприклад, 'unknown', None).

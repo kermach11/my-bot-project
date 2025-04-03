@@ -1,5 +1,6 @@
+import os
+
 def handle_create_file(cmd, base_path="."):
-    import os
     try:
         file_path = cmd.get("file_path") or cmd.get("parameters", {}).get("file_path")
         content = cmd.get("content") or cmd.get("parameters", {}).get("content")
@@ -20,7 +21,6 @@ def handle_create_file(cmd, base_path="."):
 
 
 def handle_create_and_finalize_script(cmd, base_path="."):
-    import os
     try:
         script_name = cmd.get("file_path") or cmd.get("parameters", {}).get("file_path")
         script_content = cmd.get("content") or cmd.get("parameters", {}).get("content")
