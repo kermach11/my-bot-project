@@ -106,3 +106,6 @@
 {"action": "create_file", "parameters": {"file_path": "ben_memory.json", "content": "📎 IMPORT FROM /mnt/data/ben_memory.json", "code": "# TODO: додати код функції"}, "comment": "🧠 Імпорт памʼяті особистості Ben з ініціалізованими принципами та місією"}
 {"status": "success", "message": "✅ Created file 'ben_memory.json'"}
 ---
+{"action": "create_file", "parameters": {"file_path": "ben_memory.json", "content": "📎 IMPORT FROM /mnt/data/ben_memory.json", "code": "# TODO: додати код функції"}, "comment": "🧠 Імпорт памʼяті особистості Ben з ініціалізованими принципами та місією"}
+{"status": "success", "message": "✅ Created file 'ben_memory.json'"}
+---
