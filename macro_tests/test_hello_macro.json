@@ -1,0 +1,15 @@
+{
+    "steps": [
+      {
+        "action": "create_file",
+        "filename": "hello.py",
+        "content": "print('Hello')"
+      },
+      {
+        "action": "run_python",
+        "filename": "hello.py"
+      }
+    ],
+    "expected_output": "Hello"
+  }
+  

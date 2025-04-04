@@ -13,6 +13,7 @@ import traceback
 import sqlite3
 from datetime import datetime, timezone
 autopilot_mode = True
+base_path = os.path.abspath(".")
 
 
 # Інші глобальні змінні, функції...
@@ -1028,6 +1029,10 @@ def try_remember_dialogue(cmd):
 def handle_command(cmd):
 
     print("🧪 DEBUG — початкова команда:", cmd)
+
+    if not isinstance(cmd, dict):
+        return {"status": "error", "message": "❌ Invalid command format — expected a JSON object"}
+
     print("📦 DEBUG — parameters:", cmd.get("parameters", {}))
 
     # ❌ Перевірка заборонених дій з long_term_memory.json
@@ -1096,7 +1101,7 @@ def handle_command(cmd):
                      "analyze_json", "ask_gpt", "save_template", "load_template",
                      "validate_template", "add_function", "update_code_bulk", "run_macro_from_file",
                      "message","create_file", "create_and_finalize_script","scan_all_files",
-                     "retry_last_action_with_fix"]  # ✅ додано message
+                     "retry_last_action_with_fix","scan_all_files","macro"]  # ✅ додано message
 
     if action not in known_actions:
         # 🔴 Логуємо нову дію
@@ -1153,20 +1158,6 @@ def handle_command(cmd):
         dst_file_path = os.path.join(dst_folder_path, filename) if target_folder and filename else None
         
 
-        if action == "add_function":
-            params = cmd.get("parameters", {})
-            code = params.get("code")
-            file_path = params.get("file_path")
-            name = params.get("name")
-            if code and file_path and name:
-                full_path = os.path.join(base_path, file_path)
-                os.makedirs(os.path.dirname(full_path), exist_ok=True)
-                with open(full_path, "a", encoding="utf-8") as f:
-                    f.write("\n" + code + "\n")
-                return {"status": "success", "message": f"✅ Функцію {name} додано до {file_path}"}
-            else:
-                return {"status": "error", "message": "❌ Не вказано file_path, name або code"}
-              
         if action == "create_file":
             with open(full_file_path, "w", encoding="utf-8") as f:
                 f.write(content)
@@ -1246,23 +1237,22 @@ def handle_command(cmd):
 
             return {"status": "success", "message": f"📌 Appended to file '{filename}'"}
 
-        
-        elif action == "undo_change":
-            ilename = cmd.get("filename")
-            result = undo_last_backup(os.path.join(base_path, filename))
-            results.append(result)
-
         elif action == "scan_all_files":
             result = {}
-            for fname in os.listdir(base_path):
-                fpath = os.path.join(base_path, fname)
-                if os.path.isfile(fpath) and fname.endswith((".py", ".json", ".txt", ".csv")):
-                    try:
-                        with open(fpath, "r", encoding="utf-8") as f:
-                            result[fname] = f.read()
-                    except Exception as e:
-                        result[fname] = f"⚠️ Error reading: {str(e)}"
-            return {"status": "success", "files": result}
+            for root, dirs, files in os.walk(base_path):
+                for file in files:
+                    if file.endswith((".py", ".json", ".txt", ".csv")):
+                        rel_path = os.path.relpath(os.path.join(root, file), base_path)
+                        try:
+                            with open(os.path.join(root, file), "r", encoding="utf-8") as f:
+                                result[rel_path] = f.read()
+                        except Exception as e:
+                            result[rel_path] = f"⚠️ Error reading: {str(e)}"
+            return {
+                "status": "success",
+                "message": "✅ Успішне сканування всіх файлів",
+                "files": result
+            }
 
         elif action == "update_file":
             if os.path.exists(full_file_path):
@@ -1392,9 +1382,14 @@ def handle_command(cmd):
             return {"status": "success", "message": f"📁 Folder '{foldername}' created"}
 
         elif action == "delete_file":
-            filepath = os.path.join(base_path, cmd["filename"])
-            backup_file(filepath)
+            filename = cmd.get("filename")
+            if not filename:
+                return {"status": "error", "message": "❌ Не вказано 'filename'"}
+
+            full_file_path = os.path.join(base_path, filename)
+
             if os.path.exists(full_file_path):
+                backup_file(full_file_path)
                 os.remove(full_file_path)
                 save_to_memory(cmd)
                 return {"status": "success", "message": f"🗑️ File '{filename}' deleted"}
@@ -1421,11 +1416,10 @@ def handle_command(cmd):
             return {"status": "error", "message": "Folder not found"}
 
         elif action == "run_python":
-            if not os.path.exists(full_file_path):
-                return {"status": "error", "message": f"❌ File '{filename}' not found"}
-            result = subprocess.run(["python", full_file_path], capture_output=True, text=True)
-            return {"status": "success", "output": result.stdout, "errors": result.stderr}
-        
+            from handlers.run_python import handle_run_python
+            res = handle_run_python(cmd)
+            return res  # 🔁 обов’язково повертаємо повний словник з parsed_result
+
         elif action == "self_improve":
             filename = cmd.get("filename", "gpt_agent_cache.py")
             result = self_improve_agent(filename)
@@ -1535,6 +1529,7 @@ def handle_command(cmd):
 
         elif action == "undo_change":
             target_id = cmd.get("target_id")
+            filename = cmd.get("filename")
 
             if target_id:
                 # 🔍 Шукаємо команду по ID з історії
@@ -1551,15 +1546,19 @@ def handle_command(cmd):
 
                 return ask_confirmation_for_rollback(prev_code, target_id)
 
-            else:
-                # 🕗 Стара логіка .bak
+            elif filename:
+                # 🕗 Стара логіка через filename
+                full_file_path = os.path.join(base_path, filename)
                 if os.path.exists(full_file_path + ".bak"):
                     shutil.copy(full_file_path + ".bak", full_file_path)
                     save_to_memory(cmd)
                     return {"status": "success", "message": f"↩️ Undo: відкат до .bak для '{filename}'"}
                 else:
                     return {"status": "error", "message": f"❌ Немає резервної копії для '{filename}'"}
-        
+
+            else:
+                return {"status": "error", "message": "❌ Не вказано 'filename' або 'target_id'"}
+
         # 📌 Long-term memory handling
         elif action == "remember":
             from memory_manager import remember
@@ -1580,8 +1579,20 @@ def handle_command(cmd):
             return forget(phrase)
 
         elif action == "macro":
-            return handle_macro(cmd)
-                
+            steps = cmd.get("steps", [])
+            results = []
+            for step in steps:
+                print("🔁 Виконання кроку:", step)
+                res = handle_command(step)
+                if not isinstance(res, dict):
+                    res = {"status": "error", "message": "Невідомий результат"}
+                results.append(res)
+            return {
+                "status": "success",
+                "message": f"✅ Виконано {len(steps)} кроків",
+                "results": results
+            }
+
         elif cmd.get("action") == "check_file_access":
             filename = cmd.get("filename")
             return handle_check_file_access(filename)
@@ -1597,6 +1608,11 @@ def handle_command(cmd):
         elif action == "run_macro_from_file":
             return execute_macro_from_file()
         
+        elif action == "macro_build":
+            from handlers.macro_builder import handle_macro_build
+            return handle_macro_build(cmd)
+
+
         elif action == "check_file_access":
             filename = cmd.get("filename")
             if filename:
@@ -1750,6 +1766,9 @@ def handle_command(cmd):
                     explanation = response.choices[0].message.content.strip()
                     print("🧠 GPT пояснення:", explanation)
                     log_action("🧠 GPT пояснення: " + explanation)
+                    # 💾 Зберігаємо пояснення у файл для GUI
+                    with open("last_gpt_explanation.txt", "w", encoding="utf-8") as f:
+                        f.write(explanation)
                 except Exception as e:
                     print("⚠️ Не вдалося отримати GPT пояснення:", str(e))
 
@@ -1937,7 +1956,7 @@ if __name__ == "__main__":
     parser.add_argument("--foldername")
     parser.add_argument("--target_folder")
     parser.add_argument("--new_name")
-
+    parser.add_argument("--prompt")
     args = parser.parse_args()
 
     if args.test:

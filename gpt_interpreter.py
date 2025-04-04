@@ -4,6 +4,12 @@ import sqlite3
 from openai import OpenAI
 from config import API_KEY
 
+
+def scan_all_code():
+    from handlers.scan_all import handle_scan_all_files
+    result = handle_scan_all_files()
+    return result.get("files", {})
+
 def get_recent_commands(limit=10):
     conn = sqlite3.connect("history.sqlite")
     cursor = conn.cursor()
@@ -12,7 +18,21 @@ def get_recent_commands(limit=10):
     conn.close()
     return "\n".join([f"[{r[3]}] {r[0]} → {r[1]} ({r[2]})" for r in rows[::-1]])
 
-def interpret_user_prompt(prompt, context_code=None, history_context=False, return_data=False):
+def get_macro_history(limit=5):
+    import sqlite3
+    import json
+    conn = sqlite3.connect("history.sqlite")
+    cursor = conn.cursor()
+    cursor.execute("SELECT steps, timestamp FROM command_history WHERE action = 'macro' ORDER BY id DESC LIMIT ?", (limit,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    return "\n\n".join([
+        f"[{r[1]}]\n{r[0]}" for r in rows
+    ])
+
+
+def interpret_user_prompt(prompt, context_code=None, history_context=False, return_data=False, macro_learning=False):
     client = OpenAI(api_key=API_KEY)
 
     # 🧠 Системне повідомлення
@@ -47,7 +67,27 @@ def interpret_user_prompt(prompt, context_code=None, history_context=False, retu
             "role": "system",
             "content": "📜 Останні дії користувача:\n" + recent
         })
+    
+    # 🧠 Додаємо приклади попередніх macro
+    if macro_learning:
+        try:
+            macro_context = get_macro_history()
+            context_messages.append({
+                "role": "system",
+                "content": "🧠 Попередні macro-декларації:\n" + macro_context
+            })
+        except Exception as e:
+            print("⚠️ Не вдалося завантажити macro history:", e)
 
+    # 🧠 Додаємо весь код проєкту як контекст (scan_all_code)
+    if context_code == "ALL":
+        all_code = scan_all_code()
+        code_summary = "\n\n".join([f"# {fname}\n{content}" for fname, content in all_code.items()])
+        context_messages.append({
+            "role": "system",
+            "content": "📁 Повний код проєкту:\n" + code_summary
+         })
+        
     # 🧠 Додаємо контекст коду
     if context_code:
         context_messages.append({

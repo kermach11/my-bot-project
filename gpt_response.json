@@ -1,6 +1,6 @@
 [
   {
     "status": "ok",
-    "message": "{\n  \"action\": \"update_code\",\n  \"file_path\": \"path/to/your/file.py\",\n  \"name\": \"function_name\",\n  \"code\": \"def function_name():\\n    # ваш код тут\\n    pass\",\n  \"comment\": \"Щоб уникнути помилки, переконайтеся, що ви вказали всі необхідні параметри: 'file_path', 'name' та 'code'. Це дозволить Ben Assistant правильно виконати дію 'update_code'.\"\n}"
+    "message": "{\n  \"action\": \"update_code\",\n  \"parameters\": {\n    \"file_path\": \"вкажіть_шлях_до_файлу\",\n    \"code_updates\": {\n      \"line_number\": \"вкажіть_номер_рядка\",\n      \"new_code\": \"вкажіть_новий_код\"\n    }\n  },\n  \"comment\": \"Щоб уникнути помилки 'No updates provided', необхідно вказати конкретні зміни, які потрібно внести в код. Переконайтеся, що ви вказали шлях до файлу, номер рядка та новий код, який потрібно додати або замінити.\"\n}"
   }
 ]

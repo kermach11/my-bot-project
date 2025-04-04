@@ -67,7 +67,8 @@ class BenAssistantGUI:
         self.start_live_log_updater()
         self.setup_layout()
         self.start_feedback_report_updater()
-        
+        self.update_gpt_explanation()
+
         # 🎨 Стилізація для тегу gpt_action  
         self.chat_display.tag_configure("gpt_action", foreground="#0a84ff", font=("Arial", 10, "bold"))
         self.root.bind_all("<Control-c>", lambda e: self.root.focus_get().event_generate("<<Copy>>"))
@@ -81,7 +82,7 @@ class BenAssistantGUI:
     def setup_layout(self):
         self.left_panel = tk.Frame(self.root, width=250, bg="#f0f0f0")
         self.left_panel.pack(side="left", fill="y")
-
+        
         self.project_label = tk.Label(self.left_panel, text="🗂️ Стіл", bg="#f0f0f0", font=("Arial", 12, "bold"))
         self.project_label.pack(pady=(10,0))
 
@@ -98,6 +99,24 @@ class BenAssistantGUI:
 
         self.center_panel = tk.Frame(self.root, bg="#ffffff")
         self.center_panel.pack(side="left", fill="both", expand=True)
+
+        self.notebook = ttk.Notebook(self.center_panel)
+        self.notebook.pack(fill="both", expand=True, padx=10, pady=(10, 0))
+
+        # 📦 MacroBuilder Tab
+        self.macro_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.macro_tab, text="📦 MacroBuilder")
+
+        ttk.Label(self.macro_tab, text="🧱 Побудова Macro-кроків", font=("Arial", 12, "bold")).pack(pady=10)
+
+        self.macro_steps_box = scrolledtext.ScrolledText(self.macro_tab, height=15, wrap="word")
+        self.macro_steps_box.pack(fill="both", expand=True, padx=10)
+
+        self.generate_macro_btn = tk.Button(self.macro_tab, text="🪄 Згенерувати з промпту", command=self.generate_macro_from_prompt)
+        self.generate_macro_btn.pack(pady=5)
+
+        self.run_macro_btn = tk.Button(self.macro_tab, text="🚀 Запустити Macro", command=self.run_macro_from_text)
+        self.run_macro_btn.pack(pady=5)
 
         self.chat_display = scrolledtext.ScrolledText(self.center_panel, wrap="word", height=30)
         self.chat_display.pack(fill="both", expand=True, padx=10, pady=(10, 0))
@@ -145,7 +164,16 @@ class BenAssistantGUI:
             command=self.explain_last_action
         )
         self.explain_last_action_button.pack(pady=5)
-        
+
+        # 📘 GPT Пояснення
+        explanation_label = tk.Label(self.right_panel, text="🧠 GPT Пояснення:", bg="#f9f9f9", font=("Arial", 10, "bold"))
+        explanation_label.pack(anchor="w", padx=10, pady=(10, 0))
+
+        self.gpt_explanation_area = tk.Text(self.right_panel, height=6, wrap="word", bg="#f5f5f5")
+        self.gpt_explanation_area.pack(fill="x", padx=10, pady=5)
+        self.gpt_explanation_area.insert(tk.END, "— Тут зʼявлятиметься GPT пояснення після автофіксу —")
+        self.gpt_explanation_area.configure(state="disabled")
+      
         self.autopilot_button = tk.Button(self.right_panel, text="🧠 Запустити Autopilot", command=self.start_autopilot)
         self.autopilot_button.pack(pady=5)
 
@@ -226,6 +254,16 @@ class BenAssistantGUI:
         except Exception as e:
             self.chat_display.insert(tk.END, f"❌ Помилка пояснення коду: {e}\n\n")
 
+    def update_gpt_explanation(self):
+        path = os.path.join("last_gpt_explanation.txt")
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                text = f.read()
+            self.gpt_explanation_area.configure(state="normal")
+            self.gpt_explanation_area.delete("1.0", tk.END)
+            self.gpt_explanation_area.insert(tk.END, text)
+            self.gpt_explanation_area.configure(state="disabled")
+        
     def run_autopilot_prompt(self):
         user_input = self.prompt_entry.get()
         if not user_input.strip():
@@ -239,7 +277,7 @@ class BenAssistantGUI:
             from gpt_agent_cache import handle_command 
             from utils import save_to_memory
 
-            response_json = interpret_user_prompt(user_input, history_context=True, return_data=True)
+            response_json = interpret_user_prompt(user_input, context_code="ALL", history_context=True, return_data=True, macro_learning=True)
 
             if response_json:
                 history_id = f"auto_{self.command_counter:03}"
@@ -270,7 +308,8 @@ class BenAssistantGUI:
                     self.chat_display.insert(tk.END, f"💬 AI Insight: {ai_msg}\n", "gpt_action")
                 except:
                     pass
-
+                
+                self.update_gpt_explanation()
                 self.command_counter += 1
                 self.chat_display.insert(tk.END, "\n")
                 self.chat_display.see(tk.END)
@@ -354,7 +393,7 @@ class BenAssistantGUI:
         try:
             response_json = interpret_user_prompt(
                 user_input,
-                context_code=self.current_file_content,
+                context_code="ALL",  # ⬅️ Повний код проєкту
                 history_context=True,
                 return_data=True
             )
@@ -414,11 +453,44 @@ class BenAssistantGUI:
         except Exception as e:
             self.chat_display.insert(tk.END, f"❌ Помилка GPT: {e}\n")
             self.chat_history.append({"role": "assistant", "content": f"❌ Помилка GPT: {e}"})
-
+        
+        self.update_gpt_explanation()
         self.chat_display.insert(tk.END, "\n")
         self.chat_display.see(tk.END)
         self.prompt_entry.delete(0, tk.END)
         self.save_chat()
+
+    def generate_macro_from_prompt(self):
+        prompt = self.prompt_entry.get()
+        if not prompt.strip():
+            return
+
+        try:
+            from gpt_macro_builder import generate_macro_steps_from_prompt
+            result = generate_macro_steps_from_prompt(prompt, include_macro_context=True)
+            if result.get("status") == "success":
+                steps_json = json.dumps(result["steps"], indent=2, ensure_ascii=False)
+                self.macro_steps_box.delete("1.0", tk.END)
+                self.macro_steps_box.insert(tk.END, steps_json)
+            else:
+                self.macro_steps_box.insert(tk.END, result.get("message", "❌ Помилка генерації кроків"))
+        except Exception as e:
+            self.macro_steps_box.insert(tk.END, f"❌ Внутрішня помилка: {e}")
+
+
+    def run_macro_from_text(self):
+        try:
+            import json
+            from gpt_agent_cache import handle_command
+            steps_text = self.macro_steps_box.get("1.0", tk.END)
+            steps = json.loads(steps_text)
+            cmd = {"action": "macro", "steps": steps}
+            result = handle_command(cmd)
+            self.chat_display.insert(tk.END, f"🚀 Macro виконано: {result.get('message', '')}\n", "gpt_action")
+            self.chat_display.see(tk.END)
+        except Exception as e:
+            self.chat_display.insert(tk.END, f"❌ Помилка запуску macro: {e}\n", "gpt_action")
+   
 
     def start_autopilot(self):
         import threading, time
