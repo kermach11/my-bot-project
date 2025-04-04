@@ -45,7 +45,14 @@ load_dotenv("C:/Users/DC/env_files/env")
 if os.getcwd() not in sys.path:
     sys.path.append(os.getcwd())
 
+def unwrap_parameters_if_present(command):
+    if isinstance(command.get("parameters"), dict):
+        command.update(command["parameters"])
+        del command["parameters"]
+    return command
+
 def handle_command(cmd):
+    cmd = unwrap_parameters_if_present(cmd)
     create_history_table()
     # 🧠 Обробка підтвердження rollback
     if cmd.get("action") in ["yes", "no"] and cmd.get("target_id"):
@@ -226,7 +233,7 @@ def generate_macro_steps_from_prompt(prompt_text):
 """
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt_text}
@@ -274,7 +281,7 @@ def self_improve_agent(filename="gpt_agent_cache.py"):
         from openai import OpenAI
         client = OpenAI(api_key=API_KEY)
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "user", "content": prompt}
             ]
@@ -324,7 +331,7 @@ def generate_improvement_plan():
         from openai import OpenAI
         client = OpenAI(api_key=API_KEY)
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "user", "content": prompt}
             ]
@@ -374,7 +381,7 @@ def analyze_all_code():
         # Спроба максимум 2 рази, якщо JSON невалідний
         for attempt in range(2):
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": prompt}]
             )
             raw = response.choices[0].message.content.strip()
@@ -883,7 +890,7 @@ def handle_analyze_json(cmd, base_path="."):
 {json.dumps(data, indent=2, ensure_ascii=False)}
 """
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
     reply = response.choices[0].message.content.strip()
@@ -931,7 +938,7 @@ def handle_summarize_file(cmd, base_path="."):
 
     client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
 
@@ -1027,7 +1034,6 @@ def try_remember_dialogue(cmd):
 
 
 def handle_command(cmd):
-
     print("🧪 DEBUG — початкова команда:", cmd)
 
     if not isinstance(cmd, dict):
@@ -1045,6 +1051,20 @@ def handle_command(cmd):
 
     if not isinstance(cmd, dict):
         return {"status": "error", "message": "❌ Invalid command format — expected a JSON object"}
+    # 🧩 Поправляємо параметри, якщо GPT зробив їх списком замість словника
+
+    if isinstance(cmd.get("parameters"), list):
+        print("⚠️ GPT повернув parameters у вигляді списку. Виправляю формат...")
+        new_params = {}
+        if "function_name" in cmd:
+            new_params["name"] = cmd["function_name"]
+        if "code" in cmd:
+            new_params["code"] = cmd["code"]
+        if "file_path" in cmd:
+            new_params["file_path"] = cmd["file_path"]
+        else:
+            new_params["file_path"] = "example.py"
+        cmd["parameters"] = new_params
 
     # 🧠 Автоматичне розпізнавання побажань у коментарях/промптах
     cmd = auto_guess_missing_parameters(cmd)
@@ -1479,7 +1499,7 @@ def handle_command(cmd):
             from config import API_KEY
             client = OpenAI(api_key=API_KEY)
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "user", "content": prompt}
                 ]
@@ -1495,7 +1515,7 @@ def handle_command(cmd):
                 from config import API_KEY
                 client = OpenAI(api_key=API_KEY)
                 response = client.chat.completions.create(
-                    model="gpt-4o",
+                    model="gpt-3.5-turbo",
                     messages=[
                         {"role": "user", "content": "Ping"}
                     ]
@@ -1764,7 +1784,7 @@ def handle_command(cmd):
         """
 
                     response = client.chat.completions.create(
-                        model="gpt-4o",
+                        model="gpt-3.5-turbo",
                         messages=[{"role": "user", "content": prompt}]
                     )
                     explanation = response.choices[0].message.content.strip()
@@ -2105,7 +2125,7 @@ def attempt_autodebug(filepath, error_message):
         from openai import OpenAI
         client = OpenAI(api_key=API_KEY)
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
         fixed_code = response.choices[0].message.content.strip()

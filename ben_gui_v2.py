@@ -19,6 +19,17 @@ AUTOPILOT_ON_ICON = "🟢 Autopilot УВІМКНЕНИЙ"
 AUTOPILOT_OFF_ICON = "🔴 Autopilot ВИМКНЕНИЙ"
 
 
+
+
+def count_tokens(text):
+    try:
+        import tiktoken
+        enc = tiktoken.encoding_for_model("gpt-4")
+        return len(enc.encode(text))
+    except:
+        return len(text.split())
+    
+
 def generate_ai_insight(response_json):
     from gpt_interpreter import interpret_user_prompt
 
@@ -39,24 +50,6 @@ def generate_ai_insight(response_json):
     except Exception as e:
         return f"⚠️ Не вдалося згенерувати AI Insight: {e}"
     
-def generate_ai_insight(result):
-    try:
-        from gpt_interpreter import interpret_user_prompt
-        message = result.get("message", "")
-        prompt = f"""
-Яка дія була щойно виконана: {message}
-Зроби короткий висновок у 2-3 реченнях:
-- Що зроблено?
-- Чи все гаразд?
-- Що можна покращити або наступний крок?
-
-Пиши як GPT-коментар до користувача.
-"""
-        insight = interpret_user_prompt(prompt)
-        return insight.strip()
-    except Exception as e:
-        return f"⚠️ Помилка AI Insight: {e}"
-
 class BenAssistantGUI:
     def __init__(self, root):
         self.root = root
@@ -249,7 +242,7 @@ class BenAssistantGUI:
         try:
             client = OpenAI(api_key=API_KEY)
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "Поясни, що робить наступний Python-код максимально стисло:"},
                     {"role": "user", "content": code}
@@ -262,6 +255,7 @@ class BenAssistantGUI:
 
         except Exception as e:
             self.chat_display.insert(tk.END, f"❌ Помилка пояснення коду: {e}\n\n")
+    
 
     def update_gpt_explanation(self):
         path = os.path.join("last_gpt_explanation.txt")
@@ -286,7 +280,9 @@ class BenAssistantGUI:
             from gpt_agent_cache import handle_command 
             from utils import save_to_memory
 
-            response_json = interpret_user_prompt(user_input, context_code="ALL", history_context=True, return_data=True, macro_learning=True)
+            context = self.current_file_content[:3000] if hasattr(self, 'current_file_content') else ""
+            response_json = interpret_user_prompt(user_input, context_code=context, history_context=True, return_data=True, macro_learning=True)
+
 
             if response_json:
                 history_id = f"auto_{self.command_counter:03}"
@@ -400,22 +396,30 @@ class BenAssistantGUI:
         self.chat_history.append({"role": "user", "content": user_input})
 
         try:
-            # ⏳ Беремо тільки останні 10 повідомлень з історії
-            history_block = json.dumps(self.chat_history[-10:], ensure_ascii=False, indent=2)
+            # ⏳ Контекст і історія
+            context = self.current_file_content[:3000] if hasattr(self, "current_file_content") else ""
+            history_block = json.dumps(self.chat_history[-2:], ensure_ascii=False)
 
+            # 📏 Підрахунок токенів
+            total_tokens = count_tokens(user_input) + count_tokens(context) + count_tokens(history_block)
+            if total_tokens > 15000:
+                self.chat_display.insert(tk.END, f"⚠️ Багато токенів ({total_tokens}). GPT зачекає...\n", "gpt_action")
+                self.chat_display.see(tk.END)
+                time.sleep(10)
+                return
+
+            # 🧠 Запит до GPT
             response_json = interpret_user_prompt(
                 user_input,
-                context_code="ALL",  # або self.current_file_content, якщо хочеш поточний файл
-                history_context=history_block,  # Вставляємо обмежену історію
+                context_code=context,
+                history_context=history_block,
                 return_data=True
             )
 
-            # 🆔 Генеруємо ID для дії
+            # 🆔 Генеруємо ID
             history_id = f"id_{self.action_counter:03}"
             assistant_msg = f"GPT: Згенеровано дію ✅ [{history_id}]"
             self.action_counter += 1
-
-            # 💾 Зберігаємо цей ID як останню дію
             self.last_action_id = history_id
 
             self.chat_display.insert(tk.END, f"🤖 {assistant_msg}\n", "gpt_action")
@@ -427,50 +431,43 @@ class BenAssistantGUI:
                     self.code_preview.delete("1.0", tk.END)
                     self.code_preview.insert(tk.END, code)
 
-                # 🧩 Генеруємо унікальний ID для команди
-                history_id = f"cmd_{self.command_counter:03}"
-                response_json["history_id"] = history_id
-
-                # ✅ Додаємо також посилання на останню дію для rollback
+                response_json["history_id"] = f"cmd_{self.command_counter:03}"
                 if self.last_action_id:
                     response_json["target_id"] = self.last_action_id
 
                 with open("cache.txt", "w", encoding="utf-8") as f:
                     f.write(json.dumps(response_json, indent=2, ensure_ascii=False))
 
-                self.chat_display.insert(tk.END, f"📩 [{history_id}] Команду записано в cache.txt\n", "gpt_action")
+                self.chat_display.insert(tk.END, f"📩 [{response_json['history_id']}] Команду записано в cache.txt\n", "gpt_action")
                 self.command_counter += 1
-                
-                save_to_memory(response_json)  # 💾 Зберігаємо повну команду з code/content
 
+                save_to_memory(response_json)
                 result = handle_command(response_json)
                 self.chat_display.insert(tk.END, f"📤 Виконано: {result.get('message', '⛔ Невідома відповідь')}\n")
                 self.chat_history.append({"role": "assistant", "content": result.get('message', '⛔ Невідома відповідь')})
-                # 💡 Smart Suggestion — наступний крок GPT
+
                 try:
                     suggestion = suggest_next_action(result)
                     self.chat_display.insert(tk.END, f"💡 Наступний крок GPT: {suggestion}\n", "gpt_action")
-                    self.chat_display.see(tk.END)
                 except Exception as e:
                     print("⚠️ Smart Suggestion помилка:", e)
 
-                # 🧠 AI Insight після виконання
                 try:
                     ai_insight = generate_ai_insight(result)
                     self.chat_display.insert(tk.END, f"🧠 AI Insight: {ai_insight}\n", "gpt_action")
-                    self.chat_display.see(tk.END)
                 except Exception as insight_err:
                     print("⚠️ AI Insight помилка:", insight_err)
-     
+
         except Exception as e:
             self.chat_display.insert(tk.END, f"❌ Помилка GPT: {e}\n")
             self.chat_history.append({"role": "assistant", "content": f"❌ Помилка GPT: {e}"})
-        
+
         self.update_gpt_explanation()
         self.chat_display.insert(tk.END, "\n")
         self.chat_display.see(tk.END)
         self.prompt_entry.delete(0, tk.END)
         self.save_chat()
+
 
     def generate_macro_from_prompt(self):
         prompt = self.prompt_entry.get()
@@ -511,17 +508,10 @@ class BenAssistantGUI:
         import tiktoken
         from gpt_interpreter import interpret_user_prompt, generate_ai_insight, suggest_next_action
 
-        MAX_TOKENS = 25000
+        MAX_TOKENS = 15000
         AUTOPILOT_DELAY = 45  # секунда між діями
         command_queue = []
         is_paused = False
-
-        def count_tokens(text):
-            try:
-                enc = tiktoken.encoding_for_model("gpt-4")
-                return len(enc.encode(text))
-            except:
-                return len(text.split())
 
         def autopilot_loop():
             nonlocal is_paused
@@ -538,21 +528,21 @@ class BenAssistantGUI:
                     continue
 
                 try:
-                    # Контекст
-                    context = self.current_file_content [:5000] 
-                    history_block = json.dumps(self.chat_history[-5:], ensure_ascii=False)  # без форматування, лише останні 5
-                    total_tokens = count_tokens(prompt) + count_tokens(context) + count_tokens(history_block)
+                    # Обмежений контекст
+                    context = self.current_file_content[:2000]
+                    history_block = json.dumps(self.chat_history[-2:], ensure_ascii=False)
 
-                    if total_tokens > MAX_TOKENS:
+                    total_tokens = count_tokens(user_input) + count_tokens(context) + count_tokens(history_block)
+                    if total_tokens > 15000:
                         self.chat_display.insert(tk.END, f"⚠️ Багато токенів ({total_tokens}). GPT зачекає...\n", "gpt_action")
-                        time.sleep(20)
-                        continue
+                        self.chat_display.see(tk.END)
+                        time.sleep(10)
+                        return  # або continue, залежно від контексту
 
-                    self.chat_display.insert(tk.END, f"👤 {prompt}\n", "gpt_action")
+                    self.chat_display.insert(tk.END, f"👤 {user_input}\n", "gpt_action")
 
-                    # GPT діалог
                     response_json = interpret_user_prompt(
-                        prompt,
+                        user_input,
                         context_code=context,
                         history_context=history_block,
                         return_data=True
@@ -724,7 +714,7 @@ class BenAssistantGUI:
 
             client = OpenAI(api_key=API_KEY)
             response = client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "Поясни, що робить цей Python-код стисло й зрозуміло:"},
                     {"role": "user", "content": code}
@@ -785,7 +775,7 @@ class BenAssistantGUI:
                 self.chat_display.see(tk.END)
 
                 response = client.chat.completions.create(
-                    model="gpt-4o",
+                    model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": "Проаналізуй наведений код. Якщо все добре — напиши '✅ Все добре'. Якщо є помилки — згенеруй JSON-команду у форматі Ben для їх виправлення."},
                         {"role": "user", "content": all_code}

@@ -82,12 +82,14 @@ def interpret_user_prompt(prompt, context_code=None, history_context=False, retu
     # 🧠 Додаємо весь код проєкту як контекст (scan_all_code)
     if context_code == "ALL":
         all_code = scan_all_code()
-        code_summary = "\n\n".join([f"# {fname}\n{content}" for fname, content in all_code.items()])
+        code_summary = "\n\n".join([
+            f"# {fname}\n{content[:300]}" for fname, content in all_code.items()
+        ])
         context_messages.append({
             "role": "system",
-            "content": "📁 Повний код проєкту:\n" + code_summary
-         })
-        
+            "content": "📁 Короткий огляд проєкту:\n" + code_summary
+        })
+   
     # 🧠 Додаємо контекст коду
     if context_code:
         context_messages.append({
@@ -99,7 +101,7 @@ def interpret_user_prompt(prompt, context_code=None, history_context=False, retu
 
     # 🔁 Основний запит
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-3.5-turbo",
         messages=context_messages,
         temperature=0.3
     )
@@ -140,7 +142,7 @@ def interpret_user_prompt(prompt, context_code=None, history_context=False, retu
     )
 
     retry_response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-3.5-turbo",
         messages=context_messages + [{"role": "user", "content": retry_prompt}],
         temperature=0.3
     )
@@ -205,7 +207,7 @@ def suggest_next_action(previous_result):
         ]
 
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-3.5-turbo",
             messages=messages,
             temperature=0.3
         )
