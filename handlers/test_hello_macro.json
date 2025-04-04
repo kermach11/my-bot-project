@@ -1,0 +1,15 @@
+{
+    "steps": [
+      {
+        "action": "create_file",
+        "filename": "hello.py",
+        "content": "import json\nresult = {\"status\": \"success\", \"parsed_result\": \"Hello\"}\nwith open(\"last_result.json\", \"w\", encoding=\"utf-8\") as f:\n    json.dump(result, f)"
+      },
+      {
+        "action": "run_python",
+        "filename": "hello.py"
+      }
+    ],
+    "expected_output": "Hello"
+  }
+  

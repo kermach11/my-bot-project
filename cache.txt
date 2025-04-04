@@ -1,13 +1,15 @@
 {
   "action": "update_code",
-  "parameters": {
-    "file_path": "handlers/run_python.py",
-    "updates": [
-      {
-        "line_number": 1,
-        "new_code": "import os\nimport time\nimport subprocess\n\ntime.sleep(0.2)\n\ndef handle_run_python(cmd):\n    filename = cmd.get(\"filename\")\n    if not filename:\n        return {\"status\": \"error\", \"message\": \"❌ Не вказано файл для виконання\"}\n\n    full_file_path = os.path.abspath(filename)\n\n    if not os.path.exists(full_file_path):\n        return {\"status\": \"error\", \"message\": f\"❌ Файл '{filename}' не знайдено\"}\n\n    print(\"⏳ Очікування завершення запису файлу...\")\n    time.sleep(0.2)\n\n    try:\n        result = subprocess.run(\n            [\"python\", full_file_path],\n            stdout=subprocess.PIPE,\n            stderr=subprocess.STDOUT,\n            text=True,\n            encoding=\"utf-8\",\n            cwd=os.path.dirname(full_file_path),\n            env={**os.environ, \"PYTHONIOENCODING\": \"utf-8\"}\n        )\n\n        print(\"🧪 STDOUT repr:\", repr(result.stdout))\n        output = result.stdout.strip()\n        print(\"📤 Output (repr):\", repr(output))\n\n        return {\n            \"status\": \"success\" if result.returncode == 0 else \"error\",\n            \"output\": output,\n            \"errors\": \"\"\n        }\n\n    except Exception as e:\n        return {\n            \"status\": \"error\",\n            \"message\": f\"❌ Виняток при виконанні: {e}\"\n        }"
-      }
-    ]
-  },
-  "comment": "✅ Стабільне оновлення run_python з підтримкою stdout, cwd, utf-8"
+  "file": "gpt_agent_cache.py",
+  "updates": [
+    {
+      "line_number": 1,
+      "new_code": "def unwrap_parameters_if_present(command):\n    if \"parameters\" in command and isinstance(command[\"parameters\"], dict):\n        command.update(command[\"parameters\"])\n        del command[\"parameters\"]\n    return command\n"
+    },
+    {
+      "line_number": 10,
+      "new_code": "    command = unwrap_parameters_if_present(command)  # ⬅️ Авто-розгортання parameters"
+    }
+  ],
+  "comment": "Додаємо unwrap_parameters_if_present для обробки вкладених параметрів у GPT-командах"
 }

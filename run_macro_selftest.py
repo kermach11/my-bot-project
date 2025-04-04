@@ -52,14 +52,19 @@ def run_all_macro_tests():
             # ✅ НОВА логіка — тільки RAW output
             expected_output = test_data.get("expected_output")
             if expected_output:
-                raw_outputs = [r.get("output", "") for r in result.get("results", []) if isinstance(r, dict)]
-                full_output = "\n".join(raw_outputs)
-                print("📤 Output:", repr(full_output))
-                print("🔍 Очікувано:", repr(expected_output))
+                print("🧾 FULL RAW result:", json.dumps(result, indent=2, ensure_ascii=False))
+                parsed_outputs = []
+                for r in result.get("results", []):
+                    if isinstance(r, dict):
+                        inner_results = r.get("results", [])
+                        for inner in inner_results:
+                            if isinstance(inner, dict) and inner.get("parsed_result"):
+                                parsed_outputs.append(inner["parsed_result"])
 
-                if expected_output in full_output:
-                    test_passed = True
-                else:
+                print("📤 Parsed результат:", parsed_outputs)
+                print("📤 RAW результат:", [repr(p) for p in parsed_outputs])
+                print("🔍 Очікувано:", repr(expected_output))
+                if expected_output not in parsed_outputs:
                     print(f"❌ Очікуваний результат не знайдено: '{expected_output}'")
                     test_passed = False
 

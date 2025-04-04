@@ -1,44 +1,44 @@
 import os
+import subprocess
+import json
 import time
-import tempfile
-
-time.sleep(0.2)
 
 def handle_run_python(cmd):
-    filename = cmd.get("filename")
+    filename = cmd.get("filename") or cmd.get("parameters", {}).get("filename")
     if not filename:
         return {"status": "error", "message": "❌ Не вказано файл для виконання"}
 
     full_file_path = os.path.abspath(filename)
-
     if not os.path.exists(full_file_path):
         return {"status": "error", "message": f"❌ Файл '{filename}' не знайдено"}
 
-    print("⏳ Очікування завершення запису файлу...")
-    time.sleep(0.2)
-
     try:
-        result = subprocess.run(
-            ["python", full_file_path],
+        process = subprocess.run(
+            ["python", "-u", full_file_path],
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            stderr=subprocess.PIPE,
             text=True,
-            encoding="utf-8",
-            cwd=os.path.dirname(full_file_path),
-            env={**os.environ, "PYTHONIOENCODING": "utf-8"}
+            env={**os.environ, "PYTHONUNBUFFERED": "1"}
         )
 
-        print("🧪 STDOUT repr:", repr(process.stdout))
-        print("🧪 STDERR (обʼєднано в stdout): None")
+        time.sleep(0.1)
 
-        output = result.stdout.strip()
+        parsed_result = ""
+        last_result_path = os.path.join(os.path.dirname(full_file_path), "last_result.json")
 
-        print("📤 Output (repr):", repr(output))
+        if os.path.exists(last_result_path):
+            try:
+                with open(last_result_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    parsed_result = data.get("parsed_result", "")
+            except Exception as read_err:
+                print(f"⚠️ Помилка при читанні last_result.json: {read_err}")
 
         return {
-            "status": "success" if result.returncode == 0 else "error",
-            "output": output,
-            "errors": ""
+            "status": "success" if process.returncode == 0 else "error",
+            "results": [{"parsed_result": parsed_result}] if parsed_result else [],
+            "output": process.stdout,
+            "errors": process.stderr
         }
 
     except Exception as e:

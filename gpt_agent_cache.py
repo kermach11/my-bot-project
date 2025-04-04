@@ -1101,7 +1101,7 @@ def handle_command(cmd):
                      "analyze_json", "ask_gpt", "save_template", "load_template",
                      "validate_template", "add_function", "update_code_bulk", "run_macro_from_file",
                      "message","create_file", "create_and_finalize_script","scan_all_files",
-                     "retry_last_action_with_fix","scan_all_files","macro"]  # ✅ додано message
+                     "retry_last_action_with_fix","scan_all_files","macro", "run_python"]  # ✅ додано message
 
     if action not in known_actions:
         # 🔴 Логуємо нову дію
@@ -1163,6 +1163,11 @@ def handle_command(cmd):
                 f.write(content)
             save_to_memory(cmd)  
             return {"status": "success", "message": f"✅ Created file '{filename}'"}
+        
+        elif action == "run_python":
+            from handlers.run_python import handle_run_python
+            return handle_run_python(cmd)  # 👈 передаємо всю команду!
+
 
         elif action == "update_code":
             params = cmd.get("parameters", {})
@@ -1211,6 +1216,10 @@ def handle_command(cmd):
 
         elif action == "create_file":
             return handle_create_file(cmd, base_path)
+        
+        elif action == "run_python":
+            from handlers.run_python import handle_run_python
+            return handle_run_python(cmd)  # 👈 передаємо всю команду!
 
         elif action == "create_and_finalize_script":
             return handle_create_and_finalize_script(cmd, base_path)
@@ -1414,11 +1423,6 @@ def handle_command(cmd):
                 files = os.listdir(full_folder_path)
                 return {"status": "success", "files": files}
             return {"status": "error", "message": "Folder not found"}
-
-        elif action == "run_python":
-            from handlers.run_python import handle_run_python
-            res = handle_run_python(cmd)
-            return res  # 🔁 обов’язково повертаємо повний словник з parsed_result
 
         elif action == "self_improve":
             filename = cmd.get("filename", "gpt_agent_cache.py")

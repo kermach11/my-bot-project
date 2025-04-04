@@ -1,5 +1,1 @@
-{
-  "action": "append_file",
-  "filename": "password_checker.py",
-  "content": "def is_valid_password(password):\n    return len(password) >= 8\n"
-}
+ 

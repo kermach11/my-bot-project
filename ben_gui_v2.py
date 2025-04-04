@@ -14,6 +14,11 @@ from openai import OpenAI                          # 🧠 GPT API для поя�
 from config import API_KEY
 import time
 
+# ✅ Іконки для Autopilot статусу
+AUTOPILOT_ON_ICON = "🟢 Autopilot УВІМКНЕНИЙ"
+AUTOPILOT_OFF_ICON = "🔴 Autopilot ВИМКНЕНИЙ"
+
+
 def generate_ai_insight(response_json):
     from gpt_interpreter import interpret_user_prompt
 
@@ -124,19 +129,26 @@ class BenAssistantGUI:
 
         self.chat_display.tag_bind("gpt_action", "<Button-1>", self.on_action_click)
         self.chat_display.tag_bind("gpt_action", "<Button-3>", self.on_action_right_click)
-
-       
+         
         self.prompt_entry = tk.Entry(self.center_panel, font=("Arial", 12))
         self.prompt_entry.pack(fill="x", padx=10, pady=5)
 
         self.send_button = tk.Button(self.center_panel, text="Відправити", command=self.send_prompt)
         self.send_button.pack(padx=10, pady=(0,10))
         
+        self.right_panel = tk.Frame(self.root, width=400, bg="#f9f9f9")
+        self.right_panel.pack(side="right", fill="y")
+
         self.autopilot_button = tk.Button(self.center_panel, text="🧠 Autopilot", command=self.run_autopilot_prompt)
         self.autopilot_button.pack(padx=10, pady=(0,5))
 
-        self.right_panel = tk.Frame(self.root, width=400, bg="#f9f9f9")
-        self.right_panel.pack(side="right", fill="y")
+        # Додаємо кнопку для зупинки автопілота
+        self.stop_autopilot_btn = tk.Button(self.right_panel, text="🛑 Зупинити Autopilot", command=self.stop_autopilot)
+        self.stop_autopilot_btn.pack(pady=5)
+
+        # 🟢/🔴 Статус автопілота
+        self.autopilot_status_label = tk.Label(self.right_panel, text=AUTOPILOT_OFF_ICON, font=("Arial", 10, "bold"), fg="green")
+        self.autopilot_status_label.pack(pady=5)
 
         self.code_label = tk.Label(self.right_panel, text="👁️ Попередній код", bg="#f9f9f9", font=("Arial", 12, "bold"))
         self.code_label.pack(pady=10)
@@ -174,9 +186,6 @@ class BenAssistantGUI:
         self.gpt_explanation_area.insert(tk.END, "— Тут зʼявлятиметься GPT пояснення після автофіксу —")
         self.gpt_explanation_area.configure(state="disabled")
       
-        self.autopilot_button = tk.Button(self.right_panel, text="🧠 Запустити Autopilot", command=self.start_autopilot)
-        self.autopilot_button.pack(pady=5)
-
     def add_context_menu(self, widget):
         menu = Menu(widget, tearoff=0)
         menu.add_command(label="Копіювати", command=lambda: widget.event_generate("<<Copy>>"))
@@ -391,10 +400,13 @@ class BenAssistantGUI:
         self.chat_history.append({"role": "user", "content": user_input})
 
         try:
+            # ⏳ Беремо тільки останні 10 повідомлень з історії
+            history_block = json.dumps(self.chat_history[-10:], ensure_ascii=False, indent=2)
+
             response_json = interpret_user_prompt(
                 user_input,
-                context_code="ALL",  # ⬅️ Повний код проєкту
-                history_context=True,
+                context_code="ALL",  # або self.current_file_content, якщо хочеш поточний файл
+                history_context=history_block,  # Вставляємо обмежену історію
                 return_data=True
             )
 
@@ -491,105 +503,120 @@ class BenAssistantGUI:
         except Exception as e:
             self.chat_display.insert(tk.END, f"❌ Помилка запуску macro: {e}\n", "gpt_action")
    
+    # ✅ AUTOPILOT 2.0 Удосконалений цикл
+    # Цей код потрібно вставити замість існуючого start_autopilot у класі BenAssistantGUI
 
     def start_autopilot(self):
-        import threading, time
-        from gpt_interpreter import interpret_user_prompt, generate_ai_insight
+        import threading, time, json
+        import tiktoken
+        from gpt_interpreter import interpret_user_prompt, generate_ai_insight, suggest_next_action
+
+        MAX_TOKENS = 25000
+        AUTOPILOT_DELAY = 45  # секунда між діями
+        command_queue = []
+        is_paused = False
+
+        def count_tokens(text):
+            try:
+                enc = tiktoken.encoding_for_model("gpt-4")
+                return len(enc.encode(text))
+            except:
+                return len(text.split())
 
         def autopilot_loop():
+            nonlocal is_paused
+            self.autopilot_running = True
+            self.autopilot_status_label.config(text=AUTOPILOT_ON_ICON, fg="green")
             self.chat_display.insert(tk.END, "🧠 Autopilot увімкнено. GPT сам керує діями...\n", "gpt_action")
             self.chat_display.see(tk.END)
 
             prompt = "Просто скажи Привіт"
 
-            while True:
-                try:
-                    # 1. Виводимо prompt
-                    self.chat_display.insert(tk.END, f"👤 {prompt}\n")
-                    self.chat_display.see(tk.END)
+            while self.autopilot_running:
+                if is_paused:
+                    time.sleep(3)
+                    continue
 
-                    # 2. GPT генерує дію
+                try:
+                    # Контекст
+                    context = self.current_file_content [:5000] 
+                    history_block = json.dumps(self.chat_history[-5:], ensure_ascii=False)  # без форматування, лише останні 5
+                    total_tokens = count_tokens(prompt) + count_tokens(context) + count_tokens(history_block)
+
+                    if total_tokens > MAX_TOKENS:
+                        self.chat_display.insert(tk.END, f"⚠️ Багато токенів ({total_tokens}). GPT зачекає...\n", "gpt_action")
+                        time.sleep(20)
+                        continue
+
+                    self.chat_display.insert(tk.END, f"👤 {prompt}\n", "gpt_action")
+
+                    # GPT діалог
                     response_json = interpret_user_prompt(
                         prompt,
-                        context_code=self.current_file_content,
-                        history_context=True,
+                        context_code=context,
+                        history_context=history_block,
                         return_data=True
                     )
-                    
-                    print("🔍 DEBUG: Відповідь GPT:", response_json)
-                    print("🧠 DEBUG response_json:", response_json)
-                    print("✅ Перевірка JSON пройдена.")
 
                     if not isinstance(response_json, dict):
-                        self.chat_display.insert(tk.END, f"⚠️ GPT повернув не JSON: {response_json}\n", "gpt_action")
-                        self.chat_display.see(tk.END)
+                        self.chat_display.insert(tk.END, "❌ GPT не повернув JSON. Повтор...\n", "gpt_action")
                         prompt = "❌ GPT не дав дії. Повторити..."
+                        time.sleep(5)
                         continue
 
                     gpt_text = response_json.get("comment") or response_json.get("message") or "🤖 GPT: Дія сформована."
                     self.chat_display.insert(tk.END, f"{gpt_text}\n", "gpt_action")
-                    self.chat_display.see(tk.END)
 
-                    if not response_json:
-                        self.chat_display.insert(tk.END, "❌ GPT не повернув валідну дію.\n", "gpt_action")
-                        self.chat_display.see(tk.END)
-                        prompt = "❌ GPT не дав дії. Повторити..."
-                        continue
-
-                    # 3. Присвоюємо унікальний ID
                     history_id = f"auto_{self.command_counter:03}"
                     response_json["history_id"] = history_id
-
                     if self.last_action_id:
                         response_json["target_id"] = self.last_action_id
-
                     self.last_action_id = history_id
 
-                    # 4. Зберігаємо в cache.txt
+                    # Команду додаємо в чергу
+                    command_queue.append(response_json)
+                    self.command_counter += 1
+
+                    # Якщо черга є — обробляємо
+                    while command_queue:
+                        cmd = command_queue.pop(0)
+
                     with open("cache.txt", "w", encoding="utf-8") as f:
-                        f.write(json.dumps(response_json, indent=2, ensure_ascii=False))
+                        f.write(json.dumps(cmd, indent=2, ensure_ascii=False))
 
-                    self.chat_display.insert(tk.END, f"📩 [{history_id}] Команду записано в cache.txt\n", "gpt_action")
+                    self.chat_display.insert(tk.END, f"📩 [{cmd['history_id']}] Записано в cache.txt\n", "gpt_action")
 
-                    # 5. Виконуємо дію
-                    result = handle_command(response_json)
+                    result = handle_command(cmd)
                     self.chat_display.insert(tk.END, f"📤 Виконано: {result.get('message', '⛔')}\n", "gpt_action")
-                    self.chat_display.see(tk.END)
-                    
-                    if result.get("status") == "error" and "Невідома дія" in result.get("message", ""):
-                        self.chat_display.insert(tk.END, f"🆕 GPT запропонував нову дію: {response_json.get('action')}.\n", "gpt_action")
-                        self.chat_display.see(tk.END)
 
-                    # 6. AI Insight
                     try:
-                        ai_insight = generate_ai_insight(result)
-                        self.chat_display.insert(tk.END, f"🧠 AI Insight: {ai_insight}\n", "gpt_action")
-                        self.chat_display.insert(tk.END, f"🗣️ GPT Feedback:\n{ai_insight}\n", "gpt_action")
-                    except Exception as insight_err:
-                        print("⚠️ AI Insight помилка:", insight_err)
-                    # 💡 Smart Suggestion — наступний крок GPT
+                        insight = generate_ai_insight(result)
+                        self.chat_display.insert(tk.END, f"🧠 Insight: {insight}\n", "gpt_action")
+                    except:
+                        pass
+
                     try:
                         suggestion = suggest_next_action(result)
-                        self.chat_display.insert(tk.END, f"💡 Наступний крок GPT: {suggestion}\n", "gpt_action")
-                        self.chat_display.see(tk.END)
-                    except Exception as e:
-                        print("⚠️ Smart Suggestion помилка:", e)
+                        self.chat_display.insert(tk.END, f"💡 GPT пропонує: {suggestion}\n", "gpt_action")
+                        prompt = f"📌 Наступна дія після: {suggestion}"
+                    except:
+                        prompt = f"📌 Наступна дія після: {result.get('message', '')}"
 
-                    # 7. Підготовка наступного prompt
-                    prompt = f"📌 Наступна дія після: {result.get('message', '')}"
-                    self.command_counter += 1
                     self.chat_display.insert(tk.END, "\n")
                     self.chat_display.see(tk.END)
-
-                    time.sleep(15)
+                    time.sleep(AUTOPILOT_DELAY)
 
                 except Exception as e:
-                    self.chat_display.insert(tk.END, f"❌ Autopilot помилка: {e}\n")
-                    self.chat_display.see(tk.END)
+                    self.chat_display.insert(tk.END, f"❌ Autopilot помилка: {e}\n", "gpt_action")
                     break
 
         threading.Thread(target=autopilot_loop, daemon=True).start()
-
+    
+    def stop_autopilot(self):
+        self.autopilot_running = False
+        self.autopilot_status_label.config(text=AUTOPILOT_OFF_ICON, fg="red")
+        self.chat_display.insert(tk.END, "🛑 Autopilot вимкнено.\n", "gpt_action")
+        self.chat_display.see(tk.END)
 
     def suggest_next_action(response):
         try:
@@ -735,7 +762,12 @@ class BenAssistantGUI:
         if not all_code.strip():
             self.chat_display.insert(tk.END, "⚠️ Немає .py файлів для аналізу\n\n")
             return
-
+        
+        # ✅ 🛡️ ЗАХИСТ ВІД ПЕРЕВАНТАЖЕННЯ GPT
+        if len(all_code) > 30000:
+            self.chat_display.insert(tk.END, f"⚠️ Занадто великий обсяг коду для аналізу GPT ({len(all_code)} символів)\n\n")
+            return
+        
         # 🔎 Записуємо лог про сканування
         log_path = os.path.join(base_dir, "debug.log")
         with open(log_path, "a", encoding="utf-8") as log:
