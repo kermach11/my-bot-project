@@ -1,6 +1,10 @@
 [
   {
-    "status": "ok",
-    "message": "{\n  \"action\": \"update_code\",\n  \"parameters\": {\n    \"file_path\": \"path/to/your/file.py\",\n    \"updates\": [\n      {\n        \"line_number\": 10,\n        \"new_code\": \"updated_code_here\"\n      }\n    ]\n  },\n  \"comment\": \"Щоб уникнути помилки 'No updates provided', переконайтеся, що ви вказали хоча б одне оновлення у параметрі 'updates'. Додайте конкретні зміни, які потрібно внести у файл, наприклад, змініть код на певному рядку.\"\n}"
+    "status": "success",
+    "message": "✅ Updated gpt_agent_cache.py",
+    "details": {
+      "status": "error",
+      "message": "❌ Невірний або порожній pattern"
+    }
   }
 ]
