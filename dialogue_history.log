@@ -103,3 +103,6 @@
 {"action": "create_file", "parameters": {"file_path": "recent_actions_log.txt", "content": "📘 GPT LOG INITIATED — цей файл створено фізично як єдиний дозволений лог для реальних дій GPT. Всі записи будуть перевірені.", "code": "# TODO: додати код функції"}, "comment": "🚨 Активовано контроль реальності. Більше жодного симулювання дій без реальних слідів."}
 {"status": "success", "message": "✅ Created file 'recent_actions_log.txt'"}
 ---
+{"action": "create_file", "parameters": {"file_path": "ben_memory.json", "content": "📎 IMPORT FROM /mnt/data/ben_memory.json", "code": "# TODO: додати код функції"}, "comment": "🧠 Імпорт памʼяті особистості Ben з ініціалізованими принципами та місією"}
+{"status": "success", "message": "✅ Created file 'ben_memory.json'"}
+---

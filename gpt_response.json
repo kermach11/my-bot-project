@@ -1,6 +1,6 @@
 [
   {
-    "status": "ok",
-    "message": "{\n  \"action\": \"append_file\",\n  \"filename\": \"example.py\",\n  \"content\": \"print('Hello')\",\n  \"comment\": \"Додає команду для виведення 'Hello' у файл example.py\"\n}"
+    "status": "success",
+    "message": "✅ Created file 'recent_actions_log.txt'"
   }
 ]
