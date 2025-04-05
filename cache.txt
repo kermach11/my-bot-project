@@ -1,7 +1,7 @@
 {
   "action": "add_function",
-  "file_path": "utils.py",
-  "function_name": "check_password_length",
-  "code": "def check_password_length(password):\n    \"\"\"\n    Перевіряє, чи має пароль щонайменше 8 символів.\n\n    Args:\n        password (str): Пароль користувача.\n\n    Returns:\n        bool: True, якщо пароль довший або дорівнює 8 символам, інакше False.\n    \"\"\"\n    return len(password) >= 8",
-  "comment": "Додай функцію, яка перевіряє довжину паролю (мінімум 8 символів)."
+  "file_path": "test/demo.py",
+  "function_name": "hello_test",
+  "code": "def hello_test():\n    print('Hello from test')",
+  "comment": "Тестова функція для перевірки фізичного створення файлу у test/demo.py"
 }
