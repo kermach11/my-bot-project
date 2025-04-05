@@ -45,6 +45,22 @@ load_dotenv("C:/Users/DC/env_files/env")
 if os.getcwd() not in sys.path:
     sys.path.append(os.getcwd())
 
+# 🧠 Ben cognitive layer — завантаження памʼяті
+BEN_MEMORY_PATH = 'ben_memory.json'
+ben_ego = {}
+if os.path.exists(BEN_MEMORY_PATH):
+    with open(BEN_MEMORY_PATH, 'r', encoding='utf-8') as f:
+        ben_ego = json.load(f)
+else:
+    ben_ego = {"error": "❌ Памʼять Ben відсутня"}
+
+def apply_ben_cognition_cycle(action_data):
+    print("\n🧠 [Ben думає] Хто я:", ben_ego.get("identity", {}).get("name", "невідомо"))
+    print("🎯 Мета:", ben_ego.get("mission", "немає місії"))
+    print("📘 Стратегія:", ben_ego.get("vision", {}).get("strategy", []))
+    print("🔍 Аналіз дії:", action_data)
+    return action_data
+
 def unwrap_parameters_if_present(command):
     if isinstance(command.get("parameters"), dict):
         command.update(command["parameters"])
@@ -52,9 +68,10 @@ def unwrap_parameters_if_present(command):
     return command
 
 def handle_command(cmd):
+    cmd = apply_ben_cognition_cycle(cmd)  # 🧠 свідомість Ben
     cmd = unwrap_parameters_if_present(cmd)
     create_history_table()
-    # 🧠 Обробка підтвердження rollback
+
     if cmd.get("action") in ["yes", "no"] and cmd.get("target_id"):
         target_id = cmd["target_id"]
         if cmd["action"] == "yes":
@@ -1034,6 +1051,18 @@ def try_remember_dialogue(cmd):
 
 
 def handle_command(cmd):
+    cmd = apply_ben_cognition_cycle(cmd)  # 🧠 свідомість Ben
+
+    # 🧠 Зберегти історію мислення
+    with open("ben_thoughts_log.txt", "a", encoding="utf-8") as log:
+        log.write(f"\n==== {datetime.now().isoformat()} ====\n")
+        log.write(f"Identity: {ben_ego.get('identity', {}).get('name', 'невідомо')}\n")
+        log.write(f"Mission: {ben_ego.get('mission', 'немає місії')}\n")
+        log.write(f"Strategy: {ben_ego.get('vision', {}).get('strategy', [])}\n")
+        log.write(f"Action Analyzed: {json.dumps(cmd, ensure_ascii=False, indent=2)}\n")
+
+    cmd = unwrap_parameters_if_present(cmd)
+
     print("🧪 DEBUG — початкова команда:", cmd)
 
     if not isinstance(cmd, dict):
@@ -1097,14 +1126,19 @@ def handle_command(cmd):
     # ✅ Відразу обробка відомих внутрішніх дій
     if action == "ask_gpt":
         from gpt_interpreter import interpret_user_prompt
-        inner_prompt = cmd.get("parameters", {}).get("prompt", "")
-        if inner_prompt:
+        inner_prompt = (
+            cmd.get("prompt")
+            or cmd.get("parameters", {}).get("prompt")
+            or ""
+        )
+        if inner_prompt.strip():
             answer = interpret_user_prompt(inner_prompt, return_data=False)
             try_remember_dialogue(cmd)
             return {"status": "ok", "message": answer}
         else:
             try_remember_dialogue(cmd)
             return {"status": "error", "message": "❌ Немає prompt для 'ask_gpt'"}
+
     if action == "scan_all_files":
         from handlers.scan_all import handle_scan_all_files
         return handle_scan_all_files(cmd.get("parameters", {}))
@@ -1811,6 +1845,10 @@ def handle_command(cmd):
             return auto_result
 
         return {"status": "error", "message": f"❌ Exception: {str(e)}"}
+
+ # ⛓️ Обгортаємо handle_command
+if 'original_handle_command' not in globals():
+    original_handle_command = handle_command
 
 def run_self_tests():
     print("\n🧪 Running self-tests...")

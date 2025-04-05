@@ -1,8 +1,11 @@
 {
-  "action": "create_file",
-  "parameters": {
-    "file_path": "ben_memory.json",
-    "content": "📎 IMPORT FROM /mnt/data/ben_memory.json"
-  },
-  "comment": "🧠 Імпорт памʼяті особистості Ben з ініціалізованими принципами та місією"
+  "action": "update_code",
+  "file_path": "utils/password_utils.py",
+  "updates": [
+    {
+      "pattern": "def check_password_length\\(.*?\\n(    .+\\n)*",
+      "replacement": ""
+    }
+  ],
+  "comment": "Видаляє функцію check_password_length повністю"
 }
