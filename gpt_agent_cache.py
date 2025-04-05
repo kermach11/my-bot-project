@@ -126,12 +126,14 @@ import sqlite3
 def create_history_table():
     conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)", (
-    cmd.get("action"),
-    cmd.get("file_path") or cmd.get("filename"),
-    cmd.get("update_type"),
-    cmd.get("context_guide", "")
-))
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS command_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            action TEXT,
+            file_path TEXT,
+            update_type TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
     ''')
     conn.commit()
     conn.close()
@@ -1778,7 +1780,8 @@ def handle_command(cmd):
             conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)
+                INSERT INTO command_history (action, file_path, update_type)
+                VALUES (?, ?, ?)
             """, (
                 cmd.get("action"),
                 cmd.get("file_path") or cmd.get("filename"),
@@ -1790,7 +1793,6 @@ def handle_command(cmd):
             log_action(f"⚠️ SQLite save error: {e}")
 
         # 🔁 Автоматичний запуск auto_feedback після успішної дії
-if cmd.get('context_guide'): log_action('🧠 Ціль дії: ' + cmd['context_guide'])
         try:
             if result.get("status") == "success":
                 subprocess.run(["python", "auto_feedback.py"], check=True)

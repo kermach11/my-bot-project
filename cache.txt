@@ -10,8 +10,9 @@
       "comment": "➕ Додає колонку context_guide у таблицю command_history"
     },
     {
-      "action": "update_code",
+      "action": "safe_update_code",
       "file_path": "gpt_agent_cache.py",
+      "check_context": true,
       "updates": [
         {
           "pattern": "INSERT INTO command_history \\(action, file_path, update_type\\)[\\s\\S]*?\\)",
@@ -22,18 +23,19 @@
           "replacement": "cursor.execute(\"INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)\", (\n    cmd.get(\"action\"),\n    cmd.get(\"file_path\") or cmd.get(\"filename\"),\n    cmd.get(\"update_type\"),\n    cmd.get(\"context_guide\", \"\")\n))"
         }
       ],
-      "comment": "🧠 Зберігає context_guide в базу після кожної дії"
+      "comment": "🧠 Зберігає context_guide в базу після кожної дії з перевіркою правильності вставки"
     },
     {
-      "action": "update_code",
+      "action": "safe_update_code",
       "file_path": "gpt_agent_cache.py",
+      "check_context": true,
       "updates": [
         {
           "pattern": "# 🔁 Автоматичний запуск auto_feedback після успішної дії",
           "replacement": "# 🔁 Автоматичний запуск auto_feedback після успішної дії\nif cmd.get('context_guide'): log_action('🧠 Ціль дії: ' + cmd['context_guide'])"
         }
       ],
-      "comment": "🧠 Логування context_guide у логах дій"
+      "comment": "🧠 Логування context_guide у логах дій з перевіркою структури"
     }
   ]
 }
