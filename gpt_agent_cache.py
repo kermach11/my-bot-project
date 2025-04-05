@@ -126,14 +126,12 @@ import sqlite3
 def create_history_table():
     conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
     cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS command_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            action TEXT,
-            file_path TEXT,
-            update_type TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
+    cursor.execute("INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)", (
+    cmd.get("action"),
+    cmd.get("file_path") or cmd.get("filename"),
+    cmd.get("update_type"),
+    cmd.get("context_guide", "")
+))
     ''')
     conn.commit()
     conn.close()
@@ -281,8 +279,8 @@ def self_improve_agent(filename="gpt_agent_cache.py"):
 ⚙️ Згенеруй Python-JSON обʼєкт із дією `safe_update_code`, у форматі:
 
 {{
-  "action": "safe_update_code",
-  "filename": "{filename}",
+  ""action": "safe_update_code",
+  "file_path": "{filename}",
   "updates": [
     {{
       "pattern": "REGEX-ПАТЕРН",
@@ -606,6 +604,38 @@ def handle_safe_update_code(cmd, base_path):
     shutil.move(tmp_path, filepath)
     return {"status": "success", "message": f"✅ Safe update applied to {filename}"}
 
+def handle_adaptive_safe_update_code(cmd, base_path):
+    try:
+        file_path = cmd.get("file_path")
+        updates = cmd.get("updates", [])
+        full_path = os.path.join(base_path, file_path)
+
+        if not os.path.exists(full_path):
+            return {"status": "error", "message": f"❌ Файл '{file_path}' не знайдено"}
+
+        with open(full_path, "r", encoding="utf-8") as f:
+            code = f.read()
+
+        success_count = 0
+        for update in updates:
+            pattern = update.get("pattern")
+            replacement = update.get("replacement")
+
+            # Адаптивна перевірка — щоб не зламати структуру
+            if re.search(pattern, code, re.MULTILINE):
+                code = re.sub(pattern, replacement, code, flags=re.MULTILINE)
+                success_count += 1
+            else:
+                print(f"⚠️ adaptive_safe_update_code: pattern не знайдено — {pattern}")
+
+        with open(full_path, "w", encoding="utf-8") as f:
+            f.write(code)
+
+        return {"status": "success", "message": f"✅ Застосовано {success_count} оновлень у {file_path}"}
+
+    except Exception as e:
+        return {"status": "error", "message": f"❌ Помилка в adaptive_safe_update_code: {e}"}
+    
 def save_to_memory(cmd):
     memory_file = os.path.join(base_path, ".ben_memory.json")
     try:
@@ -1182,7 +1212,7 @@ def handle_command(cmd):
                      "analyze_json", "ask_gpt", "save_template", "load_template",
                      "validate_template", "add_function", "update_code_bulk", "run_macro_from_file",
                      "message","create_file", "create_and_finalize_script","scan_all_files",
-                     "retry_last_action_with_fix","scan_all_files","macro", "run_python"]  # ✅ додано message
+                     "retry_last_action_with_fix","scan_all_files","macro","safe_update_code","run_python"]  # ✅ додано message
 
     if action not in known_actions:
         # 🔴 Логуємо нову дію
@@ -1356,12 +1386,12 @@ def handle_command(cmd):
         elif action == "add_function":
             return handle_add_function(cmd, base_path)
    
-        elif action == "safe_update_code":
-            result = handle_safe_update_code(cmd, base_path)
 
-            # 🧠 Додано захист, щоб уникнути .get() помилки
+        elif action == "safe_update_code":
+            result = handle_adaptive_safe_update_code(cmd, base_path)
+
             if result is None:
-                result = {"status": "error", "message": "❌ handle_safe_update_code не повернув результат"}
+                result = {"status": "error", "message": "❌ handle_adaptive_safe_update_code не повернув результат"}
 
             return result
 
@@ -1875,8 +1905,7 @@ def handle_command(cmd):
             conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO command_history (action, file_path, update_type)
-                VALUES (?, ?, ?)
+                INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)
             """, (
                 cmd.get("action"),
                 cmd.get("file_path") or cmd.get("filename"),
@@ -1888,6 +1917,7 @@ def handle_command(cmd):
             log_action(f"⚠️ SQLite save error: {e}")
 
         # 🔁 Автоматичний запуск auto_feedback після успішної дії
+if cmd.get('context_guide'): log_action('🧠 Ціль дії: ' + cmd['context_guide'])
         try:
             if result.get("status") == "success":
                 subprocess.run(["python", "auto_feedback.py"], check=True)
