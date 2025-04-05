@@ -1123,6 +1123,24 @@ def handle_command(cmd):
 
     action = cmd.get("action")
 
+    # ✅ Перевірка наявності обовʼязкових полів перед виконанням
+    required_fields = {
+        "add_function": ["file_path", "function_name", "code"],
+        "append_file": ["filename", "content"],
+        "update_code": ["file_path", "updates"],
+        "safe_update_code": ["file_path", "updates"],
+        "adaptive_safe_update_code": ["file_path", "updates"],
+    }
+
+    if action in required_fields:
+        missing = [f for f in required_fields[action] if not cmd.get(f)]
+        if missing:
+            return {
+                "status": "error",
+                "message": f"❌ Помилка: команда '{action}' не має обов’язкових полів: {', '.join(missing)}. Будь ласка, надай повні дані для виконання дії."
+            }
+
+
     # ✅ Відразу обробка відомих внутрішніх дій
     if action == "ask_gpt":
         from gpt_interpreter import interpret_user_prompt
@@ -1257,7 +1275,84 @@ def handle_command(cmd):
             print(f"🧪 Результат автотесту: {test_result}")
 
             return {"status": "success", "message": f"✅ Updated {filepath}", "details": result}
-        
+
+        elif action == "adaptive_safe_update_code":
+                import ast
+
+                file_path = cmd.get("file_path")
+                updates = cmd.get("updates", [])
+
+                if not os.path.exists(file_path):
+                    return {"status": "error", "message": f"❌ Файл '{file_path}' не знайдено"}
+
+                with open(file_path, "r", encoding="utf-8") as f:
+                    code = f.read()
+
+                lines = code.splitlines()
+                original_code = code
+                success_count = 0
+
+                for update in updates:
+                    pattern = update.get("pattern")
+                    replacement = update.get("replacement")
+
+                    match_found = False
+
+                    for i, line in enumerate(lines):
+                        if re.search(pattern, line):
+                            indent = len(line) - len(line.lstrip())
+                            adapted_replacement = "\n".join(
+                                (" " * indent + repl_line if repl_line.strip() else "")
+                                for repl_line in replacement.splitlines()
+                            )
+
+                            lines[i] = re.sub(pattern, adapted_replacement, line)
+                            match_found = True
+                            success_count += 1
+                            break
+
+                    if not match_found:
+                        # Якщо pattern не знайдено — вставити в логічне місце
+                        try:
+                            tree = ast.parse(code)
+                            insert_line = None
+
+                            for node in reversed(tree.body):
+                                if hasattr(node, 'lineno'):
+                                    insert_line = node.lineno
+                                    break
+
+                            if insert_line:
+                                indent = len(lines[insert_line - 1]) - len(lines[insert_line - 1].lstrip())
+                                adapted_replacement = "\n".join(
+                                    (" " * indent + repl_line if repl_line.strip() else "")
+                                    for repl_line in replacement.splitlines()
+                                )
+                                lines.insert(insert_line, adapted_replacement)
+                                success_count += 1
+                                print(f"⚠️ Вставлено адаптивно після рядка {insert_line}")
+                            else:
+                                print(f"❌ Не вдалося знайти місце для вставки pattern: {pattern}")
+
+                        except Exception as e:
+                            print(f"❌ adaptive_safe_update_code: AST помилка — {e}")
+
+                    new_code = "\n".join(lines)
+
+                if success_count:
+                    try:
+                        ast.parse(new_code)  # перевірка на валідність Python
+                        with open(file_path, "w", encoding="utf-8") as f:
+                            f.write(new_code)
+                        return {"status": "success", "message": f"✅ adaptive_safe_update_code: оновлено {success_count} блок(ів) у {file_path}"}
+                    except Exception as e:
+                        print("❌ Після вставки зламалась структура, відкат до попереднього стану.")
+                        with open(file_path, "w", encoding="utf-8") as f:
+                            f.write(original_code)
+                        return {"status": "error", "message": f"❌ Структура коду зламалась після вставки: {e}"}
+                else:
+                    return {"status": "warning", "message": f"⚠️ Жоден блок не був оновлений у {file_path}"}
+
         elif action == "add_function":
             return handle_add_function(cmd, base_path)
    
