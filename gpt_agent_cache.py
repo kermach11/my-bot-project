@@ -953,7 +953,7 @@ def handle_analyze_json(cmd, base_path="."):
 
 def handle_summarize_file(cmd, base_path="."):
     import os
-    import openai
+    from openai import OpenAI
 
     filename = (
         cmd.get("filename")
@@ -985,7 +985,7 @@ def handle_summarize_file(cmd, base_path="."):
 {content[:3000]}  # обмежимо обсяг
 """
 
-    client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
@@ -1029,21 +1029,40 @@ def handle_add_function(cmd, base_path="."):
     import os
     import ast
 
-    filename = cmd.get("file") or cmd.get("parameters", {}).get("file")
-    function_name = cmd.get("function_name") or cmd.get("parameters", {}).get("function_name")
-    function_code = cmd.get("function_code") or cmd.get("parameters", {}).get("function_code")
+    file_path = (
+        cmd.get("file_path")
+        or cmd.get("file")
+        or cmd.get("parameters", {}).get("file_path")
+        or cmd.get("parameters", {}).get("file")
+    )
 
-    if not filename or not function_name or not function_code:
-        return {"status": "error", "message": "❌ Не вказано файл, назву або код функції."}
+    function_name = (
+        cmd.get("function_name")
+        or cmd.get("parameters", {}).get("function_name")
+    )
 
-    file_path = os.path.join(base_path, filename)
+    function_code = (
+        cmd.get("function_code")
+        or cmd.get("code")
+        or cmd.get("parameters", {}).get("function_code")
+        or cmd.get("parameters", {}).get("code")
+    )
 
-    if not os.path.exists(file_path):
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write("")
+    print(f"📥 file_path: {file_path}")
+    print(f"📥 function_name: {function_name}")
+    print(f"📥 code:\n{function_code}")
+
+    if not file_path or not function_name or not function_code:
+        return {"status": "error", "message": "❌ Не вказано file_path, назву або код функції."}
+
+    full_file_path = os.path.join(base_path, file_path)
+
+    if not os.path.exists(full_file_path):
+        with open(full_file_path, "w", encoding="utf-8") as f:
+            f.write("# 🆕 Автоматично створений файл\n")
 
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(full_file_path, "r", encoding="utf-8") as f:
             source = f.read()
 
         parsed = ast.parse(source)
@@ -1051,15 +1070,15 @@ def handle_add_function(cmd, base_path="."):
             if isinstance(node, ast.FunctionDef) and node.name == function_name:
                 return {
                     "status": "skipped",
-                    "message": f"⚠️ Функція '{function_name}' вже існує у файлі '{filename}'"
+                    "message": f"⚠️ Функція '{function_name}' вже існує у файлі '{file_path}'"
                 }
 
-        with open(file_path, "a", encoding="utf-8") as f:
+        with open(full_file_path, "a", encoding="utf-8") as f:
             f.write("\n\n" + function_code.strip() + "\n")
 
         return {
             "status": "success",
-            "message": f"✅ Функцію '{function_name}' додано до '{filename}'"
+            "message": f"✅ Функцію '{function_name}' додано до '{file_path}'"
         }
 
     except Exception as e:

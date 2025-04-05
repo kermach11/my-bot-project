@@ -1,6 +1,6 @@
 [
   {
     "status": "ok",
-    "message": "{\n  \"action\": \"add_function\",\n  \"file_path\": \"utils.py\",\n  \"function_name\": \"calculate_sum\",\n  \"parameters\": [\n    \"a\",\n    \"b\"\n  ],\n  \"code\": \"    return a + b\",\n  \"comment\": \"Додай функцію для обчислення суми двох чисел\"\n}"
+    "message": "{\n  \"action\": \"add_function\",\n  \"function_name\": \"calculate_sum\",\n  \"parameters\": [\n    \"a\",\n    \"b\"\n  ],\n  \"code\": \"def calculate_sum(a, b):\\n    return a + b\",\n  \"comment\": \"Додайте нову функцію для обчислення суми двох чисел\"\n}"
   }
 ]
