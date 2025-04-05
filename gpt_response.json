@@ -1,6 +1,6 @@
 [
   {
-    "status": "ok",
-    "message": "{\n  \"action\": \"add_function\",\n  \"file_path\": \"utils.py\",\n  \"function_name\": \"calculate_sum\",\n  \"parameters\": [\n    \"a\",\n    \"b\"\n  ],\n  \"code\": \"    return a + b\",\n  \"comment\": \"Додайте нову функцію для обчислення суми двох чисел\"\n}"
+    "status": "success",
+    "message": "✅ Функцію 'hello_test' додано до 'test/demo.py'"
   }
 ]
