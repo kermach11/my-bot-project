@@ -1,6 +1,28 @@
 [
   {
-    "status": "ok",
-    "message": "{\n  \"action\": \"read_file\",\n  \"file_path\": \"example.py\",\n  \"comment\": \"Спробуйте прочитати вміст файлу 'example.py', щоб перевірити його наявність та вміст.\"\n}"
+    "status": "success",
+    "message": "✅ Виконано 3 кроків",
+    "results": [
+      {
+        "status": "error",
+        "message": "❌ Не вказано файл для виконання"
+      },
+      {
+        "status": "success",
+        "message": "✅ Updated gpt_agent_cache.py",
+        "details": {
+          "status": "success",
+          "message": "✅ Applied updates to C:\\Users\\DC\\my-bot-project\\gpt_agent_cache.py"
+        }
+      },
+      {
+        "status": "success",
+        "message": "✅ Updated gpt_agent_cache.py",
+        "details": {
+          "status": "success",
+          "message": "✅ Applied updates to C:\\Users\\DC\\my-bot-project\\gpt_agent_cache.py"
+        }
+      }
+    ]
   }
 ]

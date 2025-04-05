@@ -1917,6 +1917,8 @@ def handle_command(cmd):
             log_action(f"⚠️ SQLite save error: {e}")
 
         # 🔁 Автоматичний запуск auto_feedback після успішної дії
+    if cmd.get('context_guide'):
+        log_action('🧠 Ціль дії: ' + cmd['context_guide'])
 if cmd.get('context_guide'): log_action('🧠 Ціль дії: ' + cmd['context_guide'])
         try:
             if result.get("status") == "success":

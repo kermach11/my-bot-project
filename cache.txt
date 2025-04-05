@@ -1,38 +1,12 @@
 {
-  "action": "macro",
-  "steps": [
+  "action": "safe_update_code",
+  "file_path": "gpt_agent_cache.py",
+  "updates": [
     {
-      "action": "run_python",
-      "parameters": {
-        "code": "import sqlite3\nconn = sqlite3.connect('history.sqlite')\ncursor = conn.cursor()\ncursor.execute(\"ALTER TABLE command_history ADD COLUMN context_guide TEXT\")\nconn.commit()\nconn.close()"
-      },
-      "comment": "➕ Додає колонку context_guide у таблицю command_history"
-    },
-    {
-      "action": "update_code",
-      "file_path": "gpt_agent_cache.py",
-      "updates": [
-        {
-          "pattern": "INSERT INTO command_history \\(action, file_path, update_type\\)[\\s\\S]*?\\)",
-          "replacement": "INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)"
-        },
-        {
-          "pattern": "cursor.execute\\(.*?\\)",
-          "replacement": "cursor.execute(\"INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)\", (\n    cmd.get(\"action\"),\n    cmd.get(\"file_path\") or cmd.get(\"filename\"),\n    cmd.get(\"update_type\"),\n    cmd.get(\"context_guide\", \"\")\n))"
-        }
-      ],
-      "comment": "🧠 Зберігає context_guide в базу після кожної дії"
-    },
-    {
-      "action": "update_code",
-      "file_path": "gpt_agent_cache.py",
-      "updates": [
-        {
-          "pattern": "# 🔁 Автоматичний запуск auto_feedback після успішної дії",
-          "replacement": "# 🔁 Автоматичний запуск auto_feedback після успішної дії\nif cmd.get('context_guide'): log_action('🧠 Ціль дії: ' + cmd['context_guide'])"
-        }
-      ],
-      "comment": "🧠 Логування context_guide у логах дій"
+      "pattern": "# 🔁 Автоматичний запуск auto_feedback після успішної дії",
+      "replacement": "# 🔁 Автоматичний запуск auto_feedback після успішної дії\n    if cmd.get('context_guide'):\n        log_action('🧠 Ціль дії: ' + cmd['context_guide'])",
+      "update_type": "replace"
     }
-  ]
+  ],
+  "comment": "🛠️ Виправлення відступу після вставки context_guide логування"
 }
