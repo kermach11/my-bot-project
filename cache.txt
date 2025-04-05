@@ -1,11 +1,39 @@
 {
-  "action": "update_code",
-  "file_path": "utils/password_utils.py",
-  "updates": [
+  "action": "macro",
+  "context_guide": "Ми хочемо, щоб GPT міг краще розуміти суть виконуваних дій у системі Ben. Для цього ми додаємо підтримку поля 'context_guide', яке зберігається в базі даних та передається в auto_feedback. Це дозволить GPT в майбутньому робити висновки про доцільність дій, навчатися на фідбеках та підвищити автономність без втрати контролю. Це критично важливий крок для створення Sora-подібного агента з реальним самонавчанням.",
+  "steps": [
     {
-      "pattern": "def check_password_length\\(.*?\\n(    .+\\n)*",
-      "replacement": ""
+      "action": "run_python",
+      "parameters": {
+        "code": "import sqlite3\nconn = sqlite3.connect('history.sqlite')\ncursor = conn.cursor()\ncursor.execute(\"ALTER TABLE command_history ADD COLUMN context_guide TEXT\")\nconn.commit()\nconn.close()"
+      },
+      "comment": "➕ Додає колонку context_guide у таблицю command_history"
+    },
+    {
+      "action": "update_code",
+      "file_path": "gpt_agent_cache.py",
+      "updates": [
+        {
+          "pattern": "INSERT INTO command_history \\(action, file_path, update_type\\)[\\s\\S]*?\\)",
+          "replacement": "INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)"
+        },
+        {
+          "pattern": "cursor.execute\\(.*?\\)",
+          "replacement": "cursor.execute(\"INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)\", (\n    cmd.get(\"action\"),\n    cmd.get(\"file_path\") or cmd.get(\"filename\"),\n    cmd.get(\"update_type\"),\n    cmd.get(\"context_guide\", \"\")\n))"
+        }
+      ],
+      "comment": "🧠 Зберігає context_guide в базу після кожної дії"
+    },
+    {
+      "action": "update_code",
+      "file_path": "gpt_agent_cache.py",
+      "updates": [
+        {
+          "pattern": "# 🔁 Автоматичний запуск auto_feedback після успішної дії",
+          "replacement": "# 🔁 Автоматичний запуск auto_feedback після успішної дії\nif cmd.get('context_guide'): log_action('🧠 Ціль дії: ' + cmd['context_guide'])"
+        }
+      ],
+      "comment": "🧠 Логування context_guide у логах дій"
     }
-  ],
-  "comment": "Видаляє функцію check_password_length повністю"
+  ]
 }

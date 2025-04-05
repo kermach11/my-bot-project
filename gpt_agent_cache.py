@@ -126,14 +126,12 @@ import sqlite3
 def create_history_table():
     conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
     cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS command_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            action TEXT,
-            file_path TEXT,
-            update_type TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
+    cursor.execute("INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)", (
+    cmd.get("action"),
+    cmd.get("file_path") or cmd.get("filename"),
+    cmd.get("update_type"),
+    cmd.get("context_guide", "")
+))
     ''')
     conn.commit()
     conn.close()
@@ -1139,6 +1137,15 @@ def handle_command(cmd):
             try_remember_dialogue(cmd)
             return {"status": "error", "message": "❌ Немає prompt для 'ask_gpt'"}
 
+    # 🧠 Обробка context_guide
+    context_guide = cmd.get("context_guide")
+    if context_guide:
+        print("📘 Context Guide:")
+        print(context_guide)
+        # 💾 Зберігаємо у лог-файл
+        with open("context_guides_log.txt", "a", encoding="utf-8") as f:
+            f.write(f"\n\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]\n{context_guide}\n")
+
     if action == "scan_all_files":
         from handlers.scan_all import handle_scan_all_files
         return handle_scan_all_files(cmd.get("parameters", {}))
@@ -1771,8 +1778,7 @@ def handle_command(cmd):
             conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO command_history (action, file_path, update_type)
-                VALUES (?, ?, ?)
+                INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)
             """, (
                 cmd.get("action"),
                 cmd.get("file_path") or cmd.get("filename"),
@@ -1784,6 +1790,7 @@ def handle_command(cmd):
             log_action(f"⚠️ SQLite save error: {e}")
 
         # 🔁 Автоматичний запуск auto_feedback після успішної дії
+if cmd.get('context_guide'): log_action('🧠 Ціль дії: ' + cmd['context_guide'])
         try:
             if result.get("status") == "success":
                 subprocess.run(["python", "auto_feedback.py"], check=True)
