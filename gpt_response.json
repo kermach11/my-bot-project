@@ -1,6 +1,6 @@
 [
   {
     "status": "success",
-    "message": "✅ Функцію 'hello_test' додано до 'test/demo.py'"
+    "message": "✅ Функцію 'User' додано до 'test/models/user_model.py'"
   }
 ]
