@@ -126,12 +126,14 @@ import sqlite3
 def create_history_table():
     conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)", (
-    cmd.get("action"),
-    cmd.get("file_path") or cmd.get("filename"),
-    cmd.get("update_type"),
-    cmd.get("context_guide", "")
-))
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS command_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            action TEXT,
+            file_path TEXT,
+            update_type TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
     ''')
     conn.commit()
     conn.close()
@@ -1393,7 +1395,7 @@ def handle_command(cmd):
             if result is None:
                 result = {"status": "error", "message": "❌ handle_adaptive_safe_update_code не повернув результат"}
 
-            return result
+            return post_check_safe_update(cmd, result)
 
         elif action == "update_code_bulk":
             return handle_update_code_bulk(cmd)
@@ -1905,7 +1907,8 @@ def handle_command(cmd):
             conn = sqlite3.connect(os.path.join(base_path, "history.sqlite"))
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO command_history (action, file_path, update_type, context_guide) VALUES (?, ?, ?, ?)
+                INSERT INTO command_history (action, file_path, update_type)
+                VALUES (?, ?, ?)
             """, (
                 cmd.get("action"),
                 cmd.get("file_path") or cmd.get("filename"),
@@ -1917,9 +1920,8 @@ def handle_command(cmd):
             log_action(f"⚠️ SQLite save error: {e}")
 
         # 🔁 Автоматичний запуск auto_feedback після успішної дії
-    if cmd.get('context_guide'):
-        log_action('🧠 Ціль дії: ' + cmd['context_guide'])
-if cmd.get('context_guide'): log_action('🧠 Ціль дії: ' + cmd['context_guide'])
+            if cmd.get('context_guide'):
+                log_action('🧠 Ціль дії: ' + cmd['context_guide']) 
         try:
             if result.get("status") == "success":
                 subprocess.run(["python", "auto_feedback.py"], check=True)
@@ -2244,6 +2246,46 @@ if __name__ == "__main__":
 
                 print("🧠 GPT запит на виправлення збережено в cache.txt. Очікую нову дію...")
         time.sleep(1)
+
+def post_check_safe_update(cmd, result):
+    if result and result.get("status") == "success":
+        file_path = cmd.get("file_path")
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            issues = []
+            for update in cmd.get("updates", []):
+                pattern = update.get("pattern", "").strip()
+                replacement = update.get("replacement", "").strip()
+
+                if replacement in content:
+                    log_action("🟢 Вставка знайдена повністю — контекст ок.")
+                elif replacement[:10] in content:
+                    log_action("🟡 Частковий збіг — перевір вручну.")
+                    issues.append("частковий збіг")
+                else:
+                    log_action(f"🔴 Не знайдено вставку для патерну: {pattern}")
+                    issues.append("не знайдено")
+
+            import ast
+            try:
+                ast.parse(content)
+                log_action("✅ AST перевірка пройдена")
+            except Exception as e:
+                result["status"] = "warning"
+                result["message"] += f" ⚠️ AST помилка: {e}"
+                log_action("🔴 Код порушує синтаксис (AST fail)")
+                issues.append("ast_error")
+
+            if issues:
+                result["status"] = "warning"
+                result["message"] += " ⚠️ Є потенційні проблеми з вставкою: " + ", ".join(issues)
+
+        except Exception as e:
+            log_action(f"⚠️ Неможливо виконати перевірку вставки: {e}")
+    return result
+
 
 def repeat_last_action():
     memory_file = os.path.join(base_path, ".ben_memory.json")

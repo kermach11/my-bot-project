@@ -1,28 +1,6 @@
 [
   {
-    "status": "success",
-    "message": "✅ Виконано 3 кроків",
-    "results": [
-      {
-        "status": "error",
-        "message": "❌ Не вказано файл для виконання"
-      },
-      {
-        "status": "success",
-        "message": "✅ Updated gpt_agent_cache.py",
-        "details": {
-          "status": "success",
-          "message": "✅ Applied updates to C:\\Users\\DC\\my-bot-project\\gpt_agent_cache.py"
-        }
-      },
-      {
-        "status": "success",
-        "message": "✅ Updated gpt_agent_cache.py",
-        "details": {
-          "status": "success",
-          "message": "✅ Applied updates to C:\\Users\\DC\\my-bot-project\\gpt_agent_cache.py"
-        }
-      }
-    ]
+    "status": "ok",
+    "message": "{\n  \"action\": \"add_function\",\n  \"file_path\": \"utils.py\",\n  \"function_name\": \"calculate_sum\",\n  \"parameters\": [\n    \"a\",\n    \"b\"\n  ],\n  \"code\": \"    return a + b\",\n  \"comment\": \"Додай функцію для обчислення суми двох чисел\"\n}"
   }
 ]
